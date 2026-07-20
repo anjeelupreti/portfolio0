@@ -1,0 +1,48 @@
+import client from './client'
+
+/**
+ * Generic safe GET helper — returns fallback data instead of throwing,
+ * so a section of the page can render gracefully even if the API/network fails.
+ */
+async function safeGet(url, fallback) {
+  try {
+    const { data } = await client.get(url)
+    return data
+  } catch (err) {
+    console.warn(`API request failed: ${url}`, err?.message || err)
+    return fallback
+  }
+}
+
+export const getProfile = async () => {
+  const data = await safeGet('/profile/', null)
+  if (!data) return null
+  return Array.isArray(data) ? data[0] || null : data
+}
+
+export const getExperience = () => safeGet('/experience/', [])
+export const getProjects = () => safeGet('/projects/', [])
+export const getSkillCategories = () => safeGet('/skill-categories/', [])
+export const getEducation = () => safeGet('/education/', [])
+export const getTraining = () => safeGet('/training/', [])
+export const getReferences = () => safeGet('/references/', [])
+export const getLanguages = () => safeGet('/languages/', [])
+export const getServices = () => safeGet('/services/', [])
+export const getPricingPlans = () => safeGet('/pricing-plans/', [])
+// Feature-flag / visibility registry for homepage sections — public endpoint.
+// Returns [{id, key, label, is_visible, order}], already sorted by `order`.
+export const getSiteSections = () => safeGet('/site-sections/', [])
+export const getBlogCategories = () => safeGet('/blog-categories/', [])
+export const getBlogTags = () => safeGet('/blog-tags/', [])
+export const getBlogPosts = () => safeGet('/blog-posts/', [])
+export const getBlogPost = (slug) => safeGet(`/blog-posts/${slug}/`, null)
+
+export const postBlogComment = (payload) => client.post('/blog-comments/', payload)
+export const postContact = (payload) => client.post('/contact/', payload)
+
+export const trackVisit = (path, referrer) => {
+  // fire-and-forget, never blocks UI, never throws
+  client
+    .post('/track-visit/', { path, referrer })
+    .catch(() => {})
+}

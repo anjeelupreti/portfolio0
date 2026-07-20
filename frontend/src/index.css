@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", system-ui, "Segoe UI", Roboto, sans-serif;
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+
+  --color-cream: #f5f1e3;
+  --color-cream-dark: #ece5cf;
+  --color-ink: #0a0a0a;
+  --color-ink-soft: #16161a;
+  --color-accent: #d9ff4b;
+  --color-accent-soft: #eaffa0;
+  --color-muted: #6b6b6b;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+::selection {
+  background: var(--color-accent);
+  color: var(--color-ink);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.outline-text {
+  color: transparent;
+  -webkit-text-stroke: 1.5px currentColor;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* Dot-grid "engineering blueprint" texture for dark sections.
+   Usage: add class `bg-dot-grid` alongside a bg-ink/bg-ink-soft background. */
+.bg-dot-grid {
+  background-image: radial-gradient(circle, rgba(217, 255, 75, 0.14) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+/* Fine graph-paper line texture, alternate to the dot grid for variety between sections. */
+.bg-grid-lines {
+  background-image:
+    linear-gradient(rgba(217, 255, 75, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(217, 255, 75, 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-cream);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-ink);
+  border-radius: 999px;
+}
