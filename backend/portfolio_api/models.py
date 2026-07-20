@@ -1,0 +1,303 @@
+from django.conf import settings
+from django.db import models
+from django.utils import timezone
+
+
+class Profile(models.Model):
+    full_name = models.CharField(max_length=150)
+    title = models.CharField(max_length=150)
+    summary = models.TextField()
+    email = models.EmailField()
+    phone = models.CharField(max_length=30, blank=True)
+    location = models.CharField(max_length=150, blank=True)
+    resume_file = models.FileField(upload_to="resume/", blank=True, null=True)
+    profile_image = models.ImageField(upload_to="profile/", blank=True, null=True)
+    open_to_work = models.BooleanField(default=True)
+
+    github_url = models.URLField(blank=True)
+    linkedin_url = models.URLField(blank=True)
+    facebook_url = models.URLField(blank=True)
+    instagram_url = models.URLField(blank=True)
+    portfolio_url = models.URLField(blank=True)
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.full_name
+
+
+class Experience(models.Model):
+    company = models.CharField(max_length=150)
+    role = models.CharField(max_length=150)
+    location = models.CharField(max_length=150, blank=True)
+    description = models.TextField(blank=True)
+    start_date = models.CharField(max_length=30, help_text="e.g. 2025 or 04/2024")
+    end_date = models.CharField(max_length=30, blank=True, help_text="Leave blank if present")
+    is_current = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["-order", "-id"]
+
+    def __str__(self):
+        return f"{self.role} @ {self.company}"
+
+
+class ExperienceHighlight(models.Model):
+    experience = models.ForeignKey(Experience, related_name="highlights", on_delete=models.CASCADE)
+    text = models.CharField(max_length=300)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.text[:50]
+
+
+class Project(models.Model):
+    title = models.CharField(max_length=150)
+    description = models.TextField()
+    repo_url = models.URLField(blank=True)
+    live_url = models.URLField(blank=True)
+    image = models.ImageField(upload_to="projects/", blank=True, null=True)
+    featured = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-featured", "-order", "-id"]
+
+    def __str__(self):
+        return self.title
+
+
+class SkillCategory(models.Model):
+    name = models.CharField(max_length=100)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+        verbose_name_plural = "Skill categories"
+
+    def __str__(self):
+        return self.name
+
+
+class Skill(models.Model):
+    category = models.ForeignKey(SkillCategory, related_name="skills", on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    proficiency = models.PositiveIntegerField(default=80, help_text="0-100")
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.name
+
+
+class Education(models.Model):
+    institution = models.CharField(max_length=200)
+    degree = models.CharField(max_length=200)
+    start_year = models.CharField(max_length=10)
+    end_year = models.CharField(max_length=10)
+    gpa = models.CharField(max_length=20, blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["-order", "-id"]
+
+    def __str__(self):
+        return f"{self.degree} - {self.institution}"
+
+
+class Training(models.Model):
+    title = models.CharField(max_length=200)
+    provider = models.CharField(max_length=200)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return f"{self.title} ({self.provider})"
+
+
+class Reference(models.Model):
+    name = models.CharField(max_length=150)
+    role = models.CharField(max_length=200)
+    company = models.CharField(max_length=150, blank=True)
+    email = models.EmailField(blank=True)
+    phone = models.CharField(max_length=30, blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.name
+
+
+class Language(models.Model):
+    name = models.CharField(max_length=50)
+    proficiency_label = models.CharField(max_length=50, help_text="e.g. Native, Proficient")
+    proficiency_level = models.PositiveIntegerField(default=5, help_text="1-5 dots")
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.name
+
+
+class ContactMessage(models.Model):
+    name = models.CharField(max_length=150)
+    email = models.EmailField()
+    subject = models.CharField(max_length=200, blank=True)
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.name} - {self.subject or 'no subject'}"
+
+
+class SiteVisit(models.Model):
+    path = models.CharField(max_length=300)
+    visited_at = models.DateTimeField(auto_now_add=True)
+    user_agent = models.CharField(max_length=300, blank=True)
+    referrer = models.CharField(max_length=500, blank=True)
+    # NOTE: country/city are left blank for now. A GeoIP2 lookup (e.g. via
+    # django.contrib.gis.geoip2 + MaxMind GeoLite2 db, or a geolocation API)
+    # could populate these fields from ip_address in the future.
+    country = models.CharField(max_length=100, blank=True)
+    city = models.CharField(max_length=100, blank=True)
+    device_type = models.CharField(max_length=20, blank=True)
+    browser = models.CharField(max_length=50, blank=True)
+    os = models.CharField(max_length=50, blank=True)
+    ip_address = models.GenericIPAddressField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.path} @ {self.visited_at}"
+
+
+class Service(models.Model):
+    title = models.CharField(max_length=150)
+    description = models.TextField(blank=True)
+    icon_name = models.CharField(max_length=100, blank=True, help_text="e.g. a lucide-react icon name")
+    order = models.PositiveIntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.title
+
+
+class PricingPlan(models.Model):
+    name = models.CharField(max_length=100)
+    price = models.CharField(max_length=50, help_text="e.g. $499 or Custom")
+    billing_period = models.CharField(max_length=50, blank=True, help_text="e.g. one-time, /month")
+    description = models.TextField(blank=True)
+    is_featured = models.BooleanField(default=False)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.name
+
+
+class PricingFeature(models.Model):
+    plan = models.ForeignKey(PricingPlan, related_name="features", on_delete=models.CASCADE)
+    text = models.CharField(max_length=300)
+    included = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.text[:50]
+
+
+class BlogCategory(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+        verbose_name_plural = "Blog categories"
+
+    def __str__(self):
+        return self.name
+
+
+class BlogTag(models.Model):
+    name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
+class BlogPost(models.Model):
+    STATUS_CHOICES = [
+        ("draft", "Draft"),
+        ("published", "Published"),
+    ]
+
+    title = models.CharField(max_length=250)
+    slug = models.SlugField(unique=True, max_length=250)
+    excerpt = models.TextField(blank=True)
+    content = models.TextField(help_text="Rich text HTML from WYSIWYG editor")
+    cover_image = models.ImageField(upload_to="blog/", blank=True, null=True)
+    category = models.ForeignKey(
+        BlogCategory, related_name="posts", on_delete=models.SET_NULL, null=True, blank=True
+    )
+    tags = models.ManyToManyField(BlogTag, related_name="posts", blank=True)
+    author = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name="blog_posts", on_delete=models.SET_NULL, null=True, blank=True
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
+    published_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    view_count = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["-published_at", "-created_at"]
+
+    def __str__(self):
+        return self.title
+
+    def save(self, *args, **kwargs):
+        if self.status == "published" and self.published_at is None:
+            self.published_at = timezone.now()
+        super().save(*args, **kwargs)
+
+
+class BlogComment(models.Model):
+    post = models.ForeignKey(BlogPost, related_name="comments", on_delete=models.CASCADE)
+    name = models.CharField(max_length=150)
+    email = models.EmailField()
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_approved = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"Comment by {self.name} on {self.post}"

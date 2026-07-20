@@ -1,0 +1,183 @@
+from django.contrib.auth import get_user_model
+from rest_framework import serializers
+from .models import (
+    Profile, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
+    Education, Training, Reference, Language, ContactMessage,
+    Service, PricingPlan, PricingFeature,
+    BlogCategory, BlogTag, BlogPost, BlogComment,
+)
+
+User = get_user_model()
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profile
+        fields = "__all__"
+
+
+class ExperienceHighlightSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExperienceHighlight
+        fields = ["id", "text", "order"]
+
+
+class ExperienceSerializer(serializers.ModelSerializer):
+    highlights = ExperienceHighlightSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Experience
+        fields = "__all__"
+
+
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = "__all__"
+
+
+class SkillSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Skill
+        fields = ["id", "name", "proficiency", "order"]
+
+
+class SkillCategorySerializer(serializers.ModelSerializer):
+    skills = SkillSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = SkillCategory
+        fields = ["id", "name", "order", "skills"]
+
+
+class EducationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Education
+        fields = "__all__"
+
+
+class TrainingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Training
+        fields = "__all__"
+
+
+class ReferenceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Reference
+        fields = "__all__"
+
+
+class LanguageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Language
+        fields = "__all__"
+
+
+class ContactMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContactMessage
+        fields = ["id", "name", "email", "subject", "message", "created_at"]
+        read_only_fields = ["id", "created_at"]
+
+
+class ServiceSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Service
+        fields = "__all__"
+
+
+class PricingFeatureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PricingFeature
+        fields = ["id", "text", "included", "order"]
+
+
+class PricingPlanSerializer(serializers.ModelSerializer):
+    features = PricingFeatureSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = PricingPlan
+        fields = "__all__"
+
+
+class BlogCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogCategory
+        fields = "__all__"
+
+
+class BlogTagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogTag
+        fields = "__all__"
+
+
+class BlogCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogComment
+        fields = ["id", "post", "name", "email", "content", "created_at", "is_approved"]
+        read_only_fields = ["id", "created_at", "is_approved"]
+
+
+class BlogPostListSerializer(serializers.ModelSerializer):
+    author = serializers.CharField(source="author.username", read_only=True, default=None)
+    category = BlogCategorySerializer(read_only=True)
+    tags = BlogTagSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = BlogPost
+        fields = [
+            "id", "title", "slug", "excerpt", "cover_image",
+            "category", "tags", "author", "status", "published_at", "view_count",
+        ]
+
+
+class BlogPostDetailSerializer(serializers.ModelSerializer):
+    author = serializers.CharField(source="author.username", read_only=True, default=None)
+    category = BlogCategorySerializer(read_only=True)
+    tags = BlogTagSerializer(many=True, read_only=True)
+    comments = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BlogPost
+        fields = [
+            "id", "title", "slug", "excerpt", "content", "cover_image",
+            "category", "tags", "author", "status", "published_at",
+            "created_at", "updated_at", "view_count", "comments",
+        ]
+
+    def get_comments(self, obj):
+        approved = obj.comments.filter(is_approved=True)
+        return BlogCommentSerializer(approved, many=True).data
+
+
+class BlogPostWriteSerializer(serializers.ModelSerializer):
+    category = serializers.PrimaryKeyRelatedField(
+        queryset=BlogCategory.objects.all(), required=False, allow_null=True
+    )
+    tags = serializers.PrimaryKeyRelatedField(queryset=BlogTag.objects.all(), many=True, required=False)
+
+    class Meta:
+        model = BlogPost
+        fields = [
+            "id", "title", "slug", "excerpt", "content", "cover_image",
+            "category", "tags", "status", "published_at",
+            "created_at", "updated_at", "view_count",
+        ]
+        read_only_fields = ["id", "created_at", "updated_at", "view_count"]
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["id", "username", "email", "first_name", "last_name"]
+        read_only_fields = ["id", "username"]
+
+    def validate_email(self, value):
+        qs = User.objects.filter(email=value)
+        if self.instance:
+            qs = qs.exclude(pk=self.instance.pk)
+        if value and qs.exists():
+            raise serializers.ValidationError("A user with this email already exists.")
+        return value
