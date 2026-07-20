@@ -3,10 +3,29 @@ from django.db import models
 from django.utils import timezone
 
 
+class SiteSection(models.Model):
+    """Feature flags controlling which homepage sections are visible on the public site."""
+
+    key = models.SlugField(unique=True, help_text="e.g. hero, about, timeline, tech-stack, projects, pricing, blog, contact")
+    label = models.CharField(max_length=100, help_text="Human-readable name shown in the dashboard")
+    is_visible = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return f"{self.label} ({'on' if self.is_visible else 'off'})"
+
+
 class Profile(models.Model):
     full_name = models.CharField(max_length=150)
     title = models.CharField(max_length=150)
-    summary = models.TextField()
+    tagline = models.CharField(
+        max_length=200, blank=True,
+        help_text="Short punchy line shown as the big About headline, e.g. 'I build backend systems that scale.'",
+    )
+    summary = models.TextField(help_text="Full bio paragraph, shown as regular body text under the tagline.")
     email = models.EmailField()
     phone = models.CharField(max_length=30, blank=True)
     location = models.CharField(max_length=150, blank=True)

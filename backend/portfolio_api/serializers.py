@@ -3,11 +3,17 @@ from rest_framework import serializers
 from .models import (
     Profile, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
     Education, Training, Reference, Language, ContactMessage,
-    Service, PricingPlan, PricingFeature,
+    Service, PricingPlan, PricingFeature, SiteSection,
     BlogCategory, BlogTag, BlogPost, BlogComment,
 )
 
 User = get_user_model()
+
+
+class SiteSectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteSection
+        fields = ["id", "key", "label", "is_visible", "order"]
 
 
 class ProfileSerializer(serializers.ModelSerializer):

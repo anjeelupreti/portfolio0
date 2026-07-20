@@ -13,18 +13,28 @@ from .models import (
     Profile, Experience, Project, SkillCategory,
     Education, Training, Reference, Language, ContactMessage,
     Service, PricingPlan, BlogCategory, BlogTag, BlogPost, BlogComment,
-    SiteVisit,
+    SiteVisit, SiteSection,
 )
 from .serializers import (
     ProfileSerializer, ExperienceSerializer, ProjectSerializer, SkillCategorySerializer,
     EducationSerializer, TrainingSerializer, ReferenceSerializer, LanguageSerializer,
     ContactMessageSerializer,
-    ServiceSerializer, PricingPlanSerializer,
+    ServiceSerializer, PricingPlanSerializer, SiteSectionSerializer,
     BlogCategorySerializer, BlogTagSerializer,
     BlogPostListSerializer, BlogPostDetailSerializer, BlogPostWriteSerializer,
     BlogCommentSerializer,
 )
 from .utils import parse_user_agent, get_client_ip
+
+
+class SiteSectionViewSet(viewsets.ModelViewSet):
+    queryset = SiteSection.objects.all()
+    serializer_class = SiteSectionSerializer
+
+    def get_permissions(self):
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 
 class ProfileViewSet(viewsets.ReadOnlyModelViewSet):

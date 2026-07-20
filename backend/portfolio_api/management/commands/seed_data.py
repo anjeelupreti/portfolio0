@@ -3,6 +3,7 @@ from django.core.management.base import BaseCommand
 from portfolio_api.models import (
     Profile, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
     Education, Training, Reference, Language, Service, PricingPlan, PricingFeature,
+    SiteSection,
 )
 
 
@@ -10,6 +11,7 @@ class Command(BaseCommand):
     help = "Seed the database with Anjeel Upreti's CV content"
 
     def handle(self, *args, **options):
+        self.seed_site_sections()
         self.seed_profile()
         self.seed_experience()
         self.seed_projects()
@@ -22,12 +24,30 @@ class Command(BaseCommand):
         self.seed_pricing()
         self.stdout.write(self.style.SUCCESS("Seed data applied."))
 
+    def seed_site_sections(self):
+        data = [
+            ("hero", "Hero", True, 0),
+            ("about", "About Me", True, 1),
+            ("timeline", "Experience Timeline", True, 2),
+            ("tech-stack", "Tech Stack", True, 3),
+            ("services", "Services", True, 4),
+            ("projects", "Projects / Portfolio", True, 5),
+            ("pricing", "Pricing", False, 6),
+            ("blog", "Insights / Blog", True, 7),
+            ("contact", "Contact", True, 8),
+        ]
+        for key, label, visible, order in data:
+            SiteSection.objects.update_or_create(
+                key=key, defaults=dict(label=label, is_visible=visible, order=order)
+            )
+
     def seed_profile(self):
         Profile.objects.update_or_create(
             email="anjeelupretiofficial@gmail.com",
             defaults=dict(
                 full_name="Anjeel Upreti",
                 title="Software Engineer",
+                tagline="I build backend systems that scale.",
                 summary=(
                     "Python Developer with over a couple of years experience in backend web "
                     "development, specializing in Django, Odoo, and PostgreSQL. Adept at "

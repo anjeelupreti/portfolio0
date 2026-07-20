@@ -3,9 +3,16 @@ from django.contrib import admin
 from .models import (
     Profile, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
     Education, Training, Reference, Language, ContactMessage, SiteVisit,
-    Service, PricingPlan, PricingFeature,
+    Service, PricingPlan, PricingFeature, SiteSection,
     BlogCategory, BlogTag, BlogPost, BlogComment,
 )
+
+
+@admin.register(SiteSection)
+class SiteSectionAdmin(admin.ModelAdmin):
+    list_display = ("label", "key", "is_visible", "order")
+    list_editable = ("is_visible", "order")
+    search_fields = ("label", "key")
 
 
 class ExperienceHighlightInline(admin.TabularInline):
