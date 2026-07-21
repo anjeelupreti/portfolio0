@@ -14,6 +14,20 @@ class SiteTheme(models.Model):
         ("violet-dusk", "Violet Dusk"),
         ("forest-green", "Forest Green"),
         ("crimson-rose", "Crimson Rose"),
+        ("rose-gold", "Rose Gold"),
+        ("slate-blue", "Slate Blue"),
+        ("amber-noir", "Amber Noir"),
+        ("mint-fresh", "Mint Fresh"),
+        ("deep-plum", "Deep Plum"),
+        ("coral-reef", "Coral Reef"),
+        ("cyber-teal", "Cyber Teal"),
+        ("golden-hour", "Golden Hour"),
+        ("electric-indigo", "Electric Indigo"),
+        ("monochrome", "Monochrome"),
+        ("cherry-blossom", "Cherry Blossom"),
+        ("arctic-frost", "Arctic Frost"),
+        ("volcanic-red", "Volcanic Red"),
+        ("neon-cyber", "Neon Cyber"),
     ]
 
     preset = models.CharField(max_length=30, choices=PRESET_CHOICES, default="lime-ink")
@@ -50,6 +64,23 @@ class SiteWidget(models.Model):
         default="Hi! I saw your portfolio and would like to get in touch.",
         help_text="Prefilled message when a visitor opens the WhatsApp chat.",
     )
+
+    scroll_to_top_enabled = models.BooleanField(default=True)
+
+    resume_download_enabled = models.BooleanField(default=True)
+
+    blog_share_enabled = models.BooleanField(default=True)
+
+    cookie_banner_enabled = models.BooleanField(default=True)
+    cookie_banner_message = models.CharField(
+        max_length=300, blank=True,
+        default=(
+            "This site collects basic, anonymous visit analytics (page views, device type) "
+            "to help improve the experience. No personal data is sold or shared."
+        ),
+        help_text="Text shown in the dismissible cookie/analytics consent banner.",
+    )
+
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:

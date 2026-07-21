@@ -39,7 +39,12 @@ class SiteThemeSerializer(serializers.ModelSerializer):
 class SiteWidgetSerializer(serializers.ModelSerializer):
     class Meta:
         model = SiteWidget
-        fields = ["whatsapp_enabled", "whatsapp_number", "whatsapp_default_message", "updated_at"]
+        fields = [
+            "whatsapp_enabled", "whatsapp_number", "whatsapp_default_message",
+            "scroll_to_top_enabled", "resume_download_enabled",
+            "blog_share_enabled", "cookie_banner_enabled", "cookie_banner_message",
+            "updated_at",
+        ]
         read_only_fields = ["updated_at"]
 
     def validate_whatsapp_number(self, value):
