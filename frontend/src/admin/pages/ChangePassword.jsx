@@ -5,6 +5,7 @@ import Card from '../components/Card'
 import { changePassword } from '../api/adminResources'
 import { useToast } from '../components/Toast'
 
+/** Settings page letting the logged-in admin change their own password, given the current one. */
 export default function ChangePassword() {
   const { push } = useToast()
   const [form, setForm] = useState({ old_password: '', new_password: '', confirm: '' })

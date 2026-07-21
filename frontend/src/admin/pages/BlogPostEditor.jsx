@@ -20,6 +20,7 @@ import {
   createBlogTag,
 } from '../api/adminResources'
 
+/** Converts arbitrary text into a URL-safe slug (lowercase, hyphen-separated, no punctuation). */
 function slugify(text) {
   return text
     .toLowerCase()
@@ -40,6 +41,10 @@ const emptyForm = {
   status: 'draft',
 }
 
+/**
+ * Create/edit form for a single blog post, keyed off the `slug` route param (absent slug = new post).
+ * Wraps RichTextEditor for HTML content and renders a modal preview of the rendered post before saving.
+ */
 export default function BlogPostEditor() {
   const { slug } = useParams()
   const isEdit = Boolean(slug)

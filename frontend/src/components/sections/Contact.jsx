@@ -15,9 +15,10 @@ import SectionEyebrow from '../ui/SectionEyebrow'
 
 const initialForm = { name: '', email: '', subject: '', message: '' }
 
+/** Contact section of the home page with profile contact info and a message form that posts to the contact API. */
 export default function Contact({ profile }) {
   const [form, setForm] = useState(initialForm)
-  const [status, setStatus] = useState('idle') // idle | sending | success | error
+  const [status, setStatus] = useState('idle')
 
   const handleChange = (e) => {
     setForm((f) => ({ ...f, [e.target.name]: e.target.value }))

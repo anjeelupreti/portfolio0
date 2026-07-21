@@ -20,7 +20,7 @@ import {
   LucideSend as Send,
 } from 'lucide-react'
 
-// Maps a service's icon_name (free text from backend) to a lucide-react icon.
+/** Maps a service's `icon_name` (free text from the backend) to a lucide-react icon. */
 const ICON_MAP = {
   server: Server,
   boxes: Boxes,
@@ -42,14 +42,14 @@ const ICON_MAP = {
   settings: Settings,
 }
 
+/** Resolves a service's icon_name to a lucide-react icon component, defaulting to Code2 if unrecognized. */
 export function resolveIcon(name) {
   if (!name) return Code2
   const key = String(name).toLowerCase().trim()
   return ICON_MAP[key] || Code2
 }
 
-// Maps a skill name to a reasonable lucide-react icon, falling back to null
-// (caller should render a monogram circle when null).
+/** Maps a skill name to a reasonable lucide-react icon, falling back to null (caller should render a monogram circle when null). */
 const SKILL_ICON_MAP = {
   python: Code2,
   django: Server,
@@ -79,6 +79,7 @@ const SKILL_ICON_MAP = {
   matplotlib: BarChart3,
 }
 
+/** Resolves a skill name to a lucide-react icon component, or null if unrecognized. */
 export function resolveSkillIcon(name) {
   if (!name) return null
   const key = String(name).toLowerCase().trim()

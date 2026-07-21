@@ -13,6 +13,7 @@ import { sendEmail } from '../api/adminResources'
 
 const emptyForm = { to_email: '', subject: '', body_html: '' }
 
+/** Standalone email composer for sending a message not tied to any existing contact submission. */
 export default function Compose() {
   const { push } = useToast()
   const [form, setForm] = useState(emptyForm)

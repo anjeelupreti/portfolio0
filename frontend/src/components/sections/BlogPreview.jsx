@@ -5,6 +5,7 @@ import { ArrowUpRight, LucideNewspaper as Newspaper } from 'lucide-react'
 import { fadeUp, staggerContainer, viewportOnce } from '../../lib/motion'
 import SectionEyebrow from '../ui/SectionEyebrow'
 
+/** Blog post preview card linking to the full post at /blog/:slug. */
 function PostCard({ post }) {
   return (
     <motion.div variants={fadeUp}>
@@ -49,6 +50,7 @@ function PostCard({ post }) {
   )
 }
 
+/** Home page section previewing the 3 most recent blog posts, with a link to the full /blog listing. */
 export default function BlogPreview({ posts }) {
   return (
     <section id="insights" className="bg-cream px-4 py-24 sm:px-6 sm:py-32">

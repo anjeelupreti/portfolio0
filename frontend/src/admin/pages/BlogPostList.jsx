@@ -14,6 +14,7 @@ import Card from '../components/Card'
 import { getBlogPosts, deleteBlogPost } from '../api/adminResources'
 import { useToast } from '../components/Toast'
 
+/** Admin table of all blog posts with links to create/edit and inline optimistic delete. */
 export default function BlogPostList() {
   const { push } = useToast()
   const [posts, setPosts] = useState([])

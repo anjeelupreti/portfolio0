@@ -29,23 +29,22 @@ export const getReferences = () => safeGet('/references/', [])
 export const getLanguages = () => safeGet('/languages/', [])
 export const getServices = () => safeGet('/services/', [])
 export const getPricingPlans = () => safeGet('/pricing-plans/', [])
-// Feature-flag / visibility registry for homepage sections — public endpoint.
-// Returns [{id, key, label, is_visible, order}], already sorted by `order`.
+/** Feature-flag/visibility registry for homepage sections. Returns `[{id, key, label, is_visible, order}]`, already sorted by `order`. */
 export const getSiteSections = () => safeGet('/site-sections/', [])
 export const getBlogCategories = () => safeGet('/blog-categories/', [])
 export const getBlogTags = () => safeGet('/blog-tags/', [])
 export const getBlogPosts = () => safeGet('/blog-posts/', [])
 export const getBlogPost = (slug) => safeGet(`/blog-posts/${slug}/`, null)
-// Site-wide color theme (singleton) — public, read-only from this client.
+/** Site-wide color theme (singleton), read-only from this client. */
 export const getSiteTheme = () => safeGet('/site-theme/', null)
-// Site-wide widget settings (singleton, e.g. WhatsApp floating button) — public, read-only from this client.
+/** Site-wide widget settings (singleton — WhatsApp button, scroll-to-top, cookie banner, blog sharing), read-only from this client. */
 export const getSiteWidgets = () => safeGet('/site-widgets/', null)
 
 export const postBlogComment = (payload) => client.post('/blog-comments/', payload)
 export const postContact = (payload) => client.post('/contact/', payload)
 
+/** Fire-and-forget pageview tracker — never blocks the UI and never throws. */
 export const trackVisit = (path, referrer) => {
-  // fire-and-forget, never blocks UI, never throws
   client
     .post('/track-visit/', { path, referrer })
     .catch(() => {})

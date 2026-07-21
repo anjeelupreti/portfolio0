@@ -3,6 +3,7 @@ import { LucideCheck as Check, LucideAlertCircle as AlertCircle, LucideX as X } 
 
 const ToastContext = createContext(null)
 
+/** Provides a `push(message, type)` toast notifier to the admin dashboard tree and renders the stacked toast list; each toast auto-dismisses after 5s. */
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([])
 
@@ -54,6 +55,7 @@ export function ToastProvider({ children }) {
   )
 }
 
+/** Accesses the toast `push` function; throws if called outside ToastProvider. */
 export function useToast() {
   const ctx = useContext(ToastContext)
   if (!ctx) throw new Error('useToast must be used within ToastProvider')

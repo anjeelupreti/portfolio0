@@ -5,9 +5,12 @@ import { getSiteWidgets } from '../../api/resources'
 
 const STORAGE_KEY = 'portfolio_cookie_consent_dismissed'
 
-// Bottom-of-viewport cookie/analytics consent notice. Fails open/silent if
-// the widget config can't be fetched or is disabled, and never reappears
-// once dismissed (tracked in localStorage, never sent to the backend).
+/**
+ * Bottom-of-viewport cookie/analytics consent notice, rendered once in
+ * App.jsx's PublicLayout. Dismissal is tracked in localStorage only (never
+ * sent to the backend) so it never reappears once dismissed. Renders nothing
+ * if the site-widgets config fails to load or disables it.
+ */
 export default function CookieBanner() {
   const [widget, setWidget] = useState(null)
   const [dismissed, setDismissed] = useState(true)
@@ -37,7 +40,6 @@ export default function CookieBanner() {
     try {
       localStorage.setItem(STORAGE_KEY, 'true')
     } catch {
-      // ignore write failures (e.g. privacy mode)
     }
   }
 

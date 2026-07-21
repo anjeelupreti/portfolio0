@@ -6,10 +6,12 @@ import SectionEyebrow from '../ui/SectionEyebrow'
 import { WindowTitlebar } from '../ui/WindowChrome'
 import Modal from '../ui/Modal'
 
+/** Converts a project title into a lowercase, hyphenated slug for display labels (not routing). */
 function slugify(title) {
   return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
 }
 
+/** Repo/live-demo link buttons shown on a project card; stops propagation so clicks don't open the card's modal. */
 function ProjectLinks({ project }) {
   return (
     <div className="mt-8 flex items-center gap-3">
@@ -39,6 +41,7 @@ function ProjectLinks({ project }) {
   )
 }
 
+/** Clickable/keyboard-accessible project tile in the grid; opens the detail modal via `onOpen`. */
 function ProjectCard({ project, onOpen }) {
   return (
     <motion.div
@@ -77,6 +80,7 @@ function ProjectCard({ project, onOpen }) {
   )
 }
 
+/** Expanded project detail shown inside the Modal when a ProjectCard is opened. */
 function ProjectPreview({ project }) {
   return (
     <div>
@@ -126,6 +130,7 @@ function ProjectPreview({ project }) {
   )
 }
 
+/** Projects section of the home page: grid of ProjectCards with a shared detail Modal for the active project. */
 export default function Portfolio({ projects }) {
   const [activeProject, setActiveProject] = useState(null)
 

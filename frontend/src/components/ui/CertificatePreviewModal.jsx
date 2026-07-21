@@ -3,6 +3,7 @@ import Modal from './Modal'
 
 const IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp', '.gif']
 
+/** Extracts a lowercased file extension (e.g. `.pdf`) from a URL, ignoring query/hash. */
 function getExtension(url) {
   if (!url) return ''
   const clean = url.split('?')[0].split('#')[0]
@@ -10,11 +11,12 @@ function getExtension(url) {
   return idx === -1 ? '' : clean.slice(idx).toLowerCase()
 }
 
-// Preview modal for a Training/Certification's uploaded certificate file —
-// embeds PDFs via <iframe> (with an "open in new tab" fallback link, since
-// inline PDF rendering support varies by browser) or renders images directly
-// with <img object-contain>. Built on the shared Modal component so it gets
-// Escape/backdrop-click/X-button closing and dark-mode-aware styling for free.
+/**
+ * Preview modal for a Training/Certification's uploaded certificate file.
+ * Renders images inline, embeds PDFs via `<iframe>` with an "open in new tab"
+ * fallback link, and shows a generic download link for other file types.
+ * Built on the shared Modal component.
+ */
 export default function CertificatePreviewModal({ open, onClose, title, fileUrl }) {
   const ext = getExtension(fileUrl)
   const isImage = IMAGE_EXTENSIONS.includes(ext)

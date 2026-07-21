@@ -1,6 +1,4 @@
-// Shared "eyebrow" label used at the top of every section for a consistent
-// software-engineer motif: labels read like a self-closing JSX component tag,
-// e.g. <About /> or <Timeline />. One motif, used everywhere, per design brief.
+/** Renders a section label styled like a self-closing JSX tag (e.g. `<About />`) — the recurring "eyebrow" motif above every homepage section. */
 export default function SectionEyebrow({ children, tone = 'light' }) {
   const isDark = tone === 'dark'
   return (

@@ -1,6 +1,5 @@
 import adminClient from './adminClient'
 
-// ---- Auth ----
 export const login = (username, password) =>
   adminClient.post('/auth/login/', { username, password }).then((r) => r.data)
 
@@ -17,28 +16,23 @@ export const forgotPassword = (email) =>
 export const resetPassword = (payload) =>
   adminClient.post('/auth/reset-password/', payload).then((r) => r.data)
 
-// ---- Site sections ----
 export const getSiteSections = () => adminClient.get('/site-sections/').then((r) => r.data)
 
 export const patchSiteSection = (id, payload) =>
   adminClient.patch(`/site-sections/${id}/`, payload).then((r) => r.data)
 
-// ---- Profile ----
 export const getProfile = () => adminClient.get('/profile/').then((r) => r.data)
 
 export const updateProfile = (id, payload) =>
   adminClient.patch(`/profile/${id}/`, payload).then((r) => r.data)
 
+/** Uploads a resume file via multipart form data. Do not set Content-Type manually — the browser must generate the boundary itself, or Django rejects the body. */
 export const uploadResume = (id, file) => {
   const formData = new FormData()
   formData.append('resume_file', file)
-  // Do NOT set Content-Type manually — the browser must generate the
-  // multipart boundary itself, otherwise Django rejects the body with
-  // "The submitted data was not a file."
   return adminClient.patch(`/profile/${id}/`, formData).then((r) => r.data)
 }
 
-// ---- Training / certifications ----
 export const getTrainingAdmin = () => adminClient.get('/training/').then((r) => r.data)
 
 export const createTraining = (payload) =>
@@ -49,14 +43,13 @@ export const updateTraining = (id, payload) =>
 
 export const deleteTraining = (id) => adminClient.delete(`/training/${id}/`)
 
+/** Uploads a certificate file via multipart form data; same Content-Type caveat as uploadResume. */
 export const uploadTrainingCertificate = (id, file) => {
   const formData = new FormData()
   formData.append('certificate_file', file)
-  // Do NOT set Content-Type manually — see note in uploadResume above.
   return adminClient.patch(`/training/${id}/`, formData).then((r) => r.data)
 }
 
-// ---- Blog posts ----
 export const getBlogPosts = () => adminClient.get('/blog-posts/').then((r) => r.data)
 
 export const getBlogPost = (slug) => adminClient.get(`/blog-posts/${slug}/`).then((r) => r.data)
@@ -78,7 +71,6 @@ export const getBlogTags = () => adminClient.get('/blog-tags/').then((r) => r.da
 
 export const createBlogTag = (payload) => adminClient.post('/blog-tags/', payload).then((r) => r.data)
 
-// ---- Blog comments ----
 export const getBlogComments = () => adminClient.get('/blog-comments/').then((r) => r.data)
 
 export const approveBlogComment = (id) =>
@@ -86,32 +78,28 @@ export const approveBlogComment = (id) =>
 
 export const deleteBlogComment = (id) => adminClient.delete(`/blog-comments/${id}/`)
 
-// ---- Site theme ----
 export const getSiteThemeAdmin = () => adminClient.get('/site-theme/').then((r) => r.data)
 
 export const updateSiteTheme = (payload) =>
   adminClient.patch('/site-theme/', payload).then((r) => r.data)
 
-// ---- Site widgets ----
 export const getSiteWidgetsAdmin = () => adminClient.get('/site-widgets/').then((r) => r.data)
 
 export const updateSiteWidgets = (payload) =>
   adminClient.patch('/site-widgets/', payload).then((r) => r.data)
 
-// ---- Analytics ----
 export const getAnalyticsSummary = () => adminClient.get('/analytics/summary/').then((r) => r.data)
 
-// ---- Contact messages ----
 export const getContactMessages = () => adminClient.get('/contact-messages/').then((r) => r.data)
 
 export const markContactMessageRead = (id) =>
   adminClient.patch(`/contact-messages/${id}/mark_read/`).then((r) => r.data)
 
-// ---- Send email (reply to a contact message, or standalone compose) ----
-// SMTP failures come back from the API as a 202/502-shaped body with a
-// non-empty `send_error` field rather than a clean 2xx — axios still rejects
-// on non-2xx, so we catch and surface the response body (with the record
-// that WAS created) instead of losing it as a generic network error.
+/**
+ * Sends an email (reply to a contact message, or standalone compose). SMTP failures come back
+ * as a non-2xx response with a `send_error` field rather than a clean success, so this catches
+ * that rejection and returns `{ data, ok: false }` instead of throwing, preserving the created record.
+ */
 export const sendEmail = (payload) =>
   adminClient
     .post('/send-email/', payload)

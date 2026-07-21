@@ -5,27 +5,29 @@ const baseURL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000/api'
 export const ACCESS_TOKEN_KEY = 'portfolio_access_token'
 export const REFRESH_TOKEN_KEY = 'portfolio_refresh_token'
 
+/** Reads the persisted access token from localStorage. */
 export function getAccessToken() {
   return localStorage.getItem(ACCESS_TOKEN_KEY)
 }
 
+/** Reads the persisted refresh token from localStorage. */
 export function getRefreshToken() {
   return localStorage.getItem(REFRESH_TOKEN_KEY)
 }
 
+/** Persists whichever of access/refresh tokens are provided to localStorage. */
 export function setTokens({ access, refresh }) {
   if (access) localStorage.setItem(ACCESS_TOKEN_KEY, access)
   if (refresh) localStorage.setItem(REFRESH_TOKEN_KEY, refresh)
 }
 
+/** Removes both stored tokens, e.g. on logout or forced re-auth. */
 export function clearTokens() {
   localStorage.removeItem(ACCESS_TOKEN_KEY)
   localStorage.removeItem(REFRESH_TOKEN_KEY)
 }
 
-// Separate axios instance for admin/authenticated calls — keeps the public
-// site's plain client (src/api/client.js) untouched, avoiding any risk of
-// leaking auth headers into public requests.
+/** Authenticated axios instance for the admin dashboard, kept separate from the public site's client so auth headers never leak into public requests. */
 const adminClient = axios.create({
   baseURL,
   timeout: 15000,
@@ -41,6 +43,7 @@ adminClient.interceptors.request.use((config) => {
 
 let refreshPromise = null
 
+/** Clears stored tokens and sends the browser to the login page, unless already there. */
 function redirectToLogin() {
   clearTokens()
   if (window.location.pathname !== '/admin/login') {
@@ -48,6 +51,7 @@ function redirectToLogin() {
   }
 }
 
+/** Exchanges the stored refresh token for a new access token and persists it. */
 async function performRefresh() {
   const refresh = getRefreshToken()
   if (!refresh) throw new Error('No refresh token available')
@@ -56,6 +60,11 @@ async function performRefresh() {
   return data.access
 }
 
+/**
+ * On a 401 (excluding the login/refresh endpoints themselves), transparently
+ * refreshes the access token and retries the original request once. Concurrent
+ * 401s share a single in-flight refresh via `refreshPromise`.
+ */
 adminClient.interceptors.response.use(
   (response) => response,
   async (error) => {
@@ -64,7 +73,6 @@ adminClient.interceptors.response.use(
       return Promise.reject(error)
     }
 
-    // Don't try to refresh the refresh call itself or the login call.
     if (config.url?.includes('/auth/refresh/') || config.url?.includes('/auth/login/')) {
       redirectToLogin()
       return Promise.reject(error)
@@ -73,7 +81,6 @@ adminClient.interceptors.response.use(
     config._retry = true
 
     try {
-      // Coalesce concurrent 401s into a single refresh request.
       if (!refreshPromise) {
         refreshPromise = performRefresh().finally(() => {
           refreshPromise = null

@@ -20,6 +20,11 @@ const FIELDS = [
   { name: 'portfolio_url', label: 'Portfolio URL' },
 ]
 
+/**
+ * Admin form for editing the single Profile record (contact info, bio, socials) plus resume
+ * upload/removal via `uploadResume`/`updateProfile` from adminResources. Assumes exactly one
+ * profile exists and takes the first item if the API returns a list.
+ */
 export default function ProfileEdit() {
   const { push } = useToast()
   const [profile, setProfile] = useState(null)

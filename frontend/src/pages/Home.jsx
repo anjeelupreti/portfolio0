@@ -24,8 +24,7 @@ import Pricing from '../components/sections/Pricing'
 import BlogPreview from '../components/sections/BlogPreview'
 import Contact from '../components/sections/Contact'
 
-// Fallback order used when the site-sections endpoint is empty/unreachable,
-// so the page never renders blank just because the flag service is down.
+/** Fallback section order when the site-sections endpoint is empty/unreachable. */
 const DEFAULT_ORDER = [
   'hero',
   'about',
@@ -38,6 +37,7 @@ const DEFAULT_ORDER = [
   'contact',
 ]
 
+/** Public homepage — fetches all section data and renders sections in the order/visibility defined by the site-sections admin flags, falling back to DEFAULT_ORDER if unavailable. */
 export default function Home({ profile }) {
   const { data: experience } = useApi(getExperience, [], [])
   const { data: projects } = useApi(getProjects, [], [])
@@ -51,7 +51,6 @@ export default function Home({ profile }) {
   const { data: blogPosts } = useApi(getBlogPosts, [], [])
   const { data: siteSections } = useApi(getSiteSections, [], [])
 
-  // Registry mapping a site-section `key` to the component + props it needs.
   const SECTION_REGISTRY = {
     hero: () => <Hero profile={profile} />,
     about: () => (
@@ -80,8 +79,6 @@ export default function Home({ profile }) {
       {order.map((key) => {
         const Component = SECTION_REGISTRY[key]
         if (!Component) return null
-        // Hero always renders regardless of its flag — it's the page's entry
-        // point and hiding it would leave the page looking broken.
         if (key !== 'hero' && !isVisible(sections, key)) return null
         return <Component key={key} />
       })}

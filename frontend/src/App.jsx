@@ -32,6 +32,7 @@ import ChangePassword from './admin/pages/ChangePassword'
 import Personalization from './admin/pages/Personalization'
 import Widgets from './admin/pages/Widgets'
 
+/** Renders nothing; fires a visit-tracking call and resets scroll position on every route change. */
 function RouteTracker() {
   const location = useLocation()
 
@@ -47,6 +48,7 @@ function RouteTracker() {
   return null
 }
 
+/** Layout for all public (non-admin) routes — navbar, footer, and the persistent floating widgets (WhatsApp, scroll-to-top, cookie banner). */
 function PublicLayout() {
   const { data: profile } = useApi(getProfile, [], null)
 
@@ -68,6 +70,7 @@ function PublicLayout() {
   )
 }
 
+/** Route table for the /admin subtree — public auth routes plus the protected dashboard and its nested pages. */
 function AdminRoutes() {
   return (
     <Routes>
@@ -102,6 +105,7 @@ function AdminRoutes() {
   )
 }
 
+/** Picks between the admin route tree and the public site layout based on the current path. */
 function Layout() {
   const location = useLocation()
   const isAdmin = location.pathname.startsWith('/admin')
@@ -113,6 +117,7 @@ function Layout() {
   return <PublicLayout />
 }
 
+/** App root — sets up routing and the theme/auth/toast providers shared by both the public site and the admin dashboard. */
 export default function App() {
   return (
     <BrowserRouter>

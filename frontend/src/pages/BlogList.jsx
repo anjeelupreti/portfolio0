@@ -7,6 +7,7 @@ import { useApi } from '../hooks/useApi'
 import { getBlogPosts, getBlogCategories } from '../api/resources'
 import { fadeUp, staggerContainer, viewportOnce } from '../lib/motion'
 
+/** Public blog index — lists published posts with client-side category filtering. */
 export default function BlogList() {
   const { data: posts, loading } = useApi(getBlogPosts, [], [])
   const { data: categories } = useApi(getBlogCategories, [], [])

@@ -1,7 +1,6 @@
 import { WindowTitlebar } from '../../components/ui/WindowChrome'
 
-// Consistent "code editor window" card used across the dashboard —
-// matches the public site's WindowChrome motif applied to functional UI.
+/** "Code editor window" styled card used throughout the admin dashboard, echoing the public site's WindowChrome motif. */
 export default function Card({ title, children, className = '', bodyClassName = '' }) {
   return (
     <div className={`overflow-hidden rounded-2xl border border-ink/10 bg-surface/60 shadow-sm ${className}`}>

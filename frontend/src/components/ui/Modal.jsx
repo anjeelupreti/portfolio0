@@ -3,13 +3,11 @@ import { createPortal } from 'react-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { LucideX as X } from 'lucide-react'
 
-// Generic, reusable modal used across the public site (certificate preview,
-// project preview, resume preview, reference preview, ...). Renders via a
-// portal so it always sits above app content regardless of where it's
-// mounted, dark-mode-aware via the theme tokens (bg-cream/text-ink), closes
-// on Escape, backdrop click, or the explicit X button, and does a
-// lightweight focus trap (Tab/Shift+Tab cycle within the dialog) without
-// requiring a full focus-trap library.
+/**
+ * Generic portal-rendered modal reused across the public site (certificate,
+ * project, resume, reference previews). Closes on Escape, backdrop click, or
+ * the X button, and includes a lightweight Tab/Shift+Tab focus trap.
+ */
 export default function Modal({ open, onClose, title, children, className = '' }) {
   const dialogRef = useRef(null)
   const previouslyFocused = useRef(null)
@@ -45,7 +43,6 @@ export default function Modal({ open, onClose, title, children, className = '' }
     document.addEventListener('keydown', handleKeyDown, true)
     document.body.style.overflow = 'hidden'
 
-    // Move focus into the dialog once it's mounted.
     const focusTimer = setTimeout(() => {
       const target = dialogRef.current?.querySelector(
         'a[href], button:not([disabled]), textarea, input, select, [tabindex]:not([tabindex="-1"])'

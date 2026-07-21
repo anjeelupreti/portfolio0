@@ -5,10 +5,12 @@ import { getSiteWidgets } from '../../api/resources'
 
 const SCROLL_THRESHOLD = 400
 
-// Floating "back to top" button for the public site — bottom-left so it
-// never collides with the bottom-right WhatsApp button. Fails open/silent
-// if the widget config can't be fetched or is disabled, and stays hidden
-// until the visitor has scrolled past the threshold.
+/**
+ * Floating "back to top" button, rendered once in App.jsx's PublicLayout so
+ * it persists across public routes. Positioned bottom-left to avoid the
+ * bottom-right WhatsApp button. Hidden until scroll passes the threshold, or
+ * if the site-widgets config fails to load or disables it.
+ */
 export default function ScrollToTopButton() {
   const [widget, setWidget] = useState(null)
   const [visible, setVisible] = useState(false)

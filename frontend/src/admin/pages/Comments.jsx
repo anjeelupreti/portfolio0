@@ -11,6 +11,10 @@ import Card from '../components/Card'
 import { getBlogComments, approveBlogComment, deleteBlogComment, getBlogPosts } from '../api/adminResources'
 import { useToast } from '../components/Toast'
 
+/**
+ * Admin moderation queue for blog comments — approve or delete, with optimistic UI updates
+ * that roll back on API failure. Post titles are fetched separately and joined by post id.
+ */
 export default function Comments() {
   const { push } = useToast()
   const [comments, setComments] = useState([])

@@ -2,17 +2,19 @@ import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { getSiteWidgets } from '../../api/resources'
 
-// Strips everything except digits so the wa.me link is well-formed
-// regardless of how the number was entered (+, spaces, dashes, etc).
+/** Builds a wa.me link from a phone number in any format (strips everything but digits) and an optional prefilled message. */
 export function buildWhatsAppUrl(number, message) {
   const digitsOnly = (number || '').replace(/[^\d]/g, '')
   const text = encodeURIComponent(message || '')
   return `https://wa.me/${digitsOnly}${text ? `?text=${text}` : ''}`
 }
 
-// Floating "Chat on WhatsApp" button for the public site. Fails open/silent
-// if the widget config can't be fetched or is disabled — never blocks or
-// breaks the rest of the page.
+/**
+ * Floating WhatsApp entry point for anonymous visitors — opens wa.me with a
+ * prefilled message. Rendered once in App.jsx's PublicLayout so it persists
+ * across public routes. Renders nothing if the site-widgets config fails to
+ * load or the admin has disabled it.
+ */
 export default function WhatsAppButton() {
   const [widget, setWidget] = useState(null)
 

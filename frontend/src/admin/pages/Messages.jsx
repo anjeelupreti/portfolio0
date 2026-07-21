@@ -16,6 +16,7 @@ import RichTextEditor from '../components/RichTextEditor'
 import { getContactMessages, markContactMessageRead, sendEmail } from '../api/adminResources'
 import { useToast } from '../components/Toast'
 
+/** Renders the chain of admin replies already sent for a contact message, including any send errors. */
 function ReplyThread({ replies }) {
   if (!replies || replies.length === 0) return null
 
@@ -51,6 +52,7 @@ function ReplyThread({ replies }) {
   )
 }
 
+/** Inline reply composer for a single contact message, rendered under it in the Messages list when active. */
 function ReplyForm({ message, onSent, onCancel }) {
   const { push } = useToast()
   const [subject, setSubject] = useState(`Re: ${message.subject || 'your message'}`)
@@ -125,6 +127,7 @@ function ReplyForm({ message, onSent, onCancel }) {
   )
 }
 
+/** Admin contact inbox — lists messages, marks them read, and expands ReplyForm/ReplyThread per message. */
 export default function Messages() {
   const { push } = useToast()
   const [messages, setMessages] = useState([])

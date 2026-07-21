@@ -19,9 +19,7 @@ import { fadeUp } from '../lib/motion'
 
 const initialForm = { name: '', email: '', content: '' }
 
-// Hand-authored brand glyphs — lucide-react v1.25 dropped real brand icons,
-// so these mirror the WhatsApp button's inline-SVG pattern for recognizable
-// X/LinkedIn marks instead of generic stand-ins.
+/** Hand-drawn X (Twitter) glyph — lucide-react has no brand icon for it. */
 function XIcon(props) {
   return (
     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" {...props}>
@@ -30,6 +28,7 @@ function XIcon(props) {
   )
 }
 
+/** Hand-drawn LinkedIn glyph — lucide-react has no brand icon for it. */
 function LinkedInIcon(props) {
   return (
     <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" {...props}>
@@ -38,6 +37,7 @@ function LinkedInIcon(props) {
   )
 }
 
+/** Share-to-X/LinkedIn links plus a copy-link button for a blog post; shown only when the admin enables blog sharing via site widgets. */
 function ShareButtons({ post }) {
   const [copied, setCopied] = useState(false)
 
@@ -51,7 +51,6 @@ function ShareButtons({ post }) {
       setCopied(true)
       setTimeout(() => setCopied(false), 2000)
     } catch {
-      // clipboard unavailable — fail silently, no crash
     }
   }
 
@@ -88,11 +87,9 @@ function ShareButtons({ post }) {
   )
 }
 
+/** Public single blog post page — post content, share links, and a comment list + submission form. */
 export default function BlogDetail() {
   const { slug } = useParams()
-  // useApi calls its fetcher with no arguments, so getBlogPost (which takes
-  // slug as a param) must be wrapped in a closure here rather than passed
-  // directly — passing it bare silently requests /blog-posts/undefined/.
   const { data: post, loading } = useApi(() => getBlogPost(slug), [slug], null)
   const { data: widgets } = useApi(getSiteWidgets, [], null)
 
@@ -198,7 +195,6 @@ export default function BlogDetail() {
           {widgets?.blog_share_enabled && <ShareButtons post={post} />}
         </motion.div>
 
-        {/* Comments */}
         <div className="mt-16 border-t border-ink/10 pt-12">
           <h2 className="flex items-center gap-2 font-display text-2xl font-bold text-ink">
             <MessageCircle size={22} /> Comments ({post.comments?.length || 0})

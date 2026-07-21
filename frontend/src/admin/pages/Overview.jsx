@@ -16,38 +16,29 @@ import SectionEyebrow from '../../components/ui/SectionEyebrow'
 import Card from '../components/Card'
 import { getAnalyticsSummary } from '../api/adminResources'
 
-// Read the live CSS custom properties (set by the site theme + light/dark
-// mode, see src/lib/theme.jsx and src/lib/colorMode.js) instead of hardcoding
-// hex values, so recharts' SVG fills stay in sync with both. Must be read
-// fresh (not cached at module scope) since the theme/mode can change after
-// this module has already been imported — recharts needs real hex/rgb
-// strings for its SVG fill/stroke props, it can't consume var(...) directly
-// the way Tailwind classes can.
+/** Reads a live CSS custom property from the document root, falling back if unset. Used to pull theme colors into recharts, which needs real hex/rgb strings rather than var(...). */
 function cssVar(name, fallback) {
   if (typeof window === 'undefined') return fallback
   const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
   return value || fallback
 }
 
+/** Builds the current chart color palette from live theme CSS variables. Called on mount and whenever the theme/dark-mode attributes change, so charts stay in sync with the active site theme. */
 function readChartColors() {
   const ink = cssVar('--color-ink', '#0a0a0a')
   const accent = cssVar('--color-accent', '#d9ff4b')
   const muted = cssVar('--color-muted', '#6b6b6b')
-  // Faint grid lines derived from the live --color-ink so they stay subtle
-  // in both light mode (near-black ink) and dark mode (near-white ink)
-  // instead of a hardcoded rgba(10,10,10,...) that vanishes on dark backgrounds.
   const gridStroke = `color-mix(in srgb, ${ink} 10%, transparent)`
   return {
     ink,
     accent,
     muted,
     gridStroke,
-    // Fixed categorical order for device breakdown — accent for the top
-    // slot, then a fixed ink-tint ramp so identity never depends on data order.
     deviceColors: { desktop: accent, mobile: ink, tablet: muted },
   }
 }
 
+/** Small stat card showing an icon, label, and value — used for the visits/desktop/mobile tiles atop the analytics page. */
 function StatTile({ icon: Icon, label, value }) {
   return (
     <Card>
@@ -64,6 +55,7 @@ function StatTile({ icon: Icon, label, value }) {
   )
 }
 
+/** Custom recharts tooltip for the visits area chart, styled to match the dashboard's dark tooltip treatment. */
 function ChartTooltip({ active, payload, label }) {
   if (!active || !payload?.length) return null
   return (
@@ -76,15 +68,11 @@ function ChartTooltip({ active, payload, label }) {
   )
 }
 
+/** Admin analytics dashboard: visits over time, device/browser/country breakdowns, and top pages. Fetches summary data once on mount and re-derives chart colors whenever the site theme or dark mode changes. */
 export default function Overview() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  // Re-read on every dark-mode toggle (not just once per mount) so the
-  // charts stay in sync if the user flips the ColorModeToggle while already
-  // on this page — a MutationObserver on documentElement's data-theme
-  // attribute is the cleanest way to react to that without colorMode.js
-  // needing to know about every consumer.
   const [{ ink: INK, accent: ACCENT, muted: MUTED, gridStroke: GRID_STROKE, deviceColors: DEVICE_COLORS }, setColors] =
     useState(readChartColors)
 

@@ -5,8 +5,7 @@ import ColorModeToggle from '../ui/ColorModeToggle'
 import CertificatePreviewModal from '../ui/CertificatePreviewModal'
 import { getSiteWidgets } from '../../api/resources'
 
-// Pricing intentionally omitted — it's gated off by the site-sections
-// feature flag (seeded is_visible=false), so it's dropped from primary nav.
+/** Primary nav anchors for the single-page home layout. Pricing is intentionally excluded (gated separately behind a site-sections visibility flag). */
 const NAV_LINKS = [
   { label: 'Home', anchor: 'home' },
   { label: 'About', anchor: 'about' },
@@ -16,6 +15,7 @@ const NAV_LINKS = [
   { label: 'Services', anchor: 'services' },
 ]
 
+/** Fixed top navigation bar for the public site. Handles anchor-link scrolling on the home page (navigating there first if on another route) and conditionally shows a resume-preview button based on site widget settings. */
 export default function Navbar({ profile }) {
   const [open, setOpen] = useState(false)
   const [widgets, setWidgets] = useState(null)

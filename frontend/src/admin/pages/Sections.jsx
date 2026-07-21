@@ -5,6 +5,7 @@ import Card from '../components/Card'
 import { getSiteSections, patchSiteSection } from '../api/adminResources'
 import { useToast } from '../components/Toast'
 
+/** Toggle control styled as an iOS-like switch, used for each section's visibility row. */
 function Switch({ checked, onChange, disabled }) {
   return (
     <button
@@ -26,6 +27,7 @@ function Switch({ checked, onChange, disabled }) {
   )
 }
 
+/** Admin page for toggling which homepage sections are visible to public visitors. Applies optimistic updates on toggle and reverts if the API call fails. */
 export default function Sections() {
   const { push } = useToast()
   const [sections, setSections] = useState([])
@@ -49,7 +51,6 @@ export default function Sections() {
       await patchSiteSection(section.id, { is_visible: nextValue })
       push(`${section.label} is now ${nextValue ? 'visible' : 'hidden'}.`, 'success')
     } catch {
-      // revert optimistic update
       setSections((prev) =>
         prev.map((s) => (s.id === section.id ? { ...s, is_visible: !nextValue } : s))
       )

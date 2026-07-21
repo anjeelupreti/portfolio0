@@ -6,8 +6,7 @@ import { getSiteThemeAdmin, updateSiteTheme } from '../api/adminResources'
 import { useToast } from '../components/Toast'
 import { useTheme } from '../../lib/theme'
 
-// Hardcoded representative primary/secondary hex pairs per preset — used for
-// the swatch gallery and to populate the custom color pickers on selection.
+/** Primary/secondary hex pairs for each built-in theme preset, used for the swatch gallery and to seed the custom color pickers on selection. */
 const PRESETS = [
   { key: 'lime-ink', label: 'Lime Ink', primary: '#d9ff4b', secondary: '#0a0a0a' },
   { key: 'ocean-blue', label: 'Ocean Blue', primary: '#2563eb', secondary: '#0f172a' },
@@ -31,6 +30,7 @@ const PRESETS = [
   { key: 'neon-cyber', label: 'Neon Cyber', primary: '#39ff14', secondary: '#0a0a0a' },
 ]
 
+/** Site-wide theme editor: pick a preset or custom colors, preview live via applyTheme, then persist with Save. Affects every visitor, not just the admin. */
 export default function Personalization() {
   const { push } = useToast()
   const { applyTheme } = useTheme()

@@ -3,6 +3,7 @@ import { Check, LucideX as X } from 'lucide-react'
 import { fadeUp, staggerContainer, viewportOnce } from '../../lib/motion'
 import SectionEyebrow from '../ui/SectionEyebrow'
 
+/** Single pricing plan card; `is_featured` plans get elevated/highlighted styling. */
 function PlanCard({ plan }) {
   const featured = plan.is_featured
 
@@ -60,6 +61,7 @@ function PlanCard({ plan }) {
   )
 }
 
+/** Pricing section of the home page. Currently gated off primary nav via a site-sections visibility flag but the component itself renders unconditionally when included. */
 export default function Pricing({ plans }) {
   return (
     <section id="pricing" className="bg-cream px-4 py-24 sm:px-6 sm:py-32">

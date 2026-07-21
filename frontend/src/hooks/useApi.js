@@ -1,14 +1,10 @@
 import { useEffect, useRef, useState } from 'react'
 
 /**
- * Runs an async fetcher on mount, tracking loading/error/data state.
- * fetcher must resolve gracefully (the api/resources.js helpers already
- * catch network errors and return fallbacks), but this hook also guards
- * against setting state after unmount and against thrown errors.
- *
- * @param {() => Promise<any>} fetcher
- * @param {any[]} deps
- * @param {any} initialData
+ * Runs an async fetcher on mount (and whenever `deps` changes), tracking
+ * loading/error/data state. Guards against setting state after unmount.
+ * Callers wrapping a parameterized fetcher (e.g. `getBlogPost(slug)`) must
+ * pass a closure since this hook always invokes `fetcher` with no arguments.
  */
 export function useApi(fetcher, deps = [], initialData = null) {
   const [data, setData] = useState(initialData)

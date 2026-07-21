@@ -10,6 +10,7 @@ const SOCIALS = [
   { key: 'instagram_url', Icon: Camera, label: 'Instagram' },
 ]
 
+/** Landing hero section (first thing rendered on the home page) — headline, availability status, summary, and social links. */
 export default function Hero({ profile }) {
   const fullName = profile?.full_name || 'Anjeel Upreti'
   const firstName = fullName.split(' ')[0] || 'Anjeel'
@@ -20,7 +21,6 @@ export default function Hero({ profile }) {
       id="home"
       className="relative flex min-h-screen items-center overflow-hidden bg-cream px-4 pb-16 pt-36 sm:px-6 sm:pt-40"
     >
-      {/* abstract gradient blob behind the headline */}
       <div className="pointer-events-none absolute right-[-10%] top-1/2 h-[28rem] w-[28rem] -translate-y-1/2 rounded-[45%_55%_60%_40%/45%_40%_60%_55%] bg-gradient-to-br from-accent via-accent-soft to-cream-dark opacity-70 blur-2xl sm:h-[36rem] sm:w-[36rem]" />
       <div className="pointer-events-none absolute right-[-4%] top-1/3 h-64 w-64 rounded-full border-2 border-ink/10 sm:h-80 sm:w-80" />
 

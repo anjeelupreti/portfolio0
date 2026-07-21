@@ -21,6 +21,10 @@ import { useToast } from '../components/Toast'
 
 const EMPTY_FORM = { title: '', provider: '', order: 0 }
 
+/**
+ * Admin CRUD for training/certification entries, including certificate file upload via
+ * `uploadTrainingCertificate` (shared multipart upload helper, same pattern as ProfileEdit's resume upload).
+ */
 export default function Training() {
   const { push } = useToast()
   const [items, setItems] = useState([])

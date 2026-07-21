@@ -8,6 +8,7 @@ import { WindowTitlebar } from '../ui/WindowChrome'
 const RADIUS = 22
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 
+/** Circular SVG progress ring showing a skill's proficiency (0-100) as an animated stroke offset. */
 function ProficiencyRing({ value }) {
   const offset = CIRCUMFERENCE - (Math.min(100, Math.max(0, value)) / 100) * CIRCUMFERENCE
 
@@ -41,6 +42,7 @@ function ProficiencyRing({ value }) {
   )
 }
 
+/** Single skill entry within a category card: icon, proficiency ring, and progress bar. */
 function SkillRow({ skill }) {
   const Icon = resolveSkillIcon(skill.name) || Code2
 
@@ -72,6 +74,7 @@ function SkillRow({ skill }) {
   )
 }
 
+/** Terminal-window-styled card listing all skills in one category, sorted by their `order` field. */
 function CategoryCard({ category }) {
   return (
     <motion.div
@@ -95,6 +98,7 @@ function CategoryCard({ category }) {
   )
 }
 
+/** Tech stack section of the home page, rendering skill categories (sorted by `order`) as a grid of cards. */
 export default function TechStack({ skillCategories = [] }) {
   return (
     <section

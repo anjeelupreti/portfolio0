@@ -1,6 +1,7 @@
 import { Navigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
+/** Route guard that redirects to /admin/login when unauthenticated, preserving the attempted location for post-login redirect. Shows a loading state while auth status is still resolving. */
 export default function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
   const location = useLocation()

@@ -18,6 +18,7 @@ import {
   LucideRedo as Redo,
 } from 'lucide-react'
 
+/** Single icon button used inside the RichTextEditor toolbar; highlights when its formatting mark is active. */
 function ToolbarButton({ onClick, active, disabled, children, title }) {
   return (
     <button
@@ -34,6 +35,7 @@ function ToolbarButton({ onClick, active, disabled, children, title }) {
   )
 }
 
+/** Formatting toolbar for the Tiptap editor instance (bold/italic/headings/lists/link/image/undo-redo). */
 function Toolbar({ editor }) {
   if (!editor) return null
 
@@ -107,6 +109,7 @@ function Toolbar({ editor }) {
   )
 }
 
+/** Tiptap-based WYSIWYG editor for blog post content; emits HTML via onChange and stays in sync if `value` is replaced externally (e.g. on initial load). */
 export default function RichTextEditor({ value, onChange }) {
   const editor = useEditor({
     extensions: [
@@ -126,7 +129,6 @@ export default function RichTextEditor({ value, onChange }) {
     },
   })
 
-  // Keep editor content in sync if `value` is replaced externally (e.g. on load).
   useEffect(() => {
     if (editor && value !== undefined && value !== editor.getHTML()) {
       editor.commands.setContent(value || '', { emitUpdate: false })

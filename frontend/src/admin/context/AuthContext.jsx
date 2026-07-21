@@ -9,6 +9,7 @@ import { login as loginRequest, getMe } from '../api/adminResources'
 
 const AuthContext = createContext(null)
 
+/** Provides admin auth state (user, tokens, loading) to the dashboard tree; wraps the admin routes in App.jsx. */
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [accessToken, setAccessToken] = useState(getAccessToken())
@@ -63,6 +64,7 @@ export function AuthProvider({ children }) {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 
+/** Accesses the AuthContext value; throws if called outside AuthProvider. */
 export function useAuth() {
   const ctx = useContext(AuthContext)
   if (!ctx) throw new Error('useAuth must be used within AuthProvider')

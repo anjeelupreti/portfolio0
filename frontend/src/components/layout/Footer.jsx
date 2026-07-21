@@ -8,6 +8,7 @@ const SOCIALS = [
   { key: 'instagram_url', Icon: Camera, label: 'Instagram' },
 ]
 
+/** Site-wide footer with social links, back-to-top control, and secondary nav. */
 export default function Footer({ profile }) {
   const year = new Date().getFullYear()
 

@@ -34,6 +34,7 @@ const NAV_ITEMS = [
   { to: '/admin/change-password', label: 'Settings', icon: Key },
 ]
 
+/** Sidebar nav + logout, shared by the desktop rail and the mobile slide-in panel in DashboardLayout. */
 function SidebarContent({ onNavigate }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
@@ -88,18 +89,17 @@ function SidebarContent({ onNavigate }) {
   )
 }
 
+/** Shell for all /admin routes: sidebar nav (desktop + mobile drawer), topbar, and an Outlet for the active page. */
 export default function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { user } = useAuth()
 
   return (
     <div className="min-h-screen bg-cream">
-      {/* Desktop sidebar */}
       <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-cream-fixed/10 bg-ink-fixed lg:block">
         <SidebarContent />
       </aside>
 
-      {/* Mobile sidebar */}
       {mobileOpen && (
         <div className="fixed inset-0 z-40 lg:hidden">
           <div
@@ -113,7 +113,6 @@ export default function DashboardLayout() {
       )}
 
       <div className="lg:pl-64">
-        {/* Topbar */}
         <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-ink/10 bg-cream/90 px-4 py-3 backdrop-blur sm:px-6">
           <div className="flex items-center gap-3">
             <button

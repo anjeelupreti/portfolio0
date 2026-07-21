@@ -4,6 +4,7 @@ import { LucideLoader2 as Loader2, LucideCheck as Check } from 'lucide-react'
 import { WindowTitlebar } from '../../components/ui/WindowChrome'
 import { forgotPassword } from '../api/adminResources'
 
+/** Requests a password reset email. Always shows the "sent" confirmation regardless of outcome, since the backend intentionally doesn't reveal whether the email exists. */
 export default function ForgotPassword() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState('idle')
@@ -14,7 +15,6 @@ export default function ForgotPassword() {
     try {
       await forgotPassword(email)
     } catch {
-      // Backend always returns 200, but guard anyway.
     } finally {
       setStatus('sent')
     }

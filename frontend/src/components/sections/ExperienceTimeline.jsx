@@ -7,6 +7,7 @@ import {
 import { fadeUp, viewportOnce } from '../../lib/motion'
 import SectionEyebrow from '../ui/SectionEyebrow'
 
+/** Single work-experience card in the timeline; `align` flips text/icon alignment for the left/right zigzag layout. */
 function EntryCard({ exp, align }) {
   const dateRange = `${exp.start_date}${
     exp.is_current ? ' — Present' : exp.end_date ? ` — ${exp.end_date}` : ''
@@ -86,6 +87,7 @@ function EntryCard({ exp, align }) {
   )
 }
 
+/** Work-history section of the home page, rendered as an alternating vertical timeline sorted by `order` descending. */
 export default function ExperienceTimeline({ experience = [] }) {
   const sorted = [...experience].sort((a, b) => (b.order ?? 0) - (a.order ?? 0))
 
@@ -111,7 +113,6 @@ export default function ExperienceTimeline({ experience = [] }) {
           </div>
         ) : (
           <div className="relative mt-20">
-            {/* connecting vertical line */}
             <div className="absolute left-3 top-0 h-full w-0.5 bg-accent/25 lg:left-1/2 lg:-translate-x-1/2" />
 
             <div className="flex flex-col gap-14">
@@ -127,7 +128,6 @@ export default function ExperienceTimeline({ experience = [] }) {
                     custom={i * 0.1}
                     className="relative pl-12 lg:grid lg:grid-cols-2 lg:gap-x-12 lg:pl-0"
                   >
-                    {/* marker dot */}
                     <span className="absolute left-3 top-2 z-10 h-3 w-3 -translate-x-1/2 rounded-full border-2 border-ink-fixed bg-accent shadow-[0_0_0_4px_rgba(217,255,75,0.15)] lg:left-1/2" />
 
                     {align === 'left' ? (

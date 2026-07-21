@@ -4,6 +4,7 @@ import { fadeUp, viewportOnce } from '../../lib/motion'
 import { resolveIcon } from '../../lib/icons'
 import SectionEyebrow from '../ui/SectionEyebrow'
 
+/** One numbered service row with a hover-reveal icon thumbnail. */
 function ServiceRow({ service, index }) {
   const Icon = resolveIcon(service.icon_name)
   const num = String(index + 1).padStart(2, '0')
@@ -37,7 +38,6 @@ function ServiceRow({ service, index }) {
         </a>
       </div>
 
-      {/* hover-reveal thumbnail — only appears on hover of this row */}
       <div
         className="pointer-events-none absolute right-4 top-1/2 z-10 hidden h-32 w-44 -translate-y-1/2 translate-x-4 rotate-3 scale-90 items-center justify-center rounded-2xl bg-gradient-to-br from-accent to-accent-soft opacity-0 shadow-2xl transition-all duration-500 ease-out group-hover:translate-x-0 group-hover:rotate-0 group-hover:scale-100 group-hover:opacity-100 sm:right-24 sm:flex lg:right-40"
       >
@@ -47,6 +47,7 @@ function ServiceRow({ service, index }) {
   )
 }
 
+/** Services section of the home page; filters out services explicitly marked inactive before rendering. */
 export default function Services({ services }) {
   return (
     <section id="services" className="overflow-hidden bg-ink-fixed px-4 py-24 sm:px-6 sm:py-32">

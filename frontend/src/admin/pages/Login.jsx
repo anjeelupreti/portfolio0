@@ -4,6 +4,7 @@ import { LucideLoader2 as Loader2, LucideAlertCircle as AlertCircle } from 'luci
 import { WindowTitlebar } from '../../components/ui/WindowChrome'
 import { useAuth } from '../context/AuthContext'
 
+/** Admin login form. Redirects to the originally requested route (or /admin/overview) via AuthContext on success. */
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()

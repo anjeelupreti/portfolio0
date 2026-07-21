@@ -4,6 +4,7 @@ import { LucideLoader2 as Loader2, LucideAlertCircle as AlertCircle, LucideCheck
 import { WindowTitlebar } from '../../components/ui/WindowChrome'
 import { resetPassword } from '../api/adminResources'
 
+/** Sets a new password using the uid/token pair from the emailed reset link, then redirects to login after a short delay. */
 export default function ResetPassword() {
   const { uid, token } = useParams()
   const navigate = useNavigate()

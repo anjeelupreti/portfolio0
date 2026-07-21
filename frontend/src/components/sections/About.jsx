@@ -15,6 +15,7 @@ import SectionEyebrow from '../ui/SectionEyebrow'
 import CertificatePreviewModal from '../ui/CertificatePreviewModal'
 import Modal from '../ui/Modal'
 
+/** Shared card layout for the About section's four info panels (education, training, languages, references). */
 function InfoCard({ icon: Icon, title, promptLabel, children }) {
   return (
     <motion.div
@@ -35,6 +36,7 @@ function InfoCard({ icon: Icon, title, promptLabel, children }) {
   )
 }
 
+/** About section of the home page: bio plus education/training/languages/references cards, with certificate and reference-detail modals. */
 export default function About({ profile, education, training, languages, references = [] }) {
   const [activeCertificate, setActiveCertificate] = useState(null)
   const [activeReference, setActiveReference] = useState(null)
@@ -68,7 +70,6 @@ export default function About({ profile, education, training, languages, referen
           variants={staggerContainer}
           className="mt-16 grid grid-cols-1 gap-6 md:grid-cols-2"
         >
-          {/* Education */}
           <InfoCard icon={GraduationCap} title="Education" promptLabel="~/about/education">
             {education.length > 0 ? (
               education.map((ed) => (
@@ -87,7 +88,6 @@ export default function About({ profile, education, training, languages, referen
             )}
           </InfoCard>
 
-          {/* Training */}
           <InfoCard icon={Award} title="Training &amp; Certifications" promptLabel="~/about/training">
             {training.length > 0 ? (
               <ul className="space-y-3">
@@ -117,7 +117,6 @@ export default function About({ profile, education, training, languages, referen
             )}
           </InfoCard>
 
-          {/* Languages */}
           <InfoCard icon={LanguagesIcon} title="Languages" promptLabel="~/about/languages">
             {languages.length > 0 ? (
               <ul className="space-y-3">
@@ -147,7 +146,6 @@ export default function About({ profile, education, training, languages, referen
             )}
           </InfoCard>
 
-          {/* References */}
           <InfoCard icon={Quote} title="References" promptLabel="~/about/references">
             {references.length > 0 ? (
               <ul className="space-y-4">

@@ -1,8 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { getSiteTheme } from '../api/resources'
 
-// ---- Pure color helpers ----
-
+/** Converts a `#rgb`/`#rrggbb` hex string to `{ r, g, b }` (0-255 each). */
 export function hexToRgb(hex) {
   const clean = hex.replace('#', '')
   const full = clean.length === 3 ? clean.split('').map((c) => c + c).join('') : clean
@@ -14,6 +13,7 @@ export function hexToRgb(hex) {
   }
 }
 
+/** Converts an `{ r, g, b }` object back to a `#rrggbb` hex string, clamping each channel. */
 export function rgbToHex({ r, g, b }) {
   const toHex = (v) => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')
   return `#${toHex(r)}${toHex(g)}${toHex(b)}`
@@ -30,37 +30,25 @@ function mix(hex, target, amount) {
   })
 }
 
-// Mixes a hex color towards white by `amount` (0-1) — used to derive a
-// lightened "soft" tint from a base color (e.g. accent-soft from accent).
+/** Mixes a hex color towards white by `amount` (0-1) — used to derive a lightened tint (e.g. accent-soft). */
 export function mixHexTowardsWhite(hex, amount) {
   return mix(hex, '#ffffff', amount)
 }
 
-// Mixes a hex color towards black by `amount` (0-1) — used to derive a
-// slightly darker/soft shade from a base color (e.g. ink-soft from ink).
+/** Mixes a hex color towards black by `amount` (0-1) — used to derive a darker shade (e.g. ink-soft). */
 export function mixHexTowardsBlack(hex, amount) {
   return mix(hex, '#000000', amount)
 }
 
-// ---- Applying the theme to the live document ----
-
-// Sets the Tailwind v4 @theme-generated CSS custom properties on :root so
-// every existing bg-accent/text-accent/bg-ink/etc class across the whole
-// app (public site + admin dashboard) picks up the new palette with zero
-// component changes.
-//
-// --color-ink doubles as both "brand secondary color" AND "foreground/text
-// color" throughout the app (text-ink, border-ink, etc. are used as body
-// text everywhere). That's fine in light mode, where the admin's secondary
-// is expected to be a dark color that reads as text on the light cream
-// background. But light/dark mode (src/lib/colorMode.js) is a *separate*,
-// per-visitor, client-only concern that inverts cream/ink so ink becomes a
-// light foreground color on a dark page. If we blindly wrote the admin's
-// (typically dark) secondary_color into --color-ink while in dark mode, it
-// would overwrite that inversion with an inline style (which always beats
-// the [data-theme="dark"] CSS rule) and produce unreadable dark-on-dark
-// text. So: only let secondary_color drive --color-ink while in light mode;
-// in dark mode we leave the CSS-authored light foreground alone.
+/**
+ * Writes the admin-configured brand colors onto the Tailwind v4 CSS custom
+ * properties on `:root`, so every `bg-accent`/`text-ink`/etc class across the
+ * app picks up the new palette with no component changes. `secondary_color`
+ * only drives `--color-ink` in light mode: in dark mode, `--color-ink` is the
+ * inverted (light) foreground color from src/lib/colorMode.js, and writing an
+ * inline style would override that CSS-driven inversion with unreadable
+ * dark-on-dark text — so dark mode leaves it untouched instead.
+ */
 export function applyTheme({ primary_color, secondary_color } = {}) {
   const root = document.documentElement
   const isDark = root.dataset.theme === 'dark'
@@ -80,10 +68,9 @@ export function applyTheme({ primary_color, secondary_color } = {}) {
   }
 }
 
-// ---- React context ----
-
 const ThemeContext = createContext(null)
 
+/** Fetches the site-wide theme (singleton) on mount and applies it; exposes `theme` + `applyTheme` via context to the whole app. */
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(null)
 
@@ -96,15 +83,12 @@ export function ThemeProvider({ children }) {
         applyTheme(data)
       })
       .catch(() => {
-        // fail-open: keep default CSS-authored colors, never crash
       })
     return () => {
       cancelled = true
     }
   }, [])
 
-  // Lets callers (e.g. the Personalization admin page) push a live preview
-  // or the freshly-saved theme without waiting for a refetch/reload.
   const applyAndSet = useCallback((next) => {
     setTheme((prev) => ({ ...prev, ...next }))
     applyTheme(next)
@@ -118,6 +102,7 @@ export function ThemeProvider({ children }) {
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
 }
 
+/** Accesses the current site theme and its live-apply setter (e.g. for the Personalization admin page's preview); must be used within ThemeProvider. */
 export function useTheme() {
   const ctx = useContext(ThemeContext)
   if (!ctx) throw new Error('useTheme must be used within ThemeProvider')

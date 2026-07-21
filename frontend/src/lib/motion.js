@@ -1,5 +1,4 @@
-// Shared framer-motion variants for scroll-reveal animations across sections.
-
+/** Fade-up-on-scroll framer-motion variant, used across most section reveals. */
 export const fadeUp = {
   hidden: { opacity: 0, y: 32 },
   show: (delay = 0) => ({
@@ -9,6 +8,7 @@ export const fadeUp = {
   }),
 }
 
+/** Simple fade-in framer-motion variant (no vertical movement). */
 export const fadeIn = {
   hidden: { opacity: 0 },
   show: (delay = 0) => ({
@@ -17,6 +17,7 @@ export const fadeIn = {
   }),
 }
 
+/** Staggers child animations for lists/grids animated with fadeUp/fadeIn. */
 export const staggerContainer = {
   hidden: {},
   show: {
@@ -24,5 +25,5 @@ export const staggerContainer = {
   },
 }
 
-// Convenience defaults for whileInView usage
+/** Default `whileInView` viewport options — animate once, when 20% visible. */
 export const viewportOnce = { once: true, amount: 0.2 }

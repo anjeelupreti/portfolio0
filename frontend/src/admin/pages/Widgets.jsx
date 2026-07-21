@@ -6,6 +6,7 @@ import { getSiteWidgetsAdmin, updateSiteWidgets } from '../api/adminResources'
 import { useToast } from '../components/Toast'
 import { buildWhatsAppUrl } from '../../components/ui/WhatsAppButton'
 
+/** Small toggle-switch control used by ToggleRow. */
 function Switch({ checked, onChange, disabled }) {
   return (
     <button
@@ -27,6 +28,7 @@ function Switch({ checked, onChange, disabled }) {
   )
 }
 
+/** Labeled row pairing a title/description with a Switch, used for each widget's on/off setting. */
 function ToggleRow({ title, description, checked, onChange, disabled }) {
   return (
     <div className="flex items-center justify-between gap-4">
@@ -39,6 +41,7 @@ function ToggleRow({ title, description, checked, onChange, disabled }) {
   )
 }
 
+/** Admin settings page for the public site's floating widgets (WhatsApp, scroll-to-top, resume download, blog share, cookie banner). */
 export default function Widgets() {
   const { push } = useToast()
   const [loading, setLoading] = useState(true)
@@ -84,8 +87,7 @@ export default function Widgets() {
     }
   }
 
-  // Generic instant-toggle helper for the simple boolean-only widgets below —
-  // optimistic update + revert on failure, same pattern as the WhatsApp toggle.
+  /** Builds an optimistic toggle handler (update state, PATCH field, revert on failure) for a simple boolean widget setting. */
   const makeToggleHandler = (setState, field, label) => async (next) => {
     setState(next)
     try {
