@@ -27,9 +27,11 @@ export default function Training() {
   const [loading, setLoading] = useState(true)
   const [busyId, setBusyId] = useState(null)
   const [form, setForm] = useState(EMPTY_FORM)
+  const [newCertificate, setNewCertificate] = useState(null)
   const [creating, setCreating] = useState(false)
   const [activeCertificate, setActiveCertificate] = useState(null)
   const fileInputRefs = useRef({})
+  const newCertificateInputRef = useRef(null)
 
   const load = () => {
     setLoading(true)
@@ -57,9 +59,18 @@ export default function Training() {
     }
     setCreating(true)
     try {
-      const created = await createTraining(form)
+      let created = await createTraining(form)
+      if (newCertificate) {
+        try {
+          created = await uploadTrainingCertificate(created.id, newCertificate)
+        } catch {
+          push('Training entry added, but the certificate failed to upload — you can try again below.', 'error')
+        }
+      }
       setItems((prev) => [...prev, created])
       setForm(EMPTY_FORM)
+      setNewCertificate(null)
+      if (newCertificateInputRef.current) newCertificateInputRef.current.value = ''
       push('Training entry added.', 'success')
     } catch {
       push('Failed to add training entry.', 'error')
@@ -150,6 +161,42 @@ export default function Training() {
               value={form.order}
               onChange={handleFormChange}
               className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+            />
+          </div>
+          <div className="sm:col-span-4">
+            <label className="mb-1.5 block font-mono text-xs text-ink/50">Certificate (optional)</label>
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => newCertificateInputRef.current?.click()}
+                className="flex items-center gap-1.5 rounded-full border border-ink/15 px-3.5 py-2 font-mono text-xs text-ink/70 hover:border-ink/40 hover:text-ink"
+              >
+                <Upload size={13} /> {newCertificate ? 'Change file' : 'Choose file'}
+              </button>
+              {newCertificate && (
+                <>
+                  <span className="flex items-center gap-1.5 font-mono text-xs text-ink/60">
+                    <FileText size={13} /> {newCertificate.name}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setNewCertificate(null)
+                      if (newCertificateInputRef.current) newCertificateInputRef.current.value = ''
+                    }}
+                    className="font-mono text-xs text-ink/40 hover:text-ink"
+                  >
+                    Clear
+                  </button>
+                </>
+              )}
+            </div>
+            <input
+              ref={newCertificateInputRef}
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.webp,.gif"
+              onChange={(e) => setNewCertificate(e.target.files?.[0] || null)}
+              className="hidden"
             />
           </div>
           <div className="sm:col-span-4">
