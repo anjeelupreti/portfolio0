@@ -29,6 +29,14 @@ export const getProfile = () => adminClient.get('/profile/').then((r) => r.data)
 export const updateProfile = (id, payload) =>
   adminClient.patch(`/profile/${id}/`, payload).then((r) => r.data)
 
+export const uploadResume = (id, file) => {
+  const formData = new FormData()
+  formData.append('resume_file', file)
+  return adminClient
+    .patch(`/profile/${id}/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+    .then((r) => r.data)
+}
+
 // ---- Blog posts ----
 export const getBlogPosts = () => adminClient.get('/blog-posts/').then((r) => r.data)
 

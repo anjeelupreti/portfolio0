@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
-import { LucideLoader2 as Loader2, LucideSave as Save } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { LucideLoader2 as Loader2, LucideSave as Save, LucideUpload as Upload, LucideFileText as FileText, LucideTrash2 as Trash2 } from 'lucide-react'
 import SectionEyebrow from '../../components/ui/SectionEyebrow'
 import Card from '../components/Card'
-import { getProfile, updateProfile } from '../api/adminResources'
+import { getProfile, updateProfile, uploadResume } from '../api/adminResources'
 import { useToast } from '../components/Toast'
 
 const FIELDS = [
@@ -26,6 +26,8 @@ export default function ProfileEdit() {
   const [form, setForm] = useState({})
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     getProfile()
@@ -52,14 +54,42 @@ export default function ProfileEdit() {
       const updated = await updateProfile(profile.id, form)
       setProfile(updated)
       push('Profile updated.', 'success')
-    } catch (err) {
-      if (err?.response?.status === 405) {
-        push('Profile editing requires a backend update (endpoint is read-only for now).', 'error')
-      } else {
-        push('Failed to save profile.', 'error')
-      }
+    } catch {
+      push('Failed to save profile.', 'error')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleResumeSelect = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file || !profile?.id) return
+    setUploading(true)
+    try {
+      const updated = await uploadResume(profile.id, file)
+      setProfile(updated)
+      setForm((f) => ({ ...f, resume_file: updated.resume_file }))
+      push('Resume uploaded.', 'success')
+    } catch {
+      push('Failed to upload resume.', 'error')
+    } finally {
+      setUploading(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
+  }
+
+  const handleResumeRemove = async () => {
+    if (!profile?.id) return
+    setUploading(true)
+    try {
+      const updated = await updateProfile(profile.id, { resume_file: null })
+      setProfile(updated)
+      setForm((f) => ({ ...f, resume_file: null }))
+      push('Resume removed.', 'success')
+    } catch {
+      push('Failed to remove resume.', 'error')
+    } finally {
+      setUploading(false)
     }
   }
 
@@ -76,10 +106,56 @@ export default function ProfileEdit() {
       <div>
         <SectionEyebrow>Profile</SectionEyebrow>
         <h1 className="mt-3 font-display text-2xl font-bold text-ink">Edit Profile</h1>
-        <p className="mt-1 font-mono text-xs text-ink/40">
-          Backend Profile endpoint is currently read-only — saving may report an error until a PATCH/PUT route is added.
-        </p>
       </div>
+
+      <Card title="profile.resume">
+        <label className="mb-1.5 block font-mono text-xs text-ink/50">Resume / CV</label>
+        <p className="mb-3 text-xs text-ink/40">
+          Upload your own CV file. Nothing is generated automatically — the public site's download
+          button only appears once a file is uploaded here.
+        </p>
+        {form.resume_file ? (
+          <div className="flex flex-wrap items-center gap-3 rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5">
+            <FileText size={16} className="shrink-0 text-ink/50" />
+            <a
+              href={form.resume_file}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="truncate text-sm text-ink underline underline-offset-2"
+            >
+              {form.resume_file.split('/').pop()}
+            </a>
+            <button
+              type="button"
+              onClick={handleResumeRemove}
+              disabled={uploading}
+              className="ml-auto flex items-center gap-1.5 rounded-full border border-ink/15 px-3 py-1.5 font-mono text-xs text-ink/60 disabled:opacity-50"
+            >
+              <Trash2 size={13} /> Remove
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={uploading}
+              className="flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2.5 font-mono text-xs text-ink/70 disabled:opacity-50"
+            >
+              {uploading ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+              {uploading ? 'Uploading...' : 'Upload resume'}
+            </button>
+            <span className="font-mono text-[11px] text-ink/30">PDF recommended</span>
+          </div>
+        )}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".pdf,.doc,.docx"
+          onChange={handleResumeSelect}
+          className="hidden"
+        />
+      </Card>
 
       <Card title="profile.form">
         <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
