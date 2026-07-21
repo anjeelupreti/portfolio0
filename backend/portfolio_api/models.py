@@ -220,6 +220,29 @@ class ContactMessage(models.Model):
         return f"{self.name} - {self.subject or 'no subject'}"
 
 
+class EmailReply(models.Model):
+    """An outgoing email sent from the dashboard, optionally threaded to a ContactMessage."""
+
+    contact_message = models.ForeignKey(
+        ContactMessage, related_name="replies", on_delete=models.CASCADE, null=True, blank=True,
+        help_text="Left blank for standalone Compose emails not tied to an inbound message.",
+    )
+    to_email = models.EmailField()
+    subject = models.CharField(max_length=200)
+    body_html = models.TextField(help_text="Rich text HTML body, before branded email wrapping.")
+    sender = models.ForeignKey(
+        settings.AUTH_USER_MODEL, related_name="sent_emails", on_delete=models.SET_NULL, null=True, blank=True
+    )
+    sent_at = models.DateTimeField(auto_now_add=True)
+    send_error = models.CharField(max_length=500, blank=True, help_text="Set if SMTP send failed.")
+
+    class Meta:
+        ordering = ["-sent_at"]
+
+    def __str__(self):
+        return f"To {self.to_email}: {self.subject}"
+
+
 class SiteVisit(models.Model):
     path = models.CharField(max_length=300)
     visited_at = models.DateTimeField(auto_now_add=True)

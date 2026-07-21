@@ -1,3 +1,4 @@
+from django.core.mail import EmailMultiAlternatives
 from django.db.models import Count
 from django.db.models.functions import TruncDate
 from django.utils import timezone
@@ -11,20 +12,20 @@ from rest_framework.views import APIView
 
 from .models import (
     Profile, Experience, Project, SkillCategory,
-    Education, Training, Reference, Language, ContactMessage,
+    Education, Training, Reference, Language, ContactMessage, EmailReply,
     Service, PricingPlan, BlogCategory, BlogTag, BlogPost, BlogComment,
     SiteVisit, SiteSection, SiteTheme,
 )
 from .serializers import (
     ProfileSerializer, ExperienceSerializer, ProjectSerializer, SkillCategorySerializer,
     EducationSerializer, TrainingSerializer, ReferenceSerializer, LanguageSerializer,
-    ContactMessageSerializer,
+    ContactMessageSerializer, EmailReplySerializer, EmailReplyWriteSerializer,
     ServiceSerializer, PricingPlanSerializer, SiteSectionSerializer, SiteThemeSerializer,
     BlogCategorySerializer, BlogTagSerializer,
     BlogPostListSerializer, BlogPostDetailSerializer, BlogPostWriteSerializer,
     BlogCommentSerializer,
 )
-from .utils import parse_user_agent, get_client_ip
+from .utils import parse_user_agent, get_client_ip, render_branded_email
 
 
 class SiteSectionViewSet(viewsets.ModelViewSet):
@@ -119,6 +120,54 @@ class ContactMessageViewSet(viewsets.ReadOnlyModelViewSet):
         message.is_read = True
         message.save(update_fields=["is_read"])
         return Response(self.get_serializer(message).data)
+
+
+class SendEmailView(APIView):
+    """
+    Sends a themed HTML email from the dashboard (either a reply to a
+    ContactMessage or a standalone Compose email) and stores it as an
+    EmailReply record for the thread/history view.
+    """
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = EmailReplyWriteSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        contact_message = data.get("contact_message")
+        to_email = data["to_email"]
+        subject = data["subject"]
+        body_html = data["body_html"]
+
+        reply = EmailReply.objects.create(
+            contact_message=contact_message,
+            to_email=to_email,
+            subject=subject,
+            body_html=body_html,
+            sender=request.user,
+        )
+
+        try:
+            html_content = render_branded_email(body_html)
+            email = EmailMultiAlternatives(
+                subject=subject,
+                body=body_html,  # plain-text fallback (still HTML-ish, acceptable minimal fallback)
+                to=[to_email],
+            )
+            email.attach_alternative(html_content, "text/html")
+            email.send(fail_silently=False)
+        except Exception as exc:
+            reply.send_error = str(exc)[:500]
+            reply.save(update_fields=["send_error"])
+            return Response(EmailReplySerializer(reply).data, status=status.HTTP_502_BAD_GATEWAY)
+
+        if contact_message and not contact_message.is_read:
+            contact_message.is_read = True
+            contact_message.save(update_fields=["is_read"])
+
+        return Response(EmailReplySerializer(reply).data, status=status.HTTP_201_CREATED)
 
 
 class ServiceViewSet(viewsets.ReadOnlyModelViewSet):

@@ -59,3 +59,49 @@ def get_client_ip(request):
     if forwarded_for:
         return forwarded_for.split(",")[0].strip()
     return request.META.get("REMOTE_ADDR")
+
+
+def render_branded_email(body_html):
+    """
+    Wrap an email body in a simple branded HTML shell using the live
+    SiteTheme colors and Profile name, so outgoing dashboard emails visually
+    match the portfolio's current color palette.
+    """
+    from .models import SiteTheme, Profile
+
+    theme = SiteTheme.load()
+    profile = Profile.objects.first()
+    sender_name = profile.full_name if profile else "Portfolio"
+    primary = theme.primary_color
+    secondary = theme.secondary_color
+
+    return f"""\
+<!DOCTYPE html>
+<html>
+  <body style="margin:0; padding:0; background:#f5f1e3; font-family:Arial, Helvetica, sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f5f1e3; padding:24px 0;">
+      <tr>
+        <td align="center">
+          <table role="presentation" width="560" cellpadding="0" cellspacing="0" style="background:#ffffff; border-radius:12px; overflow:hidden; border:1px solid #e5e4e7;">
+            <tr>
+              <td style="background:{secondary}; padding:20px 28px;">
+                <span style="color:{primary}; font-size:18px; font-weight:bold;">{sender_name}</span>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:28px; color:#0a0a0a; font-size:15px; line-height:1.6;">
+                {body_html}
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:16px 28px; border-top:1px solid #e5e4e7; color:#6b6b6b; font-size:12px;">
+                Sent via {sender_name}'s portfolio dashboard.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+"""

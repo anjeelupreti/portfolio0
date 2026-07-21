@@ -2,10 +2,17 @@ from django.contrib import admin
 
 from .models import (
     Profile, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
-    Education, Training, Reference, Language, ContactMessage, SiteVisit,
+    Education, Training, Reference, Language, ContactMessage, EmailReply, SiteVisit,
     Service, PricingPlan, PricingFeature, SiteSection, SiteTheme,
     BlogCategory, BlogTag, BlogPost, BlogComment,
 )
+
+
+@admin.register(EmailReply)
+class EmailReplyAdmin(admin.ModelAdmin):
+    list_display = ("to_email", "subject", "contact_message", "sender", "sent_at", "send_error")
+    list_filter = ("sent_at",)
+    search_fields = ("to_email", "subject", "body_html")
 
 
 @admin.register(SiteSection)

@@ -2,7 +2,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import (
     Profile, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
-    Education, Training, Reference, Language, ContactMessage,
+    Education, Training, Reference, Language, ContactMessage, EmailReply,
     Service, PricingPlan, PricingFeature, SiteSection, SiteTheme,
     BlogCategory, BlogTag, BlogPost, BlogComment,
 )
@@ -100,11 +100,37 @@ class LanguageSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 
+class EmailReplySerializer(serializers.ModelSerializer):
+    sender_username = serializers.CharField(source="sender.username", read_only=True, default=None)
+
+    class Meta:
+        model = EmailReply
+        fields = [
+            "id", "contact_message", "to_email", "subject", "body_html",
+            "sender", "sender_username", "sent_at", "send_error",
+        ]
+        read_only_fields = ["id", "sender", "sender_username", "sent_at", "send_error"]
+
+
+class EmailReplyWriteSerializer(serializers.Serializer):
+    """Input shape for sending a reply/compose email — not directly a ModelSerializer
+    since sending happens in the view (needs SMTP + branded-template rendering)."""
+
+    contact_message = serializers.PrimaryKeyRelatedField(
+        queryset=ContactMessage.objects.all(), required=False, allow_null=True
+    )
+    to_email = serializers.EmailField()
+    subject = serializers.CharField(max_length=200)
+    body_html = serializers.CharField()
+
+
 class ContactMessageSerializer(serializers.ModelSerializer):
+    replies = EmailReplySerializer(many=True, read_only=True)
+
     class Meta:
         model = ContactMessage
-        fields = ["id", "name", "email", "subject", "message", "created_at", "is_read"]
-        read_only_fields = ["id", "created_at", "is_read"]
+        fields = ["id", "name", "email", "subject", "message", "created_at", "is_read", "replies"]
+        read_only_fields = ["id", "created_at", "is_read", "replies"]
 
 
 class ServiceSerializer(serializers.ModelSerializer):
