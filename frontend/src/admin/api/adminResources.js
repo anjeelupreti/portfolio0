@@ -65,6 +65,12 @@ export const getSiteThemeAdmin = () => adminClient.get('/site-theme/').then((r) 
 export const updateSiteTheme = (payload) =>
   adminClient.patch('/site-theme/', payload).then((r) => r.data)
 
+// ---- Site widgets ----
+export const getSiteWidgetsAdmin = () => adminClient.get('/site-widgets/').then((r) => r.data)
+
+export const updateSiteWidgets = (payload) =>
+  adminClient.patch('/site-widgets/', payload).then((r) => r.data)
+
 // ---- Analytics ----
 export const getAnalyticsSummary = () => adminClient.get('/analytics/summary/').then((r) => r.data)
 

@@ -13,6 +13,7 @@ import {
   LucideMenu as Menu,
   LucideX as X,
   LucidePalette as Palette,
+  LucideMessageCircle as MessageCircle,
 } from 'lucide-react'
 import { TrafficLights } from '../../components/ui/WindowChrome'
 import { useAuth } from '../context/AuthContext'
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
   { to: '/admin/messages', label: 'Messages', icon: Mail },
   { to: '/admin/compose', label: 'Compose', icon: PenSquare },
   { to: '/admin/personalization', label: 'Personalization', icon: Palette },
+  { to: '/admin/widgets', label: 'Widgets', icon: MessageCircle },
   { to: '/admin/change-password', label: 'Settings', icon: Key },
 ]
 

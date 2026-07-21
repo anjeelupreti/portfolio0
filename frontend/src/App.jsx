@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
+import WhatsAppButton from './components/ui/WhatsAppButton'
 import Home from './pages/Home'
 import BlogList from './pages/BlogList'
 import BlogDetail from './pages/BlogDetail'
@@ -26,6 +27,7 @@ import Messages from './admin/pages/Messages'
 import Compose from './admin/pages/Compose'
 import ChangePassword from './admin/pages/ChangePassword'
 import Personalization from './admin/pages/Personalization'
+import Widgets from './admin/pages/Widgets'
 
 function RouteTracker() {
   const location = useLocation()
@@ -56,6 +58,7 @@ function PublicLayout() {
         </Routes>
       </main>
       <Footer profile={profile} />
+      <WhatsAppButton />
     </>
   )
 }
@@ -86,6 +89,7 @@ function AdminRoutes() {
         <Route path="messages" element={<Messages />} />
         <Route path="compose" element={<Compose />} />
         <Route path="personalization" element={<Personalization />} />
+        <Route path="widgets" element={<Widgets />} />
         <Route path="change-password" element={<ChangePassword />} />
       </Route>
     </Routes>
