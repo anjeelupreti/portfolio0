@@ -8,9 +8,13 @@ from portfolio_api.models import (
 
 
 class Command(BaseCommand):
+    """`manage.py seed_data`: populates/updates the database with Anjeel Upreti's real CV content.
+    Uses update_or_create throughout so it's safe to re-run without duplicating rows."""
+
     help = "Seed the database with Anjeel Upreti's CV content"
 
     def handle(self, *args, **options):
+        """Run all seed_* steps in order, then print a success message."""
         self.seed_site_sections()
         self.seed_profile()
         self.seed_experience()
@@ -25,6 +29,7 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS("Seed data applied."))
 
     def seed_site_sections(self):
+        """Seed the default homepage section list and their visibility/order."""
         data = [
             ("hero", "Hero", True, 0),
             ("about", "About Me", True, 1),
@@ -42,6 +47,7 @@ class Command(BaseCommand):
             )
 
     def seed_profile(self):
+        """Seed the single Profile record: bio, contact info, and social links."""
         Profile.objects.update_or_create(
             email="anjeelupretiofficial@gmail.com",
             defaults=dict(
@@ -66,6 +72,7 @@ class Command(BaseCommand):
         )
 
     def seed_experience(self):
+        """Seed work-history entries and their highlight bullets (existing highlights are replaced)."""
         data = [
             dict(
                 company="Pagoda Labs",
@@ -117,6 +124,7 @@ class Command(BaseCommand):
                 ExperienceHighlight.objects.create(experience=exp, text=text, order=i)
 
     def seed_projects(self):
+        """Seed featured portfolio project entries."""
         data = [
             dict(
                 title="Xero OAuth Integration",
@@ -153,6 +161,7 @@ class Command(BaseCommand):
             Project.objects.update_or_create(title=item["title"], defaults=item)
 
     def seed_skills(self):
+        """Seed skill categories and their skills with proficiency scores (existing skills are replaced)."""
         categories = {
             "Backend & Languages": [
                 ("Python", 90), ("Django", 90), ("Django REST", 88), ("Odoo", 85),
@@ -175,6 +184,7 @@ class Command(BaseCommand):
                 Skill.objects.create(category=cat, name=name, proficiency=prof, order=i)
 
     def seed_education(self):
+        """Seed the degree/institution entry."""
         Education.objects.update_or_create(
             institution="Nepal Commerce Campus",
             degree="Bachelor in Information Management",
@@ -182,6 +192,7 @@ class Command(BaseCommand):
         )
 
     def seed_training(self):
+        """Seed certification/training entries."""
         data = [
             ("Python and Django", "Broadway Infosys"),
             ("Intermediate SQL", "Udemy"),
@@ -192,6 +203,7 @@ class Command(BaseCommand):
             Training.objects.update_or_create(title=title, provider=provider, defaults={"order": i})
 
     def seed_references(self):
+        """Seed professional reference entries."""
         data = [
             ("Silas Dhakal", "Software Engineer I", "Verisk"),
             ("Manoj Khadka", "Team Lead", "NEPA Works"),
@@ -202,6 +214,7 @@ class Command(BaseCommand):
             Reference.objects.update_or_create(name=name, defaults=dict(role=role, company=company, order=i))
 
     def seed_languages(self):
+        """Seed spoken language proficiency entries."""
         data = [("English", "Proficient", 4), ("Nepali", "Native", 5)]
         for i, (name, label, level) in enumerate(data):
             Language.objects.update_or_create(
@@ -209,6 +222,7 @@ class Command(BaseCommand):
             )
 
     def seed_services(self):
+        """Seed service offering entries shown on the public site."""
         data = [
             dict(title="Backend Development", description="Scalable Django & DRF backends with clean, maintainable architecture.", icon_name="server", order=1),
             dict(title="Odoo ERP Development", description="Custom Odoo modules for inventory, sales, and business process automation.", icon_name="boxes", order=2),
@@ -219,6 +233,7 @@ class Command(BaseCommand):
             Service.objects.update_or_create(title=item["title"], defaults=item)
 
     def seed_pricing(self):
+        """Seed pricing plans and their feature bullets (existing features are replaced)."""
         plans = [
             dict(name="Starter", price="$299", billing_period="one-time", description="Small backend feature or API integration.", is_featured=False, order=1,
                  features=["1 API integration", "Basic documentation", "1 revision round", "Email support"]),

@@ -30,10 +30,13 @@ from .utils import parse_user_agent, get_client_ip, render_branded_email
 
 
 class SiteSectionViewSet(viewsets.ModelViewSet):
+    """CRUD for homepage section visibility flags; public read, staff-only write."""
+
     queryset = SiteSection.objects.all()
     serializer_class = SiteSectionSerializer
 
     def get_permissions(self):
+        """Anyone can read section flags; only authenticated staff can change them."""
         if self.action in ("list", "retrieve"):
             return [AllowAny()]
         return [IsAuthenticated()]
@@ -43,14 +46,17 @@ class SiteThemeView(APIView):
     """Singleton site-wide color theme: public GET, staff-only PATCH."""
 
     def get_permissions(self):
+        """GET is public so the theme can be applied for every visitor; PATCH requires auth."""
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get(self, request):
+        """Return the current (or default) site theme."""
         return Response(SiteThemeSerializer(SiteTheme.load()).data)
 
     def patch(self, request):
+        """Partially update the singleton theme record."""
         theme = SiteTheme.load()
         serializer = SiteThemeSerializer(theme, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -62,14 +68,17 @@ class SiteWidgetView(APIView):
     """Singleton widget settings (e.g. floating WhatsApp button): public GET, staff-only PATCH."""
 
     def get_permissions(self):
+        """GET is public so widgets render for every visitor; PATCH requires auth."""
         if self.request.method == "GET":
             return [AllowAny()]
         return [IsAuthenticated()]
 
     def get(self, request):
+        """Return the current (or default) widget settings."""
         return Response(SiteWidgetSerializer(SiteWidget.load()).data)
 
     def patch(self, request):
+        """Partially update the singleton widget-settings record."""
         widget = SiteWidget.load()
         serializer = SiteWidgetSerializer(widget, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -78,56 +87,76 @@ class SiteWidgetView(APIView):
 
 
 class ProfileViewSet(viewsets.ModelViewSet):
+    """CRUD for the site owner's Profile; public read, staff-only write."""
+
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
 
     def get_permissions(self):
+        """Anyone can view the profile; only authenticated staff can edit it."""
         if self.action in ("list", "retrieve"):
             return [AllowAny()]
         return [IsAuthenticated()]
 
 
 class ExperienceViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public read-only listing of work-history entries."""
+
     queryset = Experience.objects.all()
     serializer_class = ExperienceSerializer
 
 
 class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public read-only listing of portfolio projects."""
+
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
 
 
 class SkillCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public read-only listing of skill categories with nested skills."""
+
     queryset = SkillCategory.objects.all()
     serializer_class = SkillCategorySerializer
 
 
 class EducationViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public read-only listing of education entries."""
+
     queryset = Education.objects.all()
     serializer_class = EducationSerializer
 
 
 class TrainingViewSet(viewsets.ModelViewSet):
+    """CRUD for certifications/training entries; public read, staff-only write."""
+
     queryset = Training.objects.all()
     serializer_class = TrainingSerializer
 
     def get_permissions(self):
+        """Anyone can view trainings; only authenticated staff can edit them."""
         if self.action in ("list", "retrieve"):
             return [AllowAny()]
         return [IsAuthenticated()]
 
 
 class ReferenceViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public read-only listing of professional references."""
+
     queryset = Reference.objects.all()
     serializer_class = ReferenceSerializer
 
 
 class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public read-only listing of spoken languages."""
+
     queryset = Language.objects.all()
     serializer_class = LanguageSerializer
 
 
 class ContactMessageCreateView(generics.CreateAPIView):
+    """Public endpoint the contact form posts to; creates a ContactMessage record."""
+
     queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer
 
@@ -141,6 +170,7 @@ class ContactMessageViewSet(viewsets.ReadOnlyModelViewSet):
 
     @action(detail=True, methods=["patch"])
     def mark_read(self, request, pk=None):
+        """Flip is_read on a message, used when staff opens it in the dashboard inbox."""
         message = self.get_object()
         message.is_read = True
         message.save(update_fields=["is_read"])
@@ -157,6 +187,12 @@ class SendEmailView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        """Validate input, send the branded email, and record the outcome as an EmailReply.
+
+        Persists the EmailReply before attempting SMTP send so a history record exists
+        even if delivery fails; on failure the error is stored on the reply instead of
+        raising, so the dashboard can show a per-message send status.
+        """
         serializer = EmailReplyWriteSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
@@ -178,7 +214,7 @@ class SendEmailView(APIView):
             html_content = render_branded_email(body_html)
             email = EmailMultiAlternatives(
                 subject=subject,
-                body=body_html,  # plain-text fallback (still HTML-ish, acceptable minimal fallback)
+                body=body_html,
                 to=[to_email],
             )
             email.attach_alternative(html_content, "text/html")
@@ -196,35 +232,48 @@ class SendEmailView(APIView):
 
 
 class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public read-only listing of active service offerings."""
+
     queryset = Service.objects.filter(is_active=True)
     serializer_class = ServiceSerializer
 
 
 class PricingPlanViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public read-only listing of pricing plans with nested features."""
+
     queryset = PricingPlan.objects.all()
     serializer_class = PricingPlanSerializer
 
 
 class BlogCategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public read-only listing of blog categories."""
+
     queryset = BlogCategory.objects.all()
     serializer_class = BlogCategorySerializer
 
 
 class BlogTagViewSet(viewsets.ReadOnlyModelViewSet):
+    """Public read-only listing of blog tags."""
+
     queryset = BlogTag.objects.all()
     serializer_class = BlogTagSerializer
 
 
 class BlogPostViewSet(viewsets.ModelViewSet):
+    """CRUD for blog posts, looked up by slug; staff see drafts, the public only sees published posts."""
+
     lookup_field = "slug"
 
     def get_queryset(self):
+        """Staff can see drafts and published posts; anonymous/non-staff users only see published ones."""
         user = self.request.user
         if user.is_authenticated and user.is_staff:
             return BlogPost.objects.all()
         return BlogPost.objects.filter(status="published")
 
     def get_serializer_class(self):
+        """Use the write serializer for mutations, the detail serializer for single-post reads,
+        and the lighter list serializer otherwise."""
         if self.action in ("create", "update", "partial_update"):
             return BlogPostWriteSerializer
         if self.action == "retrieve":
@@ -232,14 +281,17 @@ class BlogPostViewSet(viewsets.ModelViewSet):
         return BlogPostListSerializer
 
     def get_permissions(self):
+        """Anyone can read posts; only authenticated staff can create/edit/delete."""
         if self.action in ("create", "update", "partial_update", "destroy"):
             return [IsAuthenticated()]
         return [AllowAny()]
 
     def perform_create(self, serializer):
+        """Stamp the logged-in staff user as the post's author on creation."""
         serializer.save(author=self.request.user)
 
     def retrieve(self, request, *args, **kwargs):
+        """Increment view_count on published posts before returning them (drafts don't count views)."""
         instance = self.get_object()
         if instance.status == "published":
             BlogPost.objects.filter(pk=instance.pk).update(view_count=instance.view_count + 1)
@@ -249,19 +301,25 @@ class BlogPostViewSet(viewsets.ModelViewSet):
 
 
 class BlogCommentViewSet(viewsets.ModelViewSet):
+    """CRUD for blog comments; anyone can submit a comment, only staff can moderate/manage them."""
+
     queryset = BlogComment.objects.all()
     serializer_class = BlogCommentSerializer
 
     def get_permissions(self):
+        """Public visitors can post new comments; all other actions (moderation) require staff."""
         if self.action == "create":
             return [AllowAny()]
         return [IsAdminUser()]
 
 
 class AnalyticsSummaryView(APIView):
+    """Staff-only dashboard endpoint aggregating SiteVisit records into summary stats."""
+
     permission_classes = [IsAuthenticated, IsAdminUser]
 
     def get(self, request):
+        """Build the analytics summary: totals, a 7-day trend, and top pages/device/browser/country breakdowns."""
         total_visits = SiteVisit.objects.count()
 
         since = timezone.now() - timedelta(days=7)
@@ -317,9 +375,12 @@ class AnalyticsSummaryView(APIView):
 
 
 class TrackVisitView(APIView):
+    """Public endpoint the frontend pings on each pageview to log a SiteVisit for analytics."""
+
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """Parse the request's user agent/IP and store a new SiteVisit row."""
         path = request.data.get("path", "")
         referrer = request.data.get("referrer", "")
         user_agent = request.META.get("HTTP_USER_AGENT", "")
@@ -335,6 +396,5 @@ class TrackVisitView(APIView):
             browser=parsed["browser"],
             os=parsed["os"],
             ip_address=ip_address,
-            # country/city intentionally left blank — see SiteVisit model note.
         )
         return Response(status=status.HTTP_201_CREATED)

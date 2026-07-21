@@ -1,3 +1,10 @@
+"""
+URL routing for the portfolio API. Most resources are registered on a DRF
+DefaultRouter for standard CRUD (site content, blog, etc); auth, analytics,
+and a few one-off actions (contact, send-email, site-theme/widgets) are
+wired up as individual path() entries below the router include.
+"""
+
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
@@ -28,7 +35,6 @@ urlpatterns = [
     path("site-widgets/", views.SiteWidgetView.as_view(), name="site-widgets"),
     path("send-email/", views.SendEmailView.as_view(), name="send-email"),
 
-    # auth
     path("auth/login/", auth_views.LoginView.as_view(), name="auth-login"),
     path("auth/refresh/", auth_views.RefreshView.as_view(), name="auth-refresh"),
     path("auth/me/", auth_views.MeView.as_view(), name="auth-me"),
@@ -36,7 +42,6 @@ urlpatterns = [
     path("auth/forgot-password/", auth_views.ForgotPasswordView.as_view(), name="auth-forgot-password"),
     path("auth/reset-password/", auth_views.ResetPasswordView.as_view(), name="auth-reset-password"),
 
-    # analytics
     path("analytics/summary/", views.AnalyticsSummaryView.as_view(), name="analytics-summary"),
     path("track-visit/", views.TrackVisitView.as_view(), name="track-visit"),
 ]

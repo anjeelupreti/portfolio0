@@ -39,14 +39,17 @@ class SiteTheme(models.Model):
         verbose_name = "Site theme"
 
     def __str__(self):
+        """Show the active preset name in admin/list views."""
         return f"Theme ({self.preset})"
 
     def save(self, *args, **kwargs):
-        self.pk = 1  # enforce singleton
+        """Force pk=1 so there is ever only one theme row."""
+        self.pk = 1
         super().save(*args, **kwargs)
 
     @classmethod
     def load(cls):
+        """Fetch the singleton row, creating it with defaults on first use."""
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj
 
@@ -87,14 +90,17 @@ class SiteWidget(models.Model):
         verbose_name = "Site widgets"
 
     def __str__(self):
+        """Static label since this is a singleton settings row."""
         return "Site widget settings"
 
     def save(self, *args, **kwargs):
-        self.pk = 1  # enforce singleton
+        """Force pk=1 so there is ever only one widget-settings row."""
+        self.pk = 1
         super().save(*args, **kwargs)
 
     @classmethod
     def load(cls):
+        """Fetch the singleton row, creating it with defaults on first use."""
         obj, _ = cls.objects.get_or_create(pk=1)
         return obj
 
@@ -111,10 +117,13 @@ class SiteSection(models.Model):
         ordering = ["order", "id"]
 
     def __str__(self):
+        """Show the section label plus its current visibility state."""
         return f"{self.label} ({'on' if self.is_visible else 'off'})"
 
 
 class Profile(models.Model):
+    """The single person this portfolio is about: bio, contact info, and social links."""
+
     full_name = models.CharField(max_length=150)
     title = models.CharField(max_length=150)
     tagline = models.CharField(
@@ -138,10 +147,13 @@ class Profile(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
+        """Identify the profile by name in admin/list views."""
         return self.full_name
 
 
 class Experience(models.Model):
+    """A single job/role entry shown in the work-history timeline."""
+
     company = models.CharField(max_length=150)
     role = models.CharField(max_length=150)
     location = models.CharField(max_length=150, blank=True)
@@ -155,10 +167,13 @@ class Experience(models.Model):
         ordering = ["-order", "-id"]
 
     def __str__(self):
+        """Show role and company for quick identification."""
         return f"{self.role} @ {self.company}"
 
 
 class ExperienceHighlight(models.Model):
+    """One bullet point under an Experience entry (e.g. an achievement or responsibility)."""
+
     experience = models.ForeignKey(Experience, related_name="highlights", on_delete=models.CASCADE)
     text = models.CharField(max_length=300)
     order = models.PositiveIntegerField(default=0)
@@ -167,10 +182,13 @@ class ExperienceHighlight(models.Model):
         ordering = ["order", "id"]
 
     def __str__(self):
+        """Truncate the highlight text for compact admin listing."""
         return self.text[:50]
 
 
 class Project(models.Model):
+    """A portfolio project entry with links, image, and a featured flag for the homepage."""
+
     title = models.CharField(max_length=150)
     description = models.TextField()
     repo_url = models.URLField(blank=True)
@@ -184,10 +202,13 @@ class Project(models.Model):
         ordering = ["-featured", "-order", "-id"]
 
     def __str__(self):
+        """Identify the project by title."""
         return self.title
 
 
 class SkillCategory(models.Model):
+    """A grouping bucket for related Skill entries (e.g. 'Backend', 'DevOps')."""
+
     name = models.CharField(max_length=100)
     order = models.PositiveIntegerField(default=0)
 
@@ -196,10 +217,13 @@ class SkillCategory(models.Model):
         verbose_name_plural = "Skill categories"
 
     def __str__(self):
+        """Identify the category by name."""
         return self.name
 
 
 class Skill(models.Model):
+    """A single skill with a proficiency score, shown under its parent SkillCategory."""
+
     category = models.ForeignKey(SkillCategory, related_name="skills", on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     proficiency = models.PositiveIntegerField(default=80, help_text="0-100")
@@ -209,10 +233,13 @@ class Skill(models.Model):
         ordering = ["order", "id"]
 
     def __str__(self):
+        """Identify the skill by name."""
         return self.name
 
 
 class Education(models.Model):
+    """A degree/institution entry shown in the education timeline."""
+
     institution = models.CharField(max_length=200)
     degree = models.CharField(max_length=200)
     start_year = models.CharField(max_length=10)
@@ -224,10 +251,13 @@ class Education(models.Model):
         ordering = ["-order", "-id"]
 
     def __str__(self):
+        """Show degree and institution together."""
         return f"{self.degree} - {self.institution}"
 
 
 class Training(models.Model):
+    """A certification or short course, optionally with an uploaded certificate file."""
+
     title = models.CharField(max_length=200)
     provider = models.CharField(max_length=200)
     certificate_file = models.FileField(
@@ -240,10 +270,13 @@ class Training(models.Model):
         ordering = ["order", "id"]
 
     def __str__(self):
+        """Show title and provider together."""
         return f"{self.title} ({self.provider})"
 
 
 class Reference(models.Model):
+    """A professional reference/contact shown on the public site, if provided."""
+
     name = models.CharField(max_length=150)
     role = models.CharField(max_length=200)
     company = models.CharField(max_length=150, blank=True)
@@ -255,10 +288,13 @@ class Reference(models.Model):
         ordering = ["order", "id"]
 
     def __str__(self):
+        """Identify the reference by name."""
         return self.name
 
 
 class Language(models.Model):
+    """A spoken language with a proficiency label and dot-rating for the About section."""
+
     name = models.CharField(max_length=50)
     proficiency_label = models.CharField(max_length=50, help_text="e.g. Native, Proficient")
     proficiency_level = models.PositiveIntegerField(default=5, help_text="1-5 dots")
@@ -268,10 +304,13 @@ class Language(models.Model):
         ordering = ["order", "id"]
 
     def __str__(self):
+        """Identify the language by name."""
         return self.name
 
 
 class ContactMessage(models.Model):
+    """An inbound message submitted through the public contact form."""
+
     name = models.CharField(max_length=150)
     email = models.EmailField()
     subject = models.CharField(max_length=200, blank=True)
@@ -283,6 +322,7 @@ class ContactMessage(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
+        """Show sender name and subject for admin inbox listing."""
         return f"{self.name} - {self.subject or 'no subject'}"
 
 
@@ -306,17 +346,17 @@ class EmailReply(models.Model):
         ordering = ["-sent_at"]
 
     def __str__(self):
+        """Show recipient and subject for admin listing."""
         return f"To {self.to_email}: {self.subject}"
 
 
 class SiteVisit(models.Model):
+    """A single pageview record used for the analytics dashboard (device/browser/OS breakdowns)."""
+
     path = models.CharField(max_length=300)
     visited_at = models.DateTimeField(auto_now_add=True)
     user_agent = models.CharField(max_length=300, blank=True)
     referrer = models.CharField(max_length=500, blank=True)
-    # NOTE: country/city are left blank for now. A GeoIP2 lookup (e.g. via
-    # django.contrib.gis.geoip2 + MaxMind GeoLite2 db, or a geolocation API)
-    # could populate these fields from ip_address in the future.
     country = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100, blank=True)
     device_type = models.CharField(max_length=20, blank=True)
@@ -325,10 +365,13 @@ class SiteVisit(models.Model):
     ip_address = models.GenericIPAddressField(null=True, blank=True)
 
     def __str__(self):
+        """Show path and timestamp for admin listing."""
         return f"{self.path} @ {self.visited_at}"
 
 
 class Service(models.Model):
+    """A service offering listed on the public site (e.g. 'API development')."""
+
     title = models.CharField(max_length=150)
     description = models.TextField(blank=True)
     icon_name = models.CharField(max_length=100, blank=True, help_text="e.g. a lucide-react icon name")
@@ -339,10 +382,13 @@ class Service(models.Model):
         ordering = ["order", "id"]
 
     def __str__(self):
+        """Identify the service by title."""
         return self.title
 
 
 class PricingPlan(models.Model):
+    """A pricing tier shown on the public site, with a set of PricingFeature bullets."""
+
     name = models.CharField(max_length=100)
     price = models.CharField(max_length=50, help_text="e.g. $499 or Custom")
     billing_period = models.CharField(max_length=50, blank=True, help_text="e.g. one-time, /month")
@@ -354,10 +400,13 @@ class PricingPlan(models.Model):
         ordering = ["order", "id"]
 
     def __str__(self):
+        """Identify the plan by name."""
         return self.name
 
 
 class PricingFeature(models.Model):
+    """One included/excluded feature line under a PricingPlan."""
+
     plan = models.ForeignKey(PricingPlan, related_name="features", on_delete=models.CASCADE)
     text = models.CharField(max_length=300)
     included = models.BooleanField(default=True)
@@ -367,10 +416,13 @@ class PricingFeature(models.Model):
         ordering = ["order", "id"]
 
     def __str__(self):
+        """Truncate the feature text for compact admin listing."""
         return self.text[:50]
 
 
 class BlogCategory(models.Model):
+    """A category used to group BlogPost entries."""
+
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     order = models.PositiveIntegerField(default=0)
@@ -380,10 +432,13 @@ class BlogCategory(models.Model):
         verbose_name_plural = "Blog categories"
 
     def __str__(self):
+        """Identify the category by name."""
         return self.name
 
 
 class BlogTag(models.Model):
+    """A freeform tag attachable to multiple BlogPost entries."""
+
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
 
@@ -391,10 +446,13 @@ class BlogTag(models.Model):
         ordering = ["name"]
 
     def __str__(self):
+        """Identify the tag by name."""
         return self.name
 
 
 class BlogPost(models.Model):
+    """A blog article, either draft or published, with rich-text content from the admin editor."""
+
     STATUS_CHOICES = [
         ("draft", "Draft"),
         ("published", "Published"),
@@ -422,15 +480,19 @@ class BlogPost(models.Model):
         ordering = ["-published_at", "-created_at"]
 
     def __str__(self):
+        """Identify the post by title."""
         return self.title
 
     def save(self, *args, **kwargs):
+        """Stamp published_at the first time a post transitions to 'published'."""
         if self.status == "published" and self.published_at is None:
             self.published_at = timezone.now()
         super().save(*args, **kwargs)
 
 
 class BlogComment(models.Model):
+    """A visitor comment on a BlogPost, held for moderation via is_approved."""
+
     post = models.ForeignKey(BlogPost, related_name="comments", on_delete=models.CASCADE)
     name = models.CharField(max_length=150)
     email = models.EmailField()
@@ -442,4 +504,5 @@ class BlogComment(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self):
+        """Show commenter and post for admin moderation listing."""
         return f"Comment by {self.name} on {self.post}"

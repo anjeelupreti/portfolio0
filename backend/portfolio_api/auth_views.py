@@ -18,23 +18,27 @@ token_generator = PasswordResetTokenGenerator()
 
 
 class LoginView(TokenObtainPairView):
-    """POST {username, password} -> {access, refresh}"""
+    """POST {username, password} -> {access, refresh}. Thin wrapper around SimpleJWT's default view."""
     pass
 
 
 class RefreshView(TokenRefreshView):
-    """POST {refresh} -> {access}"""
+    """POST {refresh} -> {access}. Thin wrapper around SimpleJWT's default view."""
     pass
 
 
 class MeView(APIView):
+    """Lets the logged-in dashboard user view/edit their own account (name, email)."""
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        """Return the current user's profile fields."""
         serializer = UserProfileSerializer(request.user)
         return Response(serializer.data)
 
     def patch(self, request):
+        """Partially update the current user's profile fields."""
         serializer = UserProfileSerializer(request.user, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -42,9 +46,12 @@ class MeView(APIView):
 
 
 class ChangePasswordView(APIView):
+    """Lets a logged-in user change their password by confirming the old one first."""
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        """Verify old_password, then set new_password if it checks out."""
         old_password = request.data.get("old_password")
         new_password = request.data.get("new_password")
 
@@ -64,9 +71,13 @@ class ChangePasswordView(APIView):
 
 
 class ForgotPasswordView(APIView):
+    """Public password-reset request endpoint. Always returns 200 with a generic
+    message regardless of whether the email exists, to avoid leaking account existence."""
+
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """Email a signed reset link if the address matches a user; otherwise silently no-op."""
         email = request.data.get("email")
         if email:
             user = User.objects.filter(email=email).first()
@@ -90,22 +101,21 @@ class ForgotPasswordView(APIView):
                     email.attach_alternative(render_branded_email(body_html), "text/html")
                     email.send(fail_silently=False)
                 except Exception:
-                    # Don't leak whether the email exists or crash with a 500 —
-                    # just report a generic problem sending mail.
                     return Response(
                         {"detail": "Unable to send reset email at this time. Please try again later."},
                         status=status.HTTP_502_BAD_GATEWAY,
                     )
 
-        # Always return 200 regardless of whether the email exists, to avoid
-        # leaking account existence.
         return Response({"detail": "If an account with that email exists, a reset link has been sent."})
 
 
 class ResetPasswordView(APIView):
+    """Public endpoint that completes a password reset given a valid uid/token pair from the emailed link."""
+
     permission_classes = [AllowAny]
 
     def post(self, request):
+        """Validate the uid/token against PasswordResetTokenGenerator, then set new_password."""
         uid = request.data.get("uid")
         token = request.data.get("token")
         new_password = request.data.get("new_password")

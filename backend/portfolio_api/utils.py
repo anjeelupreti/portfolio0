@@ -14,7 +14,6 @@ def parse_user_agent(ua_string):
     ua = ua_string or ""
     ua_lower = ua.lower()
 
-    # --- device type ---
     if "ipad" in ua_lower or "tablet" in ua_lower:
         device_type = "tablet"
     elif "mobile" in ua_lower or "iphone" in ua_lower or "android" in ua_lower:
@@ -22,8 +21,6 @@ def parse_user_agent(ua_string):
     else:
         device_type = "desktop"
 
-    # --- browser (order matters: check Edge/Chrome before Safari, since
-    # both Chrome's and Edge's UA strings also contain "Safari") ---
     if "edg/" in ua_lower or "edge/" in ua_lower or "edga/" in ua_lower or "edgios/" in ua_lower:
         browser = "Edge"
     elif "opr/" in ua_lower or "opera" in ua_lower:
@@ -37,7 +34,6 @@ def parse_user_agent(ua_string):
     else:
         browser = "Other"
 
-    # --- os ---
     if "windows" in ua_lower:
         os_name = "Windows"
     elif "android" in ua_lower:
@@ -55,6 +51,7 @@ def parse_user_agent(ua_string):
 
 
 def get_client_ip(request):
+    """Extracts the visitor's real IP from X-Forwarded-For (proxy-aware) or REMOTE_ADDR. Used by TrackVisitView for analytics."""
     forwarded_for = request.META.get("HTTP_X_FORWARDED_FOR", "")
     if forwarded_for:
         return forwarded_for.split(",")[0].strip()

@@ -1,3 +1,3 @@
-from django.test import TestCase
+"""No automated tests yet for portfolio_api."""
 
-# Create your tests here.
+from django.test import TestCase
