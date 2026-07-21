@@ -37,6 +37,25 @@ export const uploadResume = (id, file) => {
     .then((r) => r.data)
 }
 
+// ---- Training / certifications ----
+export const getTrainingAdmin = () => adminClient.get('/training/').then((r) => r.data)
+
+export const createTraining = (payload) =>
+  adminClient.post('/training/', payload).then((r) => r.data)
+
+export const updateTraining = (id, payload) =>
+  adminClient.patch(`/training/${id}/`, payload).then((r) => r.data)
+
+export const deleteTraining = (id) => adminClient.delete(`/training/${id}/`)
+
+export const uploadTrainingCertificate = (id, file) => {
+  const formData = new FormData()
+  formData.append('certificate_file', file)
+  return adminClient
+    .patch(`/training/${id}/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
+    .then((r) => r.data)
+}
+
 // ---- Blog posts ----
 export const getBlogPosts = () => adminClient.get('/blog-posts/').then((r) => r.data)
 
