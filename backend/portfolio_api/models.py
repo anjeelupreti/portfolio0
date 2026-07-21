@@ -230,6 +230,10 @@ class Education(models.Model):
 class Training(models.Model):
     title = models.CharField(max_length=200)
     provider = models.CharField(max_length=200)
+    certificate_file = models.FileField(
+        upload_to="certificates/", blank=True, null=True,
+        help_text="Optional certificate image or PDF. If uploaded, shown on the public site with a preview.",
+    )
     order = models.PositiveIntegerField(default=0)
 
     class Meta:

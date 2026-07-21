@@ -102,7 +102,7 @@ class EducationAdmin(admin.ModelAdmin):
 
 @admin.register(Training)
 class TrainingAdmin(admin.ModelAdmin):
-    list_display = ("title", "provider", "order")
+    list_display = ("title", "provider", "certificate_file", "order")
     search_fields = ("title", "provider")
 
 
