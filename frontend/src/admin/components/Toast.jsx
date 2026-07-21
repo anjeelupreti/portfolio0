@@ -28,10 +28,10 @@ export function ToastProvider({ children }) {
             key={t.id}
             className={`flex max-w-sm items-start gap-2.5 rounded-xl border px-4 py-3 font-mono text-xs shadow-xl ${
               t.type === 'error'
-                ? 'border-red-500/30 bg-ink text-red-300'
+                ? 'border-red-500/30 bg-ink-fixed text-red-300'
                 : t.type === 'success'
-                  ? 'border-accent/30 bg-ink text-accent'
-                  : 'border-cream/20 bg-ink text-cream/80'
+                  ? 'border-accent/30 bg-ink-fixed text-accent'
+                  : 'border-cream-fixed/20 bg-ink-fixed text-cream-fixed/80'
             }`}
           >
             {t.type === 'error' ? (
@@ -43,7 +43,7 @@ export function ToastProvider({ children }) {
             <button
               type="button"
               onClick={() => dismiss(t.id)}
-              className="shrink-0 text-cream/40 hover:text-cream"
+              className="shrink-0 text-cream-fixed/40 hover:text-cream-fixed"
             >
               <X size={13} />
             </button>

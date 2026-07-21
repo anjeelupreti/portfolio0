@@ -14,7 +14,7 @@ function EntryCard({ exp, align }) {
 
   return (
     <div
-      className={`rounded-2xl border border-cream/10 bg-ink-soft/60 p-6 shadow-lg shadow-black/20 backdrop-blur-sm sm:p-7 ${
+      className={`rounded-2xl border border-cream-fixed/10 bg-ink-fixed-soft/60 p-6 shadow-lg shadow-black/20 backdrop-blur-sm sm:p-7 ${
         align === 'right' ? 'lg:text-left' : 'lg:text-right'
       }`}
     >
@@ -35,21 +35,21 @@ function EntryCard({ exp, align }) {
         )}
       </div>
 
-      <h3 className="mt-3 font-display text-xl font-bold tracking-tight text-cream sm:text-2xl">
+      <h3 className="mt-3 font-display text-xl font-bold tracking-tight text-cream-fixed sm:text-2xl">
         {exp.role}
       </h3>
 
       <p
-        className={`mt-1 flex items-center gap-1.5 text-sm text-cream/60 ${
+        className={`mt-1 flex items-center gap-1.5 text-sm text-cream-fixed/60 ${
           align === 'right' ? '' : 'lg:flex-row-reverse'
         }`}
       >
-        <Building2 size={14} className="shrink-0 text-cream/40" />
+        <Building2 size={14} className="shrink-0 text-cream-fixed/40" />
         {exp.company}
         {exp.location && (
           <>
-            <span className="text-cream/25">&middot;</span>
-            <span className="inline-flex items-center gap-1 text-cream/45">
+            <span className="text-cream-fixed/25">&middot;</span>
+            <span className="inline-flex items-center gap-1 text-cream-fixed/45">
               <MapPin size={12} />
               {exp.location}
             </span>
@@ -58,12 +58,12 @@ function EntryCard({ exp, align }) {
       </p>
 
       {exp.description && (
-        <p className="mt-3 text-sm leading-relaxed text-cream/60">{exp.description}</p>
+        <p className="mt-3 text-sm leading-relaxed text-cream-fixed/60">{exp.description}</p>
       )}
 
       {exp.highlights?.length > 0 && (
         <ul
-          className={`mt-4 space-y-2 border-t border-cream/10 pt-4 text-sm text-cream/70 ${
+          className={`mt-4 space-y-2 border-t border-cream-fixed/10 pt-4 text-sm text-cream-fixed/70 ${
             align === 'right' ? '' : 'lg:items-end'
           } flex flex-col`}
         >
@@ -92,7 +92,7 @@ export default function ExperienceTimeline({ experience = [] }) {
   return (
     <section
       id="timeline"
-      className="bg-dot-grid relative overflow-hidden bg-ink px-4 py-24 text-cream sm:px-6 sm:py-32"
+      className="bg-dot-grid relative overflow-hidden bg-ink-fixed px-4 py-24 text-cream-fixed sm:px-6 sm:py-32"
     >
       <div className="mx-auto max-w-5xl">
         <motion.div initial="hidden" whileInView="show" viewport={viewportOnce} variants={fadeUp}>
@@ -100,13 +100,13 @@ export default function ExperienceTimeline({ experience = [] }) {
           <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-tight tracking-tight sm:text-5xl">
             Where I&apos;ve worked and what I shipped.
           </h2>
-          <p className="mt-4 max-w-xl font-mono text-sm text-cream/45">
+          <p className="mt-4 max-w-xl font-mono text-sm text-cream-fixed/45">
             $ git log --reverse --pretty=&quot;role @ company&quot;
           </p>
         </motion.div>
 
         {sorted.length === 0 ? (
-          <div className="mt-16 rounded-2xl border border-dashed border-cream/15 py-16 text-center text-cream/50">
+          <div className="mt-16 rounded-2xl border border-dashed border-cream-fixed/15 py-16 text-center text-cream-fixed/50">
             Experience history will appear here soon.
           </div>
         ) : (
@@ -128,7 +128,7 @@ export default function ExperienceTimeline({ experience = [] }) {
                     className="relative pl-12 lg:grid lg:grid-cols-2 lg:gap-x-12 lg:pl-0"
                   >
                     {/* marker dot */}
-                    <span className="absolute left-3 top-2 z-10 h-3 w-3 -translate-x-1/2 rounded-full border-2 border-ink bg-accent shadow-[0_0_0_4px_rgba(217,255,75,0.15)] lg:left-1/2" />
+                    <span className="absolute left-3 top-2 z-10 h-3 w-3 -translate-x-1/2 rounded-full border-2 border-ink-fixed bg-accent shadow-[0_0_0_4px_rgba(217,255,75,0.15)] lg:left-1/2" />
 
                     {align === 'left' ? (
                       <>

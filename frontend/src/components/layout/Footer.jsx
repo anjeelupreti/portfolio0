@@ -12,18 +12,18 @@ export default function Footer({ profile }) {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="bg-ink px-4 pb-8 pt-16 text-cream sm:px-6">
+    <footer className="bg-ink-fixed px-4 pb-8 pt-16 text-cream-fixed sm:px-6">
       <div className="mx-auto max-w-6xl">
-        <div className="flex flex-col items-start justify-between gap-8 border-b border-cream/10 pb-10 sm:flex-row sm:items-end">
+        <div className="flex flex-col items-start justify-between gap-8 border-b border-cream-fixed/10 pb-10 sm:flex-row sm:items-end">
           <div>
             <p className="font-display text-3xl font-bold tracking-tight sm:text-4xl">
               <span className="font-mono text-accent">~/</span>anjeel
             </p>
-            <p className="mt-3 max-w-sm text-sm text-cream/60">
+            <p className="mt-3 max-w-sm text-sm text-cream-fixed/60">
               {profile?.title || 'Software Engineer'} building reliable backend
               systems, one clean commit at a time.
             </p>
-            <p className="mt-3 font-mono text-xs text-cream/30">
+            <p className="mt-3 font-mono text-xs text-cream-fixed/30">
               // exit code 0 — always shipping
             </p>
           </div>
@@ -37,7 +37,7 @@ export default function Footer({ profile }) {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-cream/20 text-cream transition-colors hover:border-accent hover:text-accent"
+                  className="flex h-11 w-11 items-center justify-center rounded-full border border-cream-fixed/20 text-cream-fixed transition-colors hover:border-accent hover:text-accent"
                 >
                   <Icon size={18} />
                 </a>
@@ -50,14 +50,14 @@ export default function Footer({ profile }) {
                 window.scrollTo({ top: 0, behavior: 'smooth' })
               }}
               aria-label="Back to top"
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-accent text-ink transition-transform hover:scale-105"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-accent text-ink-fixed transition-transform hover:scale-105"
             >
               <ArrowUp size={18} />
             </a>
           </div>
         </div>
 
-        <div className="flex flex-col gap-3 pt-6 text-xs text-cream/50 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 pt-6 text-xs text-cream-fixed/50 sm:flex-row sm:items-center sm:justify-between">
           <p>&copy; {year} {profile?.full_name || 'Anjeel Upreti'}. All rights reserved.</p>
           <div className="flex gap-5">
             <Link to="/" className="hover:text-accent">Home</Link>

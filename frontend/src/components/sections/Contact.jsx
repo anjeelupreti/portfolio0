@@ -37,7 +37,7 @@ export default function Contact({ profile }) {
   }
 
   return (
-    <section id="contact" className="bg-dot-grid relative overflow-hidden bg-ink px-4 py-24 text-cream sm:px-6 sm:py-32">
+    <section id="contact" className="bg-dot-grid relative overflow-hidden bg-ink-fixed px-4 py-24 text-cream-fixed sm:px-6 sm:py-32">
       <div className="mx-auto max-w-6xl">
         <motion.div
           initial="hidden"
@@ -51,7 +51,7 @@ export default function Contact({ profile }) {
             <h2 className="mt-6 font-display text-3xl font-bold leading-tight tracking-tight sm:text-5xl">
               Reach out and let&apos;s create something great together.
             </h2>
-            <p className="mt-4 max-w-md font-mono text-sm text-cream/40">
+            <p className="mt-4 max-w-md font-mono text-sm text-cream-fixed/40">
               $ curl -X POST /contact -d &quot;hello@anjeel&quot;
             </p>
 
@@ -64,7 +64,7 @@ export default function Contact({ profile }) {
               </a>
             )}
 
-            <div className="mt-8 space-y-3 text-sm text-cream/60">
+            <div className="mt-8 space-y-3 text-sm text-cream-fixed/60">
               {profile?.location && (
                 <p className="flex items-center gap-2">
                   <MapPin size={16} className="text-accent" /> {profile.location}
@@ -84,15 +84,15 @@ export default function Contact({ profile }) {
 
             <a
               href={profile?.email ? `mailto:${profile.email}` : '#contact'}
-              className="group mt-10 inline-flex h-32 w-32 flex-col items-center justify-center rounded-full bg-cream text-center text-sm font-semibold text-ink transition-transform hover:scale-105"
+              className="group mt-10 inline-flex h-32 w-32 flex-col items-center justify-center rounded-full bg-cream-fixed text-center text-sm font-semibold text-ink-fixed transition-transform hover:scale-105"
             >
               Let&apos;s Connect
               <ArrowUpRight size={16} className="mt-1 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
             </a>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-cream/10 bg-ink-soft p-6 shadow-lg shadow-black/20 sm:p-8">
-            <p className="mb-2 font-mono text-xs text-cream/35">~/contact $ new-message --to anjeel</p>
+          <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-cream-fixed/10 bg-ink-fixed-soft p-6 shadow-lg shadow-black/20 sm:p-8">
+            <p className="mb-2 font-mono text-xs text-cream-fixed/35">~/contact $ new-message --to anjeel</p>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <input
                 required
@@ -100,7 +100,7 @@ export default function Contact({ profile }) {
                 value={form.name}
                 onChange={handleChange}
                 placeholder="Your name"
-                className="rounded-xl border border-cream/15 bg-transparent px-4 py-3 text-sm text-cream placeholder:text-cream/40 focus:border-accent focus:outline-none"
+                className="rounded-xl border border-cream-fixed/15 bg-transparent px-4 py-3 text-sm text-cream-fixed placeholder:text-cream-fixed/40 focus:border-accent focus:outline-none"
               />
               <input
                 required
@@ -109,7 +109,7 @@ export default function Contact({ profile }) {
                 value={form.email}
                 onChange={handleChange}
                 placeholder="Your email"
-                className="rounded-xl border border-cream/15 bg-transparent px-4 py-3 text-sm text-cream placeholder:text-cream/40 focus:border-accent focus:outline-none"
+                className="rounded-xl border border-cream-fixed/15 bg-transparent px-4 py-3 text-sm text-cream-fixed placeholder:text-cream-fixed/40 focus:border-accent focus:outline-none"
               />
             </div>
             <input
@@ -118,7 +118,7 @@ export default function Contact({ profile }) {
               value={form.subject}
               onChange={handleChange}
               placeholder="Subject"
-              className="w-full rounded-xl border border-cream/15 bg-transparent px-4 py-3 text-sm text-cream placeholder:text-cream/40 focus:border-accent focus:outline-none"
+              className="w-full rounded-xl border border-cream-fixed/15 bg-transparent px-4 py-3 text-sm text-cream-fixed placeholder:text-cream-fixed/40 focus:border-accent focus:outline-none"
             />
             <textarea
               required
@@ -127,13 +127,13 @@ export default function Contact({ profile }) {
               onChange={handleChange}
               placeholder="Tell me about your project..."
               rows={5}
-              className="w-full resize-none rounded-xl border border-cream/15 bg-transparent px-4 py-3 text-sm text-cream placeholder:text-cream/40 focus:border-accent focus:outline-none"
+              className="w-full resize-none rounded-xl border border-cream-fixed/15 bg-transparent px-4 py-3 text-sm text-cream-fixed placeholder:text-cream-fixed/40 focus:border-accent focus:outline-none"
             />
 
             <button
               type="submit"
               disabled={status === 'sending'}
-              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-6 py-3.5 text-sm font-semibold text-ink transition-transform hover:scale-[1.02] disabled:opacity-60"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-accent px-6 py-3.5 text-sm font-semibold text-ink-fixed transition-transform hover:scale-[1.02] disabled:opacity-60"
             >
               {status === 'sending' && <Loader2 size={16} className="animate-spin" />}
               {status === 'sending' ? 'Sending...' : 'Send Message'}

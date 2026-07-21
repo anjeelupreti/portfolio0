@@ -13,6 +13,18 @@
   --color-accent-soft: #eaffa0;
   --color-muted: #6b6b6b;
   --color-surface: #ffffff;
+
+  /* Mode-invariant "showcase panel" colors — do NOT flip with dark mode.
+     Used by sections/components designed to always read as a dark panel
+     with light text regardless of visitor color-mode preference (navbar
+     pill, footer, timeline/tech-stack/services sections, admin sidebar,
+     auth pages, floating widgets). Without these, such sections use
+     bg-ink/text-cream, which invert along with everything else in dark
+     mode and flip into a jarring light panel — see the dark-mode audit
+     notes below the :root[data-theme="dark"] block. */
+  --color-ink-fixed: #0a0a0a;
+  --color-ink-fixed-soft: #16161a;
+  --color-cream-fixed: #f5f1e3;
 }
 
 html {
@@ -30,6 +42,9 @@ html {
   --color-ink-soft: #e8e4d5;
   --color-muted: #9a9a9a;
   --color-surface: #1c1c22;
+  /* --color-ink-fixed / --color-ink-fixed-soft / --color-cream-fixed are
+     intentionally NOT overridden here — see their definition in @theme
+     above for why. */
 }
 
 body {

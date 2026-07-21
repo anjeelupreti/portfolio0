@@ -11,9 +11,9 @@ export default function SectionEyebrow({ children, tone = 'light' }) {
           : 'border-ink/15 text-ink/70'
       }`}
     >
-      <span className={isDark ? 'text-cream/40' : 'text-ink/35'}>&lt;</span>
+      <span className={isDark ? 'text-cream-fixed/40' : 'text-ink/35'}>&lt;</span>
       {children}
-      <span className={isDark ? 'text-cream/40' : 'text-ink/35'}>/&gt;</span>
+      <span className={isDark ? 'text-cream-fixed/40' : 'text-ink/35'}>/&gt;</span>
     </span>
   )
 }

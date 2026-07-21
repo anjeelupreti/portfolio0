@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowUpRight, LucideMenu as Menu, LucideX as X, LucideDownload as Download } from 'lucide-react'
 import ColorModeToggle from '../ui/ColorModeToggle'
+import CertificatePreviewModal from '../ui/CertificatePreviewModal'
 import { getSiteWidgets } from '../../api/resources'
 
 // Pricing intentionally omitted — it's gated off by the site-sections
@@ -18,6 +19,7 @@ const NAV_LINKS = [
 export default function Navbar({ profile }) {
   const [open, setOpen] = useState(false)
   const [widgets, setWidgets] = useState(null)
+  const [resumePreviewOpen, setResumePreviewOpen] = useState(false)
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -55,15 +57,15 @@ export default function Navbar({ profile }) {
 
   return (
     <header className="fixed inset-x-0 top-3 z-50 px-3 sm:top-5 sm:px-6">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-[28px] bg-ink px-4 py-3 shadow-xl shadow-black/20 sm:rounded-[32px] sm:px-6 sm:py-4">
+      <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-[28px] bg-ink-fixed px-4 py-3 shadow-xl shadow-black/20 sm:rounded-[32px] sm:px-6 sm:py-4">
         <Link
           to="/"
-          className="font-display text-xl font-bold tracking-tight text-cream sm:text-2xl"
+          className="font-display text-xl font-bold tracking-tight text-cream-fixed sm:text-2xl"
         >
           <span className="font-mono text-accent">~/</span>anjeel
         </Link>
 
-        <ul className="hidden items-center gap-7 text-sm font-medium text-cream/80 lg:flex">
+        <ul className="hidden items-center gap-7 text-sm font-medium text-cream-fixed/80 lg:flex">
           {NAV_LINKS.map((link) => (
             <li key={link.anchor}>
               <a
@@ -88,23 +90,21 @@ export default function Navbar({ profile }) {
         </ul>
 
         <div className="hidden shrink-0 items-center gap-3 lg:flex">
-          <ColorModeToggle className="rounded-full p-2 text-cream/80 transition-colors hover:bg-cream/10 hover:text-accent" />
+          <ColorModeToggle className="rounded-full p-2 text-cream-fixed/80 transition-colors hover:bg-cream-fixed/10 hover:text-accent" />
           {showResumeButton && (
-            <a
-              href={profile.resume_file}
-              target="_blank"
-              rel="noopener noreferrer"
-              download
-              className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-4 py-2.5 text-sm font-semibold text-cream transition-colors hover:border-accent hover:text-accent"
+            <button
+              type="button"
+              onClick={() => setResumePreviewOpen(true)}
+              className="inline-flex items-center gap-2 rounded-full border border-cream-fixed/25 px-4 py-2.5 text-sm font-semibold text-cream-fixed transition-colors hover:border-accent hover:text-accent"
             >
               <Download size={15} />
               Resume
-            </a>
+            </button>
           )}
           <a
             href="/#contact"
             onClick={handleAnchorClick('contact')}
-            className="group inline-flex items-center gap-2 rounded-full bg-cream px-5 py-2.5 text-sm font-semibold text-ink transition-transform hover:scale-105"
+            className="group inline-flex items-center gap-2 rounded-full bg-cream-fixed px-5 py-2.5 text-sm font-semibold text-ink-fixed transition-transform hover:scale-105"
           >
             Contact Me
             <ArrowUpRight
@@ -115,12 +115,12 @@ export default function Navbar({ profile }) {
         </div>
 
         <div className="flex items-center gap-1 lg:hidden">
-          <ColorModeToggle className="rounded-full p-2 text-cream/80 transition-colors hover:bg-cream/10 hover:text-accent" />
+          <ColorModeToggle className="rounded-full p-2 text-cream-fixed/80 transition-colors hover:bg-cream-fixed/10 hover:text-accent" />
           <button
             type="button"
             aria-label="Toggle menu"
             onClick={() => setOpen((v) => !v)}
-            className="p-1 text-cream"
+            className="p-1 text-cream-fixed"
           >
             {open ? <X size={26} /> : <Menu size={26} />}
           </button>
@@ -128,8 +128,8 @@ export default function Navbar({ profile }) {
       </nav>
 
       {open && (
-        <div className="mx-auto mt-2 max-w-6xl rounded-3xl bg-ink px-6 py-6 shadow-xl lg:hidden">
-          <ul className="flex flex-col gap-4 text-base font-medium text-cream/90">
+        <div className="mx-auto mt-2 max-w-6xl rounded-3xl bg-ink-fixed px-6 py-6 shadow-xl lg:hidden">
+          <ul className="flex flex-col gap-4 text-base font-medium text-cream-fixed/90">
             {NAV_LINKS.map((link) => (
               <li key={link.anchor}>
                 <a href={`/#${link.anchor}`} onClick={handleAnchorClick(link.anchor)}>
@@ -144,23 +144,21 @@ export default function Navbar({ profile }) {
             </li>
             {showResumeButton && (
               <li>
-                <a
-                  href={profile.resume_file}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download
-                  className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-5 py-2.5 text-sm font-semibold text-cream"
+                <button
+                  type="button"
+                  onClick={() => setResumePreviewOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-full border border-cream-fixed/25 px-5 py-2.5 text-sm font-semibold text-cream-fixed"
                 >
                   <Download size={16} />
                   Resume
-                </a>
+                </button>
               </li>
             )}
             <li>
               <a
                 href="/#contact"
                 onClick={handleAnchorClick('contact')}
-                className="mt-2 inline-flex items-center gap-2 rounded-full bg-cream px-5 py-2.5 text-sm font-semibold text-ink"
+                className="mt-2 inline-flex items-center gap-2 rounded-full bg-cream-fixed px-5 py-2.5 text-sm font-semibold text-ink-fixed"
               >
                 Contact Me
                 <ArrowUpRight size={16} />
@@ -168,6 +166,15 @@ export default function Navbar({ profile }) {
             </li>
           </ul>
         </div>
+      )}
+
+      {showResumeButton && (
+        <CertificatePreviewModal
+          open={resumePreviewOpen}
+          onClose={() => setResumePreviewOpen(false)}
+          title="resume.preview"
+          fileUrl={profile.resume_file}
+        />
       )}
     </header>
   )

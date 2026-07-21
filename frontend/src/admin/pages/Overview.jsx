@@ -33,10 +33,15 @@ function readChartColors() {
   const ink = cssVar('--color-ink', '#0a0a0a')
   const accent = cssVar('--color-accent', '#d9ff4b')
   const muted = cssVar('--color-muted', '#6b6b6b')
+  // Faint grid lines derived from the live --color-ink so they stay subtle
+  // in both light mode (near-black ink) and dark mode (near-white ink)
+  // instead of a hardcoded rgba(10,10,10,...) that vanishes on dark backgrounds.
+  const gridStroke = `color-mix(in srgb, ${ink} 10%, transparent)`
   return {
     ink,
     accent,
     muted,
+    gridStroke,
     // Fixed categorical order for device breakdown — accent for the top
     // slot, then a fixed ink-tint ramp so identity never depends on data order.
     deviceColors: { desktop: accent, mobile: ink, tablet: muted },
@@ -75,9 +80,20 @@ export default function Overview() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
-  // Read once per mount (not at module scope) so a theme/dark-mode change
-  // made before navigating here is reflected — see readChartColors() above.
-  const [{ ink: INK, accent: ACCENT, muted: MUTED, deviceColors: DEVICE_COLORS }] = useState(readChartColors)
+  // Re-read on every dark-mode toggle (not just once per mount) so the
+  // charts stay in sync if the user flips the ColorModeToggle while already
+  // on this page — a MutationObserver on documentElement's data-theme
+  // attribute is the cleanest way to react to that without colorMode.js
+  // needing to know about every consumer.
+  const [{ ink: INK, accent: ACCENT, muted: MUTED, gridStroke: GRID_STROKE, deviceColors: DEVICE_COLORS }, setColors] =
+    useState(readChartColors)
+
+  useEffect(() => {
+    const target = document.documentElement
+    const observer = new MutationObserver(() => setColors(readChartColors()))
+    observer.observe(target, { attributes: true, attributeFilter: ['data-theme', 'style'] })
+    return () => observer.disconnect()
+  }, [])
 
   useEffect(() => {
     let cancelled = false
@@ -145,7 +161,7 @@ export default function Overview() {
                   <stop offset="100%" stopColor={ACCENT} stopOpacity={0.02} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="rgba(10,10,10,0.08)" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
               <XAxis dataKey="label" tick={{ fontSize: 11, fill: MUTED }} axisLine={false} tickLine={false} />
               <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: MUTED }} axisLine={false} tickLine={false} width={30} />
               <Tooltip content={<ChartTooltip />} />
@@ -248,7 +264,7 @@ export default function Overview() {
             <div className="h-56 w-full">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={browserData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(10,10,10,0.08)" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke={GRID_STROKE} vertical={false} />
                   <XAxis dataKey="browser" tick={{ fontSize: 11, fill: MUTED }} axisLine={false} tickLine={false} />
                   <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: MUTED }} axisLine={false} tickLine={false} width={30} />
                   <Tooltip

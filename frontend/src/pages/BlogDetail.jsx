@@ -206,7 +206,7 @@ export default function BlogDetail() {
 
           <div className="mt-8 space-y-6">
             {(post.comments || []).map((c) => (
-              <div key={c.id} className="rounded-2xl border border-ink/10 bg-white/40 p-5">
+              <div key={c.id} className="rounded-2xl border border-ink/10 bg-surface/40 p-5">
                 <div className="flex items-center justify-between">
                   <p className="font-semibold text-ink">{c.name}</p>
                   <p className="text-xs text-ink/40">
@@ -223,7 +223,7 @@ export default function BlogDetail() {
 
           <form
             onSubmit={handleSubmit}
-            className="mt-10 space-y-4 rounded-3xl border border-ink/10 bg-white/40 p-6"
+            className="mt-10 space-y-4 rounded-3xl border border-ink/10 bg-surface/40 p-6"
           >
             <h3 className="font-display text-lg font-semibold text-ink">Leave a comment</h3>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

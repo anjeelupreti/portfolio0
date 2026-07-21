@@ -82,7 +82,7 @@ export default function BlogList() {
               <motion.div key={post.id} variants={fadeUp}>
                 <Link
                   to={`/blog/${post.slug}`}
-                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-ink/10 bg-white/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                  className="group flex h-full flex-col overflow-hidden rounded-3xl border border-ink/10 bg-surface/40 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
                 >
                   <div className="relative h-44 w-full overflow-hidden">
                     {post.cover_image ? (

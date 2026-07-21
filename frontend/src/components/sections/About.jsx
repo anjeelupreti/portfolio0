@@ -1,12 +1,19 @@
+import { useState } from 'react'
 import { motion } from 'framer-motion'
 import {
   LucideGraduationCap as GraduationCap,
   LucideAward as Award,
   LucideLanguages as LanguagesIcon,
   LucideQuote as Quote,
+  LucideFileText as FileText,
+  LucideMail as Mail,
+  LucidePhone as Phone,
+  LucideBuilding2 as Building2,
 } from 'lucide-react'
 import { fadeUp, staggerContainer, viewportOnce } from '../../lib/motion'
 import SectionEyebrow from '../ui/SectionEyebrow'
+import CertificatePreviewModal from '../ui/CertificatePreviewModal'
+import Modal from '../ui/Modal'
 
 function InfoCard({ icon: Icon, title, promptLabel, children }) {
   return (
@@ -29,6 +36,9 @@ function InfoCard({ icon: Icon, title, promptLabel, children }) {
 }
 
 export default function About({ profile, education, training, languages, references = [] }) {
+  const [activeCertificate, setActiveCertificate] = useState(null)
+  const [activeReference, setActiveReference] = useState(null)
+
   return (
     <section id="about" className="relative bg-cream px-4 py-24 sm:px-6 sm:py-32">
       <div className="mx-auto max-w-6xl">
@@ -84,9 +94,20 @@ export default function About({ profile, education, training, languages, referen
                 {training.map((t) => (
                   <li key={t.id} className="flex items-start gap-2">
                     <span className="mt-1 font-mono text-ink/30">-</span>
-                    <span>
-                      <span className="font-medium text-ink">{t.title}</span>
-                      <span className="text-ink/45"> &middot; {t.provider}</span>
+                    <span className="flex flex-wrap items-center gap-x-2">
+                      <span>
+                        <span className="font-medium text-ink">{t.title}</span>
+                        <span className="text-ink/45"> &middot; {t.provider}</span>
+                      </span>
+                      {t.certificate_file && (
+                        <button
+                          type="button"
+                          onClick={() => setActiveCertificate(t)}
+                          className="inline-flex items-center gap-1 rounded-full border border-ink/15 px-2.5 py-1 text-[11px] font-semibold text-ink/70 transition-colors hover:border-ink hover:text-ink"
+                        >
+                          <FileText size={11} /> View Certificate
+                        </button>
+                      )}
                     </span>
                   </li>
                 ))}
@@ -132,11 +153,19 @@ export default function About({ profile, education, training, languages, referen
               <ul className="space-y-4">
                 {references.map((ref) => (
                   <li key={ref.id}>
-                    <p className="font-medium text-ink">{ref.name}</p>
-                    <p className="text-ink/45">
-                      {ref.role}
-                      {ref.company ? ` @ ${ref.company}` : ''}
-                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setActiveReference(ref)}
+                      className="w-full rounded-lg text-left transition-colors hover:text-ink"
+                    >
+                      <p className="font-medium text-ink underline decoration-ink/20 underline-offset-2">
+                        {ref.name}
+                      </p>
+                      <p className="text-ink/45">
+                        {ref.role}
+                        {ref.company ? ` @ ${ref.company}` : ''}
+                      </p>
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -146,6 +175,60 @@ export default function About({ profile, education, training, languages, referen
           </InfoCard>
         </motion.div>
       </div>
+
+      <CertificatePreviewModal
+        open={!!activeCertificate}
+        onClose={() => setActiveCertificate(null)}
+        title={activeCertificate ? `${activeCertificate.title}.certificate` : ''}
+        fileUrl={activeCertificate?.certificate_file}
+      />
+
+      <Modal
+        open={!!activeReference}
+        onClose={() => setActiveReference(null)}
+        title={activeReference ? `${activeReference.name}.reference` : ''}
+      >
+        {activeReference && (
+          <div>
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-ink text-accent">
+              <Quote size={20} />
+            </span>
+            <h3 className="mt-4 font-display text-2xl font-bold text-ink">{activeReference.name}</h3>
+            <p className="mt-1 flex items-center gap-1.5 text-sm text-ink/60">
+              <Building2 size={14} />
+              {activeReference.role}
+              {activeReference.company ? ` @ ${activeReference.company}` : ''}
+            </p>
+
+            <div className="mt-6 space-y-2.5 border-t border-ink/10 pt-5 text-sm">
+              {activeReference.email ? (
+                <a
+                  href={`mailto:${activeReference.email}`}
+                  className="flex items-center gap-2 text-ink/70 hover:text-ink"
+                >
+                  <Mail size={15} /> {activeReference.email}
+                </a>
+              ) : (
+                <p className="flex items-center gap-2 text-ink/40">
+                  <Mail size={15} /> Available upon request
+                </p>
+              )}
+              {activeReference.phone ? (
+                <a
+                  href={`tel:${activeReference.phone}`}
+                  className="flex items-center gap-2 text-ink/70 hover:text-ink"
+                >
+                  <Phone size={15} /> {activeReference.phone}
+                </a>
+              ) : (
+                <p className="flex items-center gap-2 text-ink/40">
+                  <Phone size={15} /> Available upon request
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+      </Modal>
     </section>
   )
 }

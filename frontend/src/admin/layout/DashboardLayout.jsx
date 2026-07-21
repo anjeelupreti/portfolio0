@@ -4,6 +4,7 @@ import {
   LucideLayoutDashboard as LayoutDashboard,
   LucideToggleLeft as ToggleLeft,
   LucideUser as User,
+  LucideAward as Award,
   LucideFileText as FileText,
   LucideMessageSquare as MessageSquare,
   LucideMail as Mail,
@@ -23,6 +24,7 @@ const NAV_ITEMS = [
   { to: '/admin/overview', label: 'Overview', icon: LayoutDashboard },
   { to: '/admin/sections', label: 'Sections', icon: ToggleLeft },
   { to: '/admin/profile', label: 'Profile', icon: User },
+  { to: '/admin/training', label: 'Training', icon: Award },
   { to: '/admin/blog', label: 'Blog Posts', icon: FileText },
   { to: '/admin/comments', label: 'Comments', icon: MessageSquare },
   { to: '/admin/messages', label: 'Messages', icon: Mail },
@@ -43,11 +45,11 @@ function SidebarContent({ onNavigate }) {
 
   return (
     <div className="flex h-full flex-col">
-      <div className="border-b border-cream/10 px-5 py-5">
-        <span className="font-display text-lg font-bold text-cream">
+      <div className="border-b border-cream-fixed/10 px-5 py-5">
+        <span className="font-display text-lg font-bold text-cream-fixed">
           <span className="font-mono text-accent">~/</span>admin
         </span>
-        <p className="mt-1 font-mono text-[11px] text-cream/40">portfolio-dashboard</p>
+        <p className="mt-1 font-mono text-[11px] text-cream-fixed/40">portfolio-dashboard</p>
       </div>
 
       <nav className="flex-1 space-y-1 px-3 py-4">
@@ -60,7 +62,7 @@ function SidebarContent({ onNavigate }) {
               `flex items-center gap-3 rounded-lg px-3 py-2.5 font-mono text-sm transition-colors ${
                 isActive
                   ? 'bg-accent/10 text-accent'
-                  : 'text-cream/60 hover:bg-cream/5 hover:text-cream'
+                  : 'text-cream-fixed/60 hover:bg-cream-fixed/5 hover:text-cream-fixed'
               }`
             }
           >
@@ -70,14 +72,14 @@ function SidebarContent({ onNavigate }) {
         ))}
       </nav>
 
-      <div className="border-t border-cream/10 px-4 py-4">
-        <p className="truncate font-mono text-xs text-cream/50">
+      <div className="border-t border-cream-fixed/10 px-4 py-4">
+        <p className="truncate font-mono text-xs text-cream-fixed/50">
           {user?.username ? `logged in as ${user.username}` : ''}
         </p>
         <button
           type="button"
           onClick={handleLogout}
-          className="mt-3 flex w-full items-center gap-2 rounded-lg border border-cream/15 px-3 py-2 font-mono text-xs text-cream/70 transition-colors hover:border-red-400/40 hover:text-red-300"
+          className="mt-3 flex w-full items-center gap-2 rounded-lg border border-cream-fixed/15 px-3 py-2 font-mono text-xs text-cream-fixed/70 transition-colors hover:border-red-400/40 hover:text-red-300"
         >
           <LogOut size={14} /> Logout
         </button>
@@ -93,7 +95,7 @@ export default function DashboardLayout() {
   return (
     <div className="min-h-screen bg-cream">
       {/* Desktop sidebar */}
-      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-cream/10 bg-ink lg:block">
+      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-cream-fixed/10 bg-ink-fixed lg:block">
         <SidebarContent />
       </aside>
 
@@ -104,7 +106,7 @@ export default function DashboardLayout() {
             className="absolute inset-0 bg-black/50"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="absolute inset-y-0 left-0 w-64 bg-ink">
+          <aside className="absolute inset-y-0 left-0 w-64 bg-ink-fixed">
             <SidebarContent onNavigate={() => setMobileOpen(false)} />
           </aside>
         </div>

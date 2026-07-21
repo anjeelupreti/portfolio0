@@ -50,16 +50,16 @@ export default function CookieBanner() {
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="fixed inset-x-3 bottom-3 z-[100] sm:inset-x-auto sm:bottom-6 sm:left-6 sm:max-w-md"
       >
-        <div className="flex flex-col gap-3 rounded-2xl border border-ink/10 bg-ink px-5 py-4 text-cream shadow-xl shadow-black/30 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-3 rounded-2xl border border-cream-fixed/10 bg-ink-fixed px-5 py-4 text-cream-fixed shadow-xl shadow-black/30 sm:flex-row sm:items-center">
           <Cookie size={20} className="hidden shrink-0 text-accent sm:block" />
-          <p className="flex-1 text-xs leading-relaxed text-cream/80 sm:text-sm">
+          <p className="flex-1 text-xs leading-relaxed text-cream-fixed/80 sm:text-sm">
             {widget.cookie_banner_message ||
               'This site uses cookies for basic analytics to improve your experience.'}
           </p>
           <button
             type="button"
             onClick={handleDismiss}
-            className="shrink-0 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-ink transition-transform hover:scale-105 sm:self-center"
+            className="shrink-0 rounded-full bg-accent px-4 py-2 text-xs font-semibold text-ink-fixed transition-transform hover:scale-105 sm:self-center"
           >
             Got it
           </button>

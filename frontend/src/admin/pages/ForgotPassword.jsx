@@ -21,12 +21,12 @@ export default function ForgotPassword() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-ink bg-dot-grid px-4">
-      <div className="w-full max-w-sm overflow-hidden rounded-2xl border border-cream/10 bg-ink-soft shadow-2xl">
+    <div className="flex min-h-screen items-center justify-center bg-ink-fixed bg-dot-grid px-4">
+      <div className="w-full max-w-sm overflow-hidden rounded-2xl border border-cream-fixed/10 bg-ink-fixed-soft shadow-2xl">
         <WindowTitlebar label="admin/forgot-password.jsx" />
         <div className="p-7">
-          <h1 className="font-display text-xl font-bold text-cream">Forgot Password</h1>
-          <p className="mt-1 font-mono text-xs text-cream/40">
+          <h1 className="font-display text-xl font-bold text-cream-fixed">Forgot Password</h1>
+          <p className="mt-1 font-mono text-xs text-cream-fixed/40">
             We'll email you a reset link if the account exists.
           </p>
 
@@ -38,19 +38,19 @@ export default function ForgotPassword() {
           ) : (
             <form onSubmit={handleSubmit} className="mt-6 space-y-4">
               <div>
-                <label className="mb-1.5 block font-mono text-xs text-cream/50">email</label>
+                <label className="mb-1.5 block font-mono text-xs text-cream-fixed/50">email</label>
                 <input
                   required
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full rounded-lg border border-cream/15 bg-black/20 px-3.5 py-2.5 text-sm text-cream placeholder:text-cream/30 focus:border-accent focus:outline-none"
+                  className="w-full rounded-lg border border-cream-fixed/15 bg-black/20 px-3.5 py-2.5 text-sm text-cream-fixed placeholder:text-cream-fixed/30 focus:border-accent focus:outline-none"
                 />
               </div>
               <button
                 type="submit"
                 disabled={status === 'loading'}
-                className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-ink transition-transform hover:scale-[1.01] disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-ink-fixed transition-transform hover:scale-[1.01] disabled:opacity-60"
               >
                 {status === 'loading' && <Loader2 size={16} className="animate-spin" />}
                 {status === 'loading' ? 'Sending...' : 'Send reset link'}
@@ -59,7 +59,7 @@ export default function ForgotPassword() {
           )}
 
           <div className="mt-5 font-mono text-xs">
-            <Link to="/admin/login" className="text-cream/40 hover:text-accent">
+            <Link to="/admin/login" className="text-cream-fixed/40 hover:text-accent">
               &larr; Back to login
             </Link>
           </div>

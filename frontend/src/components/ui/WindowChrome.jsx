@@ -11,14 +11,18 @@ export function TrafficLights() {
 }
 
 // A titlebar strip for a "window"-styled card: traffic lights + a filename/tab label.
+// Used inside always-dark "showcase" cards (Portfolio project cards, admin
+// Login/ForgotPassword/ResetPassword panels) — border/bg use the
+// mode-invariant fixed tokens so the titlebar never flips to a light strip
+// on a dark card (or vice versa) when the visitor's color mode changes.
 export function WindowTitlebar({ label, className = '' }) {
   return (
     <div
-      className={`flex items-center gap-3 border-b border-cream/10 bg-black/20 px-4 py-2.5 ${className}`}
+      className={`flex items-center gap-3 border-b border-cream-fixed/10 bg-black/20 px-4 py-2.5 ${className}`}
     >
       <TrafficLights />
       {label && (
-        <span className="font-mono text-[11px] text-cream/40">{label}</span>
+        <span className="font-mono text-[11px] text-cream-fixed/40">{label}</span>
       )}
     </div>
   )

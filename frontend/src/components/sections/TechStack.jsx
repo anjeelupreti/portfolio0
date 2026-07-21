@@ -20,7 +20,7 @@ function ProficiencyRing({ value }) {
         fill="none"
         stroke="currentColor"
         strokeWidth="4"
-        className="text-cream/10"
+        className="text-cream-fixed/10"
       />
       <motion.circle
         cx="28"
@@ -47,15 +47,15 @@ function SkillRow({ skill }) {
   return (
     <motion.div
       variants={fadeUp}
-      className="flex items-center gap-4 rounded-xl border border-cream/5 bg-black/10 px-4 py-3 transition-colors hover:border-accent/30 hover:bg-black/20"
+      className="flex items-center gap-4 rounded-xl border border-cream-fixed/5 bg-black/10 px-4 py-3 transition-colors hover:border-accent/30 hover:bg-black/20"
     >
       <div className="relative flex h-14 w-14 shrink-0 items-center justify-center">
         <ProficiencyRing value={skill.proficiency} />
-        <Icon size={18} className="absolute text-cream/80" />
+        <Icon size={18} className="absolute text-cream-fixed/80" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-semibold text-cream">{skill.name}</p>
-        <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-cream/10">
+        <p className="truncate text-sm font-semibold text-cream-fixed">{skill.name}</p>
+        <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-cream-fixed/10">
           <motion.div
             className="h-full rounded-full bg-accent"
             initial={{ width: 0 }}
@@ -76,11 +76,11 @@ function CategoryCard({ category }) {
   return (
     <motion.div
       variants={fadeUp}
-      className="overflow-hidden rounded-2xl border border-cream/10 bg-ink-soft shadow-lg shadow-black/20"
+      className="overflow-hidden rounded-2xl border border-cream-fixed/10 bg-ink-fixed-soft shadow-lg shadow-black/20"
     >
       <WindowTitlebar label={`~/skills/${category.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}.json`} />
       <div className="p-5">
-        <h3 className="mb-4 font-mono text-xs uppercase tracking-widest text-cream/40">
+        <h3 className="mb-4 font-mono text-xs uppercase tracking-widest text-cream-fixed/40">
           {category.name}
         </h3>
         <div className="space-y-3">
@@ -99,7 +99,7 @@ export default function TechStack({ skillCategories = [] }) {
   return (
     <section
       id="tech-stack"
-      className="bg-dot-grid relative overflow-hidden bg-ink px-4 py-24 text-cream sm:px-6 sm:py-32"
+      className="bg-dot-grid relative overflow-hidden bg-ink-fixed px-4 py-24 text-cream-fixed sm:px-6 sm:py-32"
     >
       <div className="mx-auto max-w-6xl">
         <motion.div initial="hidden" whileInView="show" viewport={viewportOnce} variants={fadeUp}>
@@ -107,13 +107,13 @@ export default function TechStack({ skillCategories = [] }) {
           <h2 className="mt-6 max-w-2xl font-display text-3xl font-bold leading-tight tracking-tight sm:text-5xl">
             Tools and technologies I use to build reliable software.
           </h2>
-          <p className="mt-4 max-w-xl font-mono text-sm text-cream/45">
+          <p className="mt-4 max-w-xl font-mono text-sm text-cream-fixed/45">
             $ cat stack.json --grouped --with-proficiency
           </p>
         </motion.div>
 
         {skillCategories.length === 0 ? (
-          <div className="mt-16 rounded-2xl border border-dashed border-cream/15 py-16 text-center text-cream/50">
+          <div className="mt-16 rounded-2xl border border-dashed border-cream-fixed/15 py-16 text-center text-cream-fixed/50">
             Skills will appear here soon.
           </div>
         ) : (

@@ -11,25 +11,25 @@ function PlanCard({ plan }) {
       variants={fadeUp}
       className={`relative flex flex-col rounded-3xl p-8 transition-transform duration-300 ${
         featured
-          ? 'scale-100 bg-ink text-cream shadow-2xl lg:scale-105'
+          ? 'scale-100 bg-ink-fixed text-cream-fixed shadow-2xl lg:scale-105'
           : 'border border-ink/10 bg-cream text-ink'
       }`}
     >
       {featured && (
-        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-4 py-1 text-[11px] font-bold uppercase tracking-wide text-ink">
+        <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-accent px-4 py-1 text-[11px] font-bold uppercase tracking-wide text-ink-fixed">
           Popular
         </span>
       )}
 
       <h3 className="font-display text-xl font-bold">{plan.name}</h3>
-      <p className={`mt-2 text-sm ${featured ? 'text-cream/60' : 'text-ink/60'}`}>
+      <p className={`mt-2 text-sm ${featured ? 'text-cream-fixed/60' : 'text-ink/60'}`}>
         {plan.description}
       </p>
 
       <div className="mt-6 flex items-baseline gap-2">
         <span className="font-display text-4xl font-extrabold">{plan.price}</span>
         {plan.billing_period && (
-          <span className={`text-sm ${featured ? 'text-cream/50' : 'text-ink/50'}`}>
+          <span className={`text-sm ${featured ? 'text-cream-fixed/50' : 'text-ink/50'}`}>
             / {plan.billing_period}
           </span>
         )}
@@ -41,7 +41,7 @@ function PlanCard({ plan }) {
             {f.included ? (
               <Check size={16} className="shrink-0 text-accent" />
             ) : (
-              <X size={16} className={`shrink-0 ${featured ? 'text-cream/30' : 'text-ink/30'}`} />
+              <X size={16} className={`shrink-0 ${featured ? 'text-cream-fixed/30' : 'text-ink/30'}`} />
             )}
             <span className={f.included ? '' : 'line-through opacity-50'}>{f.text}</span>
           </li>
@@ -51,7 +51,7 @@ function PlanCard({ plan }) {
       <a
         href="#contact"
         className={`mt-8 inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold transition-transform hover:scale-105 ${
-          featured ? 'bg-accent text-ink' : 'bg-ink text-cream'
+          featured ? 'bg-accent text-ink-fixed' : 'bg-ink text-cream'
         }`}
       >
         Get Started
