@@ -32,9 +32,10 @@ export const updateProfile = (id, payload) =>
 export const uploadResume = (id, file) => {
   const formData = new FormData()
   formData.append('resume_file', file)
-  return adminClient
-    .patch(`/profile/${id}/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-    .then((r) => r.data)
+  // Do NOT set Content-Type manually — the browser must generate the
+  // multipart boundary itself, otherwise Django rejects the body with
+  // "The submitted data was not a file."
+  return adminClient.patch(`/profile/${id}/`, formData).then((r) => r.data)
 }
 
 // ---- Training / certifications ----
@@ -51,9 +52,8 @@ export const deleteTraining = (id) => adminClient.delete(`/training/${id}/`)
 export const uploadTrainingCertificate = (id, file) => {
   const formData = new FormData()
   formData.append('certificate_file', file)
-  return adminClient
-    .patch(`/training/${id}/`, formData, { headers: { 'Content-Type': 'multipart/form-data' } })
-    .then((r) => r.data)
+  // Do NOT set Content-Type manually — see note in uploadResume above.
+  return adminClient.patch(`/training/${id}/`, formData).then((r) => r.data)
 }
 
 // ---- Blog posts ----
