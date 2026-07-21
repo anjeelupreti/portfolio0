@@ -1,17 +1,12 @@
 import { motion } from 'framer-motion'
-import { GitBranch, Link2, Globe, Camera, ArrowDown } from 'lucide-react'
+import { ArrowDown } from 'lucide-react'
 import { fadeUp } from '../../lib/motion'
 import { TrafficLights } from '../ui/WindowChrome'
-
-const SOCIALS = [
-  { key: 'github_url', Icon: GitBranch, label: 'GitHub' },
-  { key: 'linkedin_url', Icon: Link2, label: 'LinkedIn' },
-  { key: 'facebook_url', Icon: Globe, label: 'Facebook' },
-  { key: 'instagram_url', Icon: Camera, label: 'Instagram' },
-]
+import SocialIcon from '../ui/SocialIcon'
 
 /** Landing hero section (first thing rendered on the home page) — headline, availability status, summary, and social links. */
-export default function Hero({ profile }) {
+export default function Hero({ profile, socialLinks = [] }) {
+  const visibleSocialLinks = socialLinks.filter((link) => link.is_visible)
   const fullName = profile?.full_name || 'Anjeel Upreti'
   const firstName = fullName.split(' ')[0] || 'Anjeel'
   const title = profile?.title || 'Software Engineer'
@@ -21,7 +16,13 @@ export default function Hero({ profile }) {
       id="home"
       className="relative flex min-h-screen items-center overflow-hidden bg-cream px-4 pb-16 pt-36 sm:px-6 sm:pt-40"
     >
-      <div className="pointer-events-none absolute right-[-10%] top-1/2 h-[28rem] w-[28rem] -translate-y-1/2 rounded-[45%_55%_60%_40%/45%_40%_60%_55%] bg-gradient-to-br from-accent via-accent-soft to-cream-dark opacity-70 blur-2xl sm:h-[36rem] sm:w-[36rem]" />
+      {profile?.profile_image ? (
+        <div className="pointer-events-none absolute right-[2%] top-1/2 hidden h-80 w-80 -translate-y-1/2 overflow-hidden rounded-[45%_55%_60%_40%/45%_40%_60%_55%] shadow-2xl sm:block sm:h-96 sm:w-96 lg:h-[28rem] lg:w-[28rem]">
+          <img src={profile.profile_image} alt={fullName} className="h-full w-full object-cover" />
+        </div>
+      ) : (
+        <div className="pointer-events-none absolute right-[-10%] top-1/2 h-[28rem] w-[28rem] -translate-y-1/2 rounded-[45%_55%_60%_40%/45%_40%_60%_55%] bg-gradient-to-br from-accent via-accent-soft to-cream-dark opacity-70 blur-2xl sm:h-[36rem] sm:w-[36rem]" />
+      )}
       <div className="pointer-events-none absolute right-[-4%] top-1/3 h-64 w-64 rounded-full border-2 border-ink/10 sm:h-80 sm:w-80" />
 
       <div className="relative z-10 mx-auto w-full max-w-6xl">
@@ -71,20 +72,18 @@ export default function Hero({ profile }) {
           </p>
 
           <div className="flex items-center gap-4">
-            {SOCIALS.map(({ key, Icon, label }) =>
-              profile?.[key] ? (
-                <a
-                  key={key}
-                  href={profile[key]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/15 text-ink transition-colors hover:border-ink hover:bg-ink hover:text-cream"
-                >
-                  <Icon size={18} />
-                </a>
-              ) : null
-            )}
+            {visibleSocialLinks.map((link) => (
+              <a
+                key={link.id}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={link.platform_label}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-ink/15 text-ink transition-colors hover:border-ink hover:bg-ink hover:text-cream"
+              >
+                <SocialIcon platform={link.platform} size={18} />
+              </a>
+            ))}
           </div>
 
           <div className="flex flex-wrap gap-x-8 gap-y-3 font-mono text-xs text-ink/50">

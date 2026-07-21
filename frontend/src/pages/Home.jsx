@@ -38,7 +38,7 @@ const DEFAULT_ORDER = [
 ]
 
 /** Public homepage — fetches all section data and renders sections in the order/visibility defined by the site-sections admin flags, falling back to DEFAULT_ORDER if unavailable. */
-export default function Home({ profile }) {
+export default function Home({ profile, socialLinks }) {
   const { data: experience } = useApi(getExperience, [], [])
   const { data: projects } = useApi(getProjects, [], [])
   const { data: skillCategories } = useApi(getSkillCategories, [], [])
@@ -52,7 +52,7 @@ export default function Home({ profile }) {
   const { data: siteSections } = useApi(getSiteSections, [], [])
 
   const SECTION_REGISTRY = {
-    hero: () => <Hero profile={profile} />,
+    hero: () => <Hero profile={profile} socialLinks={socialLinks} />,
     about: () => (
       <About
         profile={profile}

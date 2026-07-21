@@ -60,9 +60,18 @@ export default function Navbar({ profile }) {
       <nav className="mx-auto flex max-w-6xl items-center justify-between gap-4 rounded-[28px] bg-ink-fixed px-4 py-3 shadow-xl shadow-black/20 sm:rounded-[32px] sm:px-6 sm:py-4">
         <Link
           to="/"
-          className="font-display text-xl font-bold tracking-tight text-cream-fixed sm:text-2xl"
+          className="flex items-center gap-2.5 font-display text-xl font-bold tracking-tight text-cream-fixed sm:text-2xl"
         >
-          <span className="font-mono text-accent">~/</span>anjeel
+          {profile?.profile_image && (
+            <img
+              src={profile.profile_image}
+              alt={profile?.full_name || 'Profile'}
+              className="h-8 w-8 rounded-full object-cover ring-2 ring-cream-fixed/20"
+            />
+          )}
+          <span>
+            <span className="font-mono text-accent">~/</span>anjeel
+          </span>
         </Link>
 
         <ul className="hidden items-center gap-7 text-sm font-medium text-cream-fixed/80 lg:flex">

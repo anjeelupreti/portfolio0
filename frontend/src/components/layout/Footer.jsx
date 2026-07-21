@@ -1,16 +1,11 @@
 import { Link } from 'react-router-dom'
-import { GitBranch, Link2, Globe, Camera, ArrowUp } from 'lucide-react'
-
-const SOCIALS = [
-  { key: 'github_url', Icon: GitBranch, label: 'GitHub' },
-  { key: 'linkedin_url', Icon: Link2, label: 'LinkedIn' },
-  { key: 'facebook_url', Icon: Globe, label: 'Facebook' },
-  { key: 'instagram_url', Icon: Camera, label: 'Instagram' },
-]
+import { ArrowUp } from 'lucide-react'
+import SocialIcon from '../ui/SocialIcon'
 
 /** Site-wide footer with social links, back-to-top control, and secondary nav. */
-export default function Footer({ profile }) {
+export default function Footer({ profile, socialLinks = [] }) {
   const year = new Date().getFullYear()
+  const visibleSocialLinks = socialLinks.filter((link) => link.is_visible)
 
   return (
     <footer className="bg-ink-fixed px-4 pb-8 pt-16 text-cream-fixed sm:px-6">
@@ -30,20 +25,18 @@ export default function Footer({ profile }) {
           </div>
 
           <div className="flex items-center gap-3">
-            {SOCIALS.map(({ key, Icon, label }) =>
-              profile?.[key] ? (
-                <a
-                  key={key}
-                  href={profile[key]}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={label}
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-cream-fixed/20 text-cream-fixed transition-colors hover:border-accent hover:text-accent"
-                >
-                  <Icon size={18} />
-                </a>
-              ) : null
-            )}
+            {visibleSocialLinks.map((link) => (
+              <a
+                key={link.id}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={link.platform_label}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-cream-fixed/20 text-cream-fixed transition-colors hover:border-accent hover:text-accent"
+              >
+                <SocialIcon platform={link.platform} size={18} />
+              </a>
+            ))}
             <a
               href="#home"
               onClick={(e) => {

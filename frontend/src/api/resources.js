@@ -39,6 +39,8 @@ export const getBlogPost = (slug) => safeGet(`/blog-posts/${slug}/`, null)
 export const getSiteTheme = () => safeGet('/site-theme/', null)
 /** Site-wide widget settings (singleton — WhatsApp button, scroll-to-top, cookie banner, blog sharing), read-only from this client. */
 export const getSiteWidgets = () => safeGet('/site-widgets/', null)
+/** Public social/contact links `[{id, platform, platform_label, url, is_visible, order}]`, already sorted by `order`. */
+export const getSocialLinks = () => safeGet('/social-links/', [])
 
 export const postBlogComment = (payload) => client.post('/blog-comments/', payload)
 export const postContact = (payload) => client.post('/contact/', payload)

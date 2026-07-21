@@ -9,7 +9,7 @@ import Home from './pages/Home'
 import BlogList from './pages/BlogList'
 import BlogDetail from './pages/BlogDetail'
 import { useApi } from './hooks/useApi'
-import { getProfile, trackVisit } from './api/resources'
+import { getProfile, getSocialLinks, trackVisit } from './api/resources'
 
 import { AuthProvider } from './admin/context/AuthContext'
 import { ToastProvider } from './admin/components/Toast'
@@ -31,6 +31,7 @@ import Compose from './admin/pages/Compose'
 import ChangePassword from './admin/pages/ChangePassword'
 import Personalization from './admin/pages/Personalization'
 import Widgets from './admin/pages/Widgets'
+import SocialLinks from './admin/pages/SocialLinks'
 
 /** Renders nothing; fires a visit-tracking call and resets scroll position on every route change. */
 function RouteTracker() {
@@ -51,18 +52,19 @@ function RouteTracker() {
 /** Layout for all public (non-admin) routes — navbar, footer, and the persistent floating widgets (WhatsApp, scroll-to-top, cookie banner). */
 function PublicLayout() {
   const { data: profile } = useApi(getProfile, [], null)
+  const { data: socialLinks } = useApi(getSocialLinks, [], [])
 
   return (
     <>
       <Navbar profile={profile} />
       <main>
         <Routes>
-          <Route path="/" element={<Home profile={profile} />} />
+          <Route path="/" element={<Home profile={profile} socialLinks={socialLinks} />} />
           <Route path="/blog" element={<BlogList />} />
           <Route path="/blog/:slug" element={<BlogDetail />} />
         </Routes>
       </main>
-      <Footer profile={profile} />
+      <Footer profile={profile} socialLinks={socialLinks} />
       <WhatsAppButton />
       <ScrollToTopButton />
       <CookieBanner />
@@ -99,6 +101,7 @@ function AdminRoutes() {
         <Route path="compose" element={<Compose />} />
         <Route path="personalization" element={<Personalization />} />
         <Route path="widgets" element={<Widgets />} />
+        <Route path="social-links" element={<SocialLinks />} />
         <Route path="change-password" element={<ChangePassword />} />
       </Route>
     </Routes>

@@ -15,6 +15,7 @@ import {
   LucideX as X,
   LucidePalette as Palette,
   LucideMessageCircle as MessageCircle,
+  LucideShare2 as Share2,
 } from 'lucide-react'
 import { TrafficLights } from '../../components/ui/WindowChrome'
 import { useAuth } from '../context/AuthContext'
@@ -31,6 +32,7 @@ const NAV_ITEMS = [
   { to: '/admin/compose', label: 'Compose', icon: PenSquare },
   { to: '/admin/personalization', label: 'Personalization', icon: Palette },
   { to: '/admin/widgets', label: 'Widgets', icon: MessageCircle },
+  { to: '/admin/social-links', label: 'Social Links', icon: Share2 },
   { to: '/admin/change-password', label: 'Settings', icon: Key },
 ]
 

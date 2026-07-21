@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
-import { LucideLoader2 as Loader2, LucideSave as Save, LucideUpload as Upload, LucideFileText as FileText, LucideTrash2 as Trash2 } from 'lucide-react'
+import { LucideLoader2 as Loader2, LucideSave as Save, LucideUpload as Upload, LucideFileText as FileText, LucideTrash2 as Trash2, LucideUser as User } from 'lucide-react'
 import SectionEyebrow from '../../components/ui/SectionEyebrow'
 import Card from '../components/Card'
-import { getProfile, updateProfile, uploadResume } from '../api/adminResources'
+import { getProfile, updateProfile, uploadResume, uploadProfileImage } from '../api/adminResources'
 import { useToast } from '../components/Toast'
 
 const FIELDS = [
@@ -13,17 +13,14 @@ const FIELDS = [
   { name: 'email', label: 'Email', type: 'email' },
   { name: 'phone', label: 'Phone' },
   { name: 'location', label: 'Location' },
-  { name: 'github_url', label: 'GitHub URL' },
-  { name: 'linkedin_url', label: 'LinkedIn URL' },
-  { name: 'facebook_url', label: 'Facebook URL' },
-  { name: 'instagram_url', label: 'Instagram URL' },
   { name: 'portfolio_url', label: 'Portfolio URL' },
 ]
 
 /**
- * Admin form for editing the single Profile record (contact info, bio, socials) plus resume
+ * Admin form for editing the single Profile record (contact info, bio) plus resume
  * upload/removal via `uploadResume`/`updateProfile` from adminResources. Assumes exactly one
- * profile exists and takes the first item if the API returns a list.
+ * profile exists and takes the first item if the API returns a list. Social links are managed
+ * separately on the Social Links page (SocialLink is its own model now, not Profile fields).
  */
 export default function ProfileEdit() {
   const { push } = useToast()
@@ -32,7 +29,9 @@ export default function ProfileEdit() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [uploadingPhoto, setUploadingPhoto] = useState(false)
   const fileInputRef = useRef(null)
+  const photoInputRef = useRef(null)
 
   useEffect(() => {
     getProfile()
@@ -98,6 +97,38 @@ export default function ProfileEdit() {
     }
   }
 
+  const handlePhotoSelect = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file || !profile?.id) return
+    setUploadingPhoto(true)
+    try {
+      const updated = await uploadProfileImage(profile.id, file)
+      setProfile(updated)
+      setForm((f) => ({ ...f, profile_image: updated.profile_image }))
+      push('Photo uploaded.', 'success')
+    } catch {
+      push('Failed to upload photo.', 'error')
+    } finally {
+      setUploadingPhoto(false)
+      if (photoInputRef.current) photoInputRef.current.value = ''
+    }
+  }
+
+  const handlePhotoRemove = async () => {
+    if (!profile?.id) return
+    setUploadingPhoto(true)
+    try {
+      const updated = await updateProfile(profile.id, { profile_image: null })
+      setProfile(updated)
+      setForm((f) => ({ ...f, profile_image: null }))
+      push('Photo removed.', 'success')
+    } catch {
+      push('Failed to remove photo.', 'error')
+    } finally {
+      setUploadingPhoto(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex min-h-[40vh] items-center justify-center">
@@ -112,6 +143,50 @@ export default function ProfileEdit() {
         <SectionEyebrow>Profile</SectionEyebrow>
         <h1 className="mt-3 font-display text-2xl font-bold text-ink">Edit Profile</h1>
       </div>
+
+      <Card title="profile.photo">
+        <label className="mb-1.5 block font-mono text-xs text-ink/50">Profile Photo</label>
+        <p className="mb-3 text-xs text-ink/40">
+          Shown in the Hero section and navbar on the public site once uploaded.
+        </p>
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-full border border-ink/15 bg-surface">
+            {form.profile_image ? (
+              <img src={form.profile_image} alt="Profile" className="h-full w-full object-cover" />
+            ) : (
+              <User size={28} className="text-ink/20" />
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => photoInputRef.current?.click()}
+              disabled={uploadingPhoto}
+              className="flex items-center gap-2 rounded-full border border-ink/15 px-4 py-2.5 font-mono text-xs text-ink/70 disabled:opacity-50"
+            >
+              {uploadingPhoto ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+              {uploadingPhoto ? 'Uploading...' : form.profile_image ? 'Replace photo' : 'Upload photo'}
+            </button>
+            {form.profile_image && (
+              <button
+                type="button"
+                onClick={handlePhotoRemove}
+                disabled={uploadingPhoto}
+                className="flex items-center gap-1.5 rounded-full border border-ink/15 px-3 py-2 font-mono text-xs text-ink/60 disabled:opacity-50"
+              >
+                <Trash2 size={13} /> Remove
+              </button>
+            )}
+          </div>
+        </div>
+        <input
+          ref={photoInputRef}
+          type="file"
+          accept=".jpg,.jpeg,.png,.webp"
+          onChange={handlePhotoSelect}
+          className="hidden"
+        />
+      </Card>
 
       <Card title="profile.resume">
         <label className="mb-1.5 block font-mono text-xs text-ink/50">Resume / CV</label>

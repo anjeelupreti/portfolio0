@@ -33,6 +33,13 @@ export const uploadResume = (id, file) => {
   return adminClient.patch(`/profile/${id}/`, formData).then((r) => r.data)
 }
 
+/** Uploads a profile photo via multipart form data; same Content-Type caveat as uploadResume. */
+export const uploadProfileImage = (id, file) => {
+  const formData = new FormData()
+  formData.append('profile_image', file)
+  return adminClient.patch(`/profile/${id}/`, formData).then((r) => r.data)
+}
+
 export const getTrainingAdmin = () => adminClient.get('/training/').then((r) => r.data)
 
 export const createTraining = (payload) =>
@@ -87,6 +94,16 @@ export const getSiteWidgetsAdmin = () => adminClient.get('/site-widgets/').then(
 
 export const updateSiteWidgets = (payload) =>
   adminClient.patch('/site-widgets/', payload).then((r) => r.data)
+
+export const getSocialLinksAdmin = () => adminClient.get('/social-links/').then((r) => r.data)
+
+export const createSocialLink = (payload) =>
+  adminClient.post('/social-links/', payload).then((r) => r.data)
+
+export const updateSocialLink = (id, payload) =>
+  adminClient.patch(`/social-links/${id}/`, payload).then((r) => r.data)
+
+export const deleteSocialLink = (id) => adminClient.delete(`/social-links/${id}/`)
 
 export const getAnalyticsSummary = () => adminClient.get('/analytics/summary/').then((r) => r.data)
 
