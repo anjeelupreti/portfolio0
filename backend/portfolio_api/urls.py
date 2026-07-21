@@ -13,6 +13,7 @@ from . import views, auth_views
 router = DefaultRouter()
 router.register(r"site-sections", views.SiteSectionViewSet, basename="sitesection")
 router.register(r"profile", views.ProfileViewSet, basename="profile")
+router.register(r"social-links", views.SocialLinkViewSet, basename="sociallink")
 router.register(r"experience", views.ExperienceViewSet, basename="experience")
 router.register(r"projects", views.ProjectViewSet, basename="project")
 router.register(r"skill-categories", views.SkillCategoryViewSet, basename="skillcategory")

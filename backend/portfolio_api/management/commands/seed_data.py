@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 
 from portfolio_api.models import (
-    Profile, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
+    Profile, SocialLink, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
     Education, Training, Reference, Language, Service, PricingPlan, PricingFeature,
     SiteSection,
 )
@@ -17,6 +17,7 @@ class Command(BaseCommand):
         """Run all seed_* steps in order, then print a success message."""
         self.seed_site_sections()
         self.seed_profile()
+        self.seed_social_links()
         self.seed_experience()
         self.seed_projects()
         self.seed_skills()
@@ -47,7 +48,7 @@ class Command(BaseCommand):
             )
 
     def seed_profile(self):
-        """Seed the single Profile record: bio, contact info, and social links."""
+        """Seed the single Profile record: bio and contact info (social links are seeded separately)."""
         Profile.objects.update_or_create(
             email="anjeelupretiofficial@gmail.com",
             defaults=dict(
@@ -63,13 +64,22 @@ class Command(BaseCommand):
                 phone="+977 9843951313",
                 location="Kathmandu, Nepal",
                 open_to_work=True,
-                github_url="https://github.com/anjeelupreti",
-                linkedin_url="https://www.linkedin.com/in/anjeelupreti/",
-                facebook_url="https://www.facebook.com/anjeelupreti",
-                instagram_url="https://www.instagram.com/anjeelupreti/",
                 portfolio_url="https://anjeelupreti.vercel.app/",
             ),
         )
+
+    def seed_social_links(self):
+        """Seed the default social/contact platform links, all visible."""
+        data = [
+            ("github", "https://github.com/anjeelupreti", 0),
+            ("linkedin", "https://www.linkedin.com/in/anjeelupreti/", 1),
+            ("facebook", "https://www.facebook.com/anjeelupreti", 2),
+            ("instagram", "https://www.instagram.com/anjeelupreti/", 3),
+        ]
+        for platform, url, order in data:
+            SocialLink.objects.update_or_create(
+                platform=platform, defaults=dict(url=url, order=order, is_visible=True)
+            )
 
     def seed_experience(self):
         """Seed work-history entries and their highlight bullets (existing highlights are replaced)."""

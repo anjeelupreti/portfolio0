@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from .models import (
-    Profile, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
+    Profile, SocialLink, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
     Education, Training, Reference, Language, ContactMessage, EmailReply,
     Service, PricingPlan, PricingFeature, SiteSection, SiteTheme, SiteWidget,
     BlogCategory, BlogTag, BlogPost, BlogComment,
@@ -67,11 +67,21 @@ class SiteWidgetSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    """(De)serializes the single Profile record (bio, contact info, social links)."""
+    """(De)serializes the single Profile record (bio and contact info). Social links live separately on SocialLink."""
 
     class Meta:
         model = Profile
         fields = "__all__"
+
+
+class SocialLinkSerializer(serializers.ModelSerializer):
+    """(De)serializes one social/contact platform link, including its human-readable platform label."""
+
+    platform_label = serializers.CharField(source="get_platform_display", read_only=True)
+
+    class Meta:
+        model = SocialLink
+        fields = ["id", "platform", "platform_label", "url", "is_visible", "order"]
 
 
 class ExperienceHighlightSerializer(serializers.ModelSerializer):

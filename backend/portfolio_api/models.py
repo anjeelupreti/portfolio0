@@ -138,17 +138,45 @@ class Profile(models.Model):
     profile_image = models.ImageField(upload_to="profile/", blank=True, null=True)
     open_to_work = models.BooleanField(default=True)
 
-    github_url = models.URLField(blank=True)
-    linkedin_url = models.URLField(blank=True)
-    facebook_url = models.URLField(blank=True)
-    instagram_url = models.URLField(blank=True)
-    portfolio_url = models.URLField(blank=True)
+    portfolio_url = models.URLField(blank=True, help_text="Link to a separate personal site/blog, if any — not a social platform.")
 
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         """Identify the profile by name in admin/list views."""
         return self.full_name
+
+
+class SocialLink(models.Model):
+    """
+    One social/contact platform link (GitHub, LinkedIn, Twitter, etc), shown
+    as an icon on the public site. Replaces the old fixed *_url fields on
+    Profile so new platforms don't need a migration — just a new row.
+    is_visible lets the admin hide a link without deleting its URL.
+    """
+
+    PLATFORM_CHOICES = [
+        ("github", "GitHub"),
+        ("linkedin", "LinkedIn"),
+        ("facebook", "Facebook"),
+        ("instagram", "Instagram"),
+        ("twitter", "Twitter / X"),
+        ("youtube", "YouTube"),
+        ("telegram", "Telegram"),
+        ("discord", "Discord"),
+    ]
+
+    platform = models.CharField(max_length=20, choices=PLATFORM_CHOICES)
+    url = models.URLField()
+    is_visible = models.BooleanField(default=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        """Show the platform and its current visibility state."""
+        return f"{self.get_platform_display()} ({'shown' if self.is_visible else 'hidden'})"
 
 
 class Experience(models.Model):

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from .models import (
-    Profile, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
+    Profile, SocialLink, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
     Education, Training, Reference, Language, ContactMessage, EmailReply, SiteVisit,
     Service, PricingPlan, PricingFeature, SiteSection, SiteTheme, SiteWidget,
     BlogCategory, BlogTag, BlogPost, BlogComment,
@@ -83,6 +83,15 @@ class ProfileAdmin(admin.ModelAdmin):
 
     list_display = ("full_name", "title", "email", "open_to_work", "updated_at")
     search_fields = ("full_name", "title", "email")
+
+
+@admin.register(SocialLink)
+class SocialLinkAdmin(admin.ModelAdmin):
+    """Admin listing for social/contact platform links, editable inline for quick toggling."""
+
+    list_display = ("platform", "url", "is_visible", "order")
+    list_editable = ("is_visible", "order")
+    list_filter = ("platform", "is_visible")
 
 
 @admin.register(Experience)

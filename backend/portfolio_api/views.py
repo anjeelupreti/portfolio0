@@ -11,13 +11,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import (
-    Profile, Experience, Project, SkillCategory,
+    Profile, SocialLink, Experience, Project, SkillCategory,
     Education, Training, Reference, Language, ContactMessage, EmailReply,
     Service, PricingPlan, BlogCategory, BlogTag, BlogPost, BlogComment,
     SiteVisit, SiteSection, SiteTheme, SiteWidget,
 )
 from .serializers import (
-    ProfileSerializer, ExperienceSerializer, ProjectSerializer, SkillCategorySerializer,
+    ProfileSerializer, SocialLinkSerializer, ExperienceSerializer, ProjectSerializer, SkillCategorySerializer,
     EducationSerializer, TrainingSerializer, ReferenceSerializer, LanguageSerializer,
     ContactMessageSerializer, EmailReplySerializer, EmailReplyWriteSerializer,
     ServiceSerializer, PricingPlanSerializer, SiteSectionSerializer, SiteThemeSerializer,
@@ -94,6 +94,19 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
     def get_permissions(self):
         """Anyone can view the profile; only authenticated staff can edit it."""
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+
+class SocialLinkViewSet(viewsets.ModelViewSet):
+    """CRUD for social/contact platform links; public read, staff-only write."""
+
+    queryset = SocialLink.objects.all()
+    serializer_class = SocialLinkSerializer
+
+    def get_permissions(self):
+        """Anyone can view social links; only authenticated staff can add/edit/remove them."""
         if self.action in ("list", "retrieve"):
             return [AllowAny()]
         return [IsAuthenticated()]
