@@ -107,9 +107,14 @@ class EducationViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = EducationSerializer
 
 
-class TrainingViewSet(viewsets.ReadOnlyModelViewSet):
+class TrainingViewSet(viewsets.ModelViewSet):
     queryset = Training.objects.all()
     serializer_class = TrainingSerializer
+
+    def get_permissions(self):
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 
 class ReferenceViewSet(viewsets.ReadOnlyModelViewSet):
