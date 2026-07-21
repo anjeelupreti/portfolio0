@@ -10,6 +10,7 @@ import { getProfile, trackVisit } from './api/resources'
 
 import { AuthProvider } from './admin/context/AuthContext'
 import { ToastProvider } from './admin/components/Toast'
+import { ThemeProvider } from './lib/theme'
 import ProtectedRoute from './admin/components/ProtectedRoute'
 import DashboardLayout from './admin/layout/DashboardLayout'
 import Login from './admin/pages/Login'
@@ -23,6 +24,7 @@ import BlogPostEditor from './admin/pages/BlogPostEditor'
 import Comments from './admin/pages/Comments'
 import Messages from './admin/pages/Messages'
 import ChangePassword from './admin/pages/ChangePassword'
+import Personalization from './admin/pages/Personalization'
 
 function RouteTracker() {
   const location = useLocation()
@@ -81,6 +83,7 @@ function AdminRoutes() {
         <Route path="blog/:slug/edit" element={<BlogPostEditor />} />
         <Route path="comments" element={<Comments />} />
         <Route path="messages" element={<Messages />} />
+        <Route path="personalization" element={<Personalization />} />
         <Route path="change-password" element={<ChangePassword />} />
       </Route>
     </Routes>
@@ -101,12 +104,14 @@ function Layout() {
 export default function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <ToastProvider>
-          <RouteTracker />
-          <Layout />
-        </ToastProvider>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <RouteTracker />
+            <Layout />
+          </ToastProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </BrowserRouter>
   )
 }

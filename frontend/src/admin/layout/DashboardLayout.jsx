@@ -11,9 +11,11 @@ import {
   LucideLogOut as LogOut,
   LucideMenu as Menu,
   LucideX as X,
+  LucidePalette as Palette,
 } from 'lucide-react'
 import { TrafficLights } from '../../components/ui/WindowChrome'
 import { useAuth } from '../context/AuthContext'
+import ColorModeToggle from '../../components/ui/ColorModeToggle'
 
 const NAV_ITEMS = [
   { to: '/admin/overview', label: 'Overview', icon: LayoutDashboard },
@@ -22,6 +24,7 @@ const NAV_ITEMS = [
   { to: '/admin/blog', label: 'Blog Posts', icon: FileText },
   { to: '/admin/comments', label: 'Comments', icon: MessageSquare },
   { to: '/admin/messages', label: 'Messages', icon: Mail },
+  { to: '/admin/personalization', label: 'Personalization', icon: Palette },
   { to: '/admin/change-password', label: 'Settings', icon: Key },
 ]
 
@@ -120,8 +123,11 @@ export default function DashboardLayout() {
               <span className="font-mono text-[11px] text-ink/40">admin-dashboard</span>
             </div>
           </div>
-          <div className="font-mono text-xs text-ink/50">
-            {user?.email || user?.username}
+          <div className="flex items-center gap-3">
+            <ColorModeToggle className="rounded-lg p-1.5 text-ink/60 transition-colors hover:bg-ink/5 hover:text-ink" />
+            <div className="font-mono text-xs text-ink/50">
+              {user?.email || user?.username}
+            </div>
           </div>
         </header>
 

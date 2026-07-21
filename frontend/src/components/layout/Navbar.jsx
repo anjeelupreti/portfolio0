@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ArrowUpRight, LucideMenu as Menu, LucideX as X } from 'lucide-react'
+import ColorModeToggle from '../ui/ColorModeToggle'
 
 // Pricing intentionally omitted — it's gated off by the site-sections
 // feature flag (seeded is_visible=false), so it's dropped from primary nav.
@@ -70,26 +71,32 @@ export default function Navbar() {
           </li>
         </ul>
 
-        <a
-          href="/#contact"
-          onClick={handleAnchorClick('contact')}
-          className="group hidden shrink-0 items-center gap-2 rounded-full bg-cream px-5 py-2.5 text-sm font-semibold text-ink transition-transform hover:scale-105 lg:inline-flex"
-        >
-          Contact Me
-          <ArrowUpRight
-            size={16}
-            className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-          />
-        </a>
+        <div className="hidden shrink-0 items-center gap-3 lg:flex">
+          <ColorModeToggle className="rounded-full p-2 text-cream/80 transition-colors hover:bg-cream/10 hover:text-accent" />
+          <a
+            href="/#contact"
+            onClick={handleAnchorClick('contact')}
+            className="group inline-flex items-center gap-2 rounded-full bg-cream px-5 py-2.5 text-sm font-semibold text-ink transition-transform hover:scale-105"
+          >
+            Contact Me
+            <ArrowUpRight
+              size={16}
+              className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+            />
+          </a>
+        </div>
 
-        <button
-          type="button"
-          aria-label="Toggle menu"
-          onClick={() => setOpen((v) => !v)}
-          className="text-cream lg:hidden"
-        >
-          {open ? <X size={26} /> : <Menu size={26} />}
-        </button>
+        <div className="flex items-center gap-1 lg:hidden">
+          <ColorModeToggle className="rounded-full p-2 text-cream/80 transition-colors hover:bg-cream/10 hover:text-accent" />
+          <button
+            type="button"
+            aria-label="Toggle menu"
+            onClick={() => setOpen((v) => !v)}
+            className="p-1 text-cream"
+          >
+            {open ? <X size={26} /> : <Menu size={26} />}
+          </button>
+        </div>
       </nav>
 
       {open && (

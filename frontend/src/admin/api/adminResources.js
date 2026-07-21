@@ -59,6 +59,12 @@ export const approveBlogComment = (id) =>
 
 export const deleteBlogComment = (id) => adminClient.delete(`/blog-comments/${id}/`)
 
+// ---- Site theme ----
+export const getSiteThemeAdmin = () => adminClient.get('/site-theme/').then((r) => r.data)
+
+export const updateSiteTheme = (payload) =>
+  adminClient.patch('/site-theme/', payload).then((r) => r.data)
+
 // ---- Analytics ----
 export const getAnalyticsSummary = () => adminClient.get('/analytics/summary/').then((r) => r.data)
 

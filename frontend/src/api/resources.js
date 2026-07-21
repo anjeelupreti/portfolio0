@@ -36,6 +36,8 @@ export const getBlogCategories = () => safeGet('/blog-categories/', [])
 export const getBlogTags = () => safeGet('/blog-tags/', [])
 export const getBlogPosts = () => safeGet('/blog-posts/', [])
 export const getBlogPost = (slug) => safeGet(`/blog-posts/${slug}/`, null)
+// Site-wide color theme (singleton) — public, read-only from this client.
+export const getSiteTheme = () => safeGet('/site-theme/', null)
 
 export const postBlogComment = (payload) => client.post('/blog-comments/', payload)
 export const postContact = (payload) => client.post('/contact/', payload)

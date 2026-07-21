@@ -18,6 +18,18 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Per-visitor light/dark mode (client-side only, see src/lib/colorMode.js).
+   Deliberate inversion: cream = page background, ink = foreground/text
+   everywhere in the app, so flipping these two var groups re-themes the
+   entire existing app with zero component changes. */
+:root[data-theme="dark"] {
+  --color-cream: #0f0f12;
+  --color-cream-dark: #1a1a1f;
+  --color-ink: #f5f1e3;
+  --color-ink-soft: #e8e4d5;
+  --color-muted: #9a9a9a;
+}
+
 body {
   margin: 0;
   background: var(--color-cream);

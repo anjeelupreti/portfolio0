@@ -16,12 +16,32 @@ import SectionEyebrow from '../../components/ui/SectionEyebrow'
 import Card from '../components/Card'
 import { getAnalyticsSummary } from '../api/adminResources'
 
-const INK = '#0a0a0a'
-const ACCENT = '#d9ff4b'
-const MUTED = '#6b6b6b'
-// Fixed categorical order for device breakdown — accent for the top slot,
-// then a fixed ink-tint ramp so identity never depends on data order.
-const DEVICE_COLORS = { desktop: ACCENT, mobile: INK, tablet: MUTED }
+// Read the live CSS custom properties (set by the site theme + light/dark
+// mode, see src/lib/theme.jsx and src/lib/colorMode.js) instead of hardcoding
+// hex values, so recharts' SVG fills stay in sync with both. Must be read
+// fresh (not cached at module scope) since the theme/mode can change after
+// this module has already been imported — recharts needs real hex/rgb
+// strings for its SVG fill/stroke props, it can't consume var(...) directly
+// the way Tailwind classes can.
+function cssVar(name, fallback) {
+  if (typeof window === 'undefined') return fallback
+  const value = getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+  return value || fallback
+}
+
+function readChartColors() {
+  const ink = cssVar('--color-ink', '#0a0a0a')
+  const accent = cssVar('--color-accent', '#d9ff4b')
+  const muted = cssVar('--color-muted', '#6b6b6b')
+  return {
+    ink,
+    accent,
+    muted,
+    // Fixed categorical order for device breakdown — accent for the top
+    // slot, then a fixed ink-tint ramp so identity never depends on data order.
+    deviceColors: { desktop: accent, mobile: ink, tablet: muted },
+  }
+}
 
 function StatTile({ icon: Icon, label, value }) {
   return (
@@ -55,6 +75,9 @@ export default function Overview() {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(false)
+  // Read once per mount (not at module scope) so a theme/dark-mode change
+  // made before navigating here is reflected — see readChartColors() above.
+  const [{ ink: INK, accent: ACCENT, muted: MUTED, deviceColors: DEVICE_COLORS }] = useState(readChartColors)
 
   useEffect(() => {
     let cancelled = false
