@@ -3,7 +3,7 @@ from django.contrib import admin
 from .models import (
     Profile, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
     Education, Training, Reference, Language, ContactMessage, EmailReply, SiteVisit,
-    Service, PricingPlan, PricingFeature, SiteSection, SiteTheme,
+    Service, PricingPlan, PricingFeature, SiteSection, SiteTheme, SiteWidget,
     BlogCategory, BlogTag, BlogPost, BlogComment,
 )
 
@@ -28,6 +28,17 @@ class SiteThemeAdmin(admin.ModelAdmin):
 
     def has_add_permission(self, request):
         return not SiteTheme.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+
+@admin.register(SiteWidget)
+class SiteWidgetAdmin(admin.ModelAdmin):
+    list_display = ("whatsapp_enabled", "whatsapp_number", "updated_at")
+
+    def has_add_permission(self, request):
+        return not SiteWidget.objects.exists()
 
     def has_delete_permission(self, request, obj=None):
         return False

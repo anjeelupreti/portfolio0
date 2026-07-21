@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import (
     Profile, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
     Education, Training, Reference, Language, ContactMessage, EmailReply,
-    Service, PricingPlan, PricingFeature, SiteSection, SiteTheme,
+    Service, PricingPlan, PricingFeature, SiteSection, SiteTheme, SiteWidget,
     BlogCategory, BlogTag, BlogPost, BlogComment,
 )
 
@@ -33,6 +33,21 @@ class SiteThemeSerializer(serializers.ModelSerializer):
         import re
         if not re.match(r"^#[0-9a-fA-F]{6}$", value):
             raise serializers.ValidationError("Must be a hex color like #d9ff4b.")
+        return value
+
+
+class SiteWidgetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteWidget
+        fields = ["whatsapp_enabled", "whatsapp_number", "whatsapp_default_message", "updated_at"]
+        read_only_fields = ["updated_at"]
+
+    def validate_whatsapp_number(self, value):
+        import re
+        if value and not re.match(r"^\+[1-9]\d{7,14}$", value):
+            raise serializers.ValidationError(
+                "Must be in international format with country code, e.g. +9779843951313."
+            )
         return value
 
 

@@ -14,13 +14,14 @@ from .models import (
     Profile, Experience, Project, SkillCategory,
     Education, Training, Reference, Language, ContactMessage, EmailReply,
     Service, PricingPlan, BlogCategory, BlogTag, BlogPost, BlogComment,
-    SiteVisit, SiteSection, SiteTheme,
+    SiteVisit, SiteSection, SiteTheme, SiteWidget,
 )
 from .serializers import (
     ProfileSerializer, ExperienceSerializer, ProjectSerializer, SkillCategorySerializer,
     EducationSerializer, TrainingSerializer, ReferenceSerializer, LanguageSerializer,
     ContactMessageSerializer, EmailReplySerializer, EmailReplyWriteSerializer,
     ServiceSerializer, PricingPlanSerializer, SiteSectionSerializer, SiteThemeSerializer,
+    SiteWidgetSerializer,
     BlogCategorySerializer, BlogTagSerializer,
     BlogPostListSerializer, BlogPostDetailSerializer, BlogPostWriteSerializer,
     BlogCommentSerializer,
@@ -52,6 +53,25 @@ class SiteThemeView(APIView):
     def patch(self, request):
         theme = SiteTheme.load()
         serializer = SiteThemeSerializer(theme, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
+class SiteWidgetView(APIView):
+    """Singleton widget settings (e.g. floating WhatsApp button): public GET, staff-only PATCH."""
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get(self, request):
+        return Response(SiteWidgetSerializer(SiteWidget.load()).data)
+
+    def patch(self, request):
+        widget = SiteWidget.load()
+        serializer = SiteWidgetSerializer(widget, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)

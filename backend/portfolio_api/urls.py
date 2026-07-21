@@ -25,6 +25,7 @@ urlpatterns = [
     path("", include(router.urls)),
     path("contact/", views.ContactMessageCreateView.as_view(), name="contact-message"),
     path("site-theme/", views.SiteThemeView.as_view(), name="site-theme"),
+    path("site-widgets/", views.SiteWidgetView.as_view(), name="site-widgets"),
     path("send-email/", views.SendEmailView.as_view(), name="send-email"),
 
     # auth

@@ -37,6 +37,37 @@ class SiteTheme(models.Model):
         return obj
 
 
+class SiteWidget(models.Model):
+    """Singleton: configuration for site-wide widgets like the floating WhatsApp button."""
+
+    whatsapp_enabled = models.BooleanField(default=True)
+    whatsapp_number = models.CharField(
+        max_length=20, blank=True, default="+9779843951313",
+        help_text="Include country code, e.g. +9779843951313 (no spaces or dashes).",
+    )
+    whatsapp_default_message = models.CharField(
+        max_length=300, blank=True,
+        default="Hi! I saw your portfolio and would like to get in touch.",
+        help_text="Prefilled message when a visitor opens the WhatsApp chat.",
+    )
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Site widgets"
+
+    def __str__(self):
+        return "Site widget settings"
+
+    def save(self, *args, **kwargs):
+        self.pk = 1  # enforce singleton
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+
 class SiteSection(models.Model):
     """Feature flags controlling which homepage sections are visible on the public site."""
 
