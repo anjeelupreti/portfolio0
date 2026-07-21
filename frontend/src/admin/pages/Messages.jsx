@@ -85,7 +85,7 @@ function ReplyForm({ message, onSent, onCancel }) {
 
   return (
     <div className="mt-4 rounded-xl border border-ink/10 bg-ink/[0.02] p-4">
-      <div className="mb-3 rounded-lg bg-white/60 p-3">
+      <div className="mb-3 rounded-lg bg-surface/60 p-3">
         <p className="font-mono text-[11px] text-ink/40">
           Replying to: {message.name} &lt;{message.email}&gt;
         </p>
@@ -97,7 +97,7 @@ function ReplyForm({ message, onSent, onCancel }) {
       <input
         value={subject}
         onChange={(e) => setSubject(e.target.value)}
-        className="mb-3 w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+        className="mb-3 w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
       />
 
       <label className="mb-1.5 block font-mono text-xs text-ink/50">body</label>

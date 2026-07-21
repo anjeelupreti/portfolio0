@@ -15,6 +15,20 @@ const PRESETS = [
   { key: 'violet-dusk', label: 'Violet Dusk', primary: '#a855f7', secondary: '#1a1025' },
   { key: 'forest-green', label: 'Forest Green', primary: '#22c55e', secondary: '#0d1f13' },
   { key: 'crimson-rose', label: 'Crimson Rose', primary: '#f43f5e', secondary: '#1f0a0f' },
+  { key: 'rose-gold', label: 'Rose Gold', primary: '#e8a598', secondary: '#241512' },
+  { key: 'slate-blue', label: 'Slate Blue', primary: '#7c93b3', secondary: '#141b24' },
+  { key: 'amber-noir', label: 'Amber Noir', primary: '#f5a524', secondary: '#0c0a08' },
+  { key: 'mint-fresh', label: 'Mint Fresh', primary: '#2dd4a7', secondary: '#0a1f18' },
+  { key: 'deep-plum', label: 'Deep Plum', primary: '#9b5de5', secondary: '#170a1f' },
+  { key: 'coral-reef', label: 'Coral Reef', primary: '#ff7f6b', secondary: '#0b1f24' },
+  { key: 'cyber-teal', label: 'Cyber Teal', primary: '#2de1e6', secondary: '#080c0c' },
+  { key: 'golden-hour', label: 'Golden Hour', primary: '#f2c14e', secondary: '#231708' },
+  { key: 'electric-indigo', label: 'Electric Indigo', primary: '#6339f5', secondary: '#0b081c' },
+  { key: 'monochrome', label: 'Monochrome', primary: '#eaeaea', secondary: '#000000' },
+  { key: 'cherry-blossom', label: 'Cherry Blossom', primary: '#f7a8c4', secondary: '#210a14' },
+  { key: 'arctic-frost', label: 'Arctic Frost', primary: '#bfe6f5', secondary: '#0a1826' },
+  { key: 'volcanic-red', label: 'Volcanic Red', primary: '#ff3b30', secondary: '#0d0705' },
+  { key: 'neon-cyber', label: 'Neon Cyber', primary: '#39ff14', secondary: '#0a0a0a' },
 ]
 
 export default function Personalization() {
@@ -94,7 +108,7 @@ export default function Personalization() {
       </div>
 
       <Card title="presets.json">
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+        <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6">
           {PRESETS.map((p) => {
             const active = preset === p.key
             return (
@@ -134,13 +148,13 @@ export default function Personalization() {
                 type="color"
                 value={primary}
                 onChange={(e) => handlePrimaryChange(e.target.value)}
-                className="h-10 w-14 cursor-pointer rounded-lg border border-ink/15 bg-white p-1"
+                className="h-10 w-14 cursor-pointer rounded-lg border border-ink/15 bg-surface p-1"
               />
               <input
                 type="text"
                 value={primary}
                 onChange={(e) => handlePrimaryChange(e.target.value)}
-                className="w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 font-mono text-sm text-ink focus:border-ink focus:outline-none"
+                className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 font-mono text-sm text-ink focus:border-ink focus:outline-none"
               />
             </div>
           </div>
@@ -152,13 +166,13 @@ export default function Personalization() {
                 type="color"
                 value={secondary}
                 onChange={(e) => handleSecondaryChange(e.target.value)}
-                className="h-10 w-14 cursor-pointer rounded-lg border border-ink/15 bg-white p-1"
+                className="h-10 w-14 cursor-pointer rounded-lg border border-ink/15 bg-surface p-1"
               />
               <input
                 type="text"
                 value={secondary}
                 onChange={(e) => handleSecondaryChange(e.target.value)}
-                className="w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 font-mono text-sm text-ink focus:border-ink focus:outline-none"
+                className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 font-mono text-sm text-ink focus:border-ink focus:outline-none"
               />
             </div>
           </div>

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { ArrowUpRight, LucideMenu as Menu, LucideX as X } from 'lucide-react'
+import { ArrowUpRight, LucideMenu as Menu, LucideX as X, LucideDownload as Download } from 'lucide-react'
 import ColorModeToggle from '../ui/ColorModeToggle'
+import { getSiteWidgets } from '../../api/resources'
 
 // Pricing intentionally omitted — it's gated off by the site-sections
 // feature flag (seeded is_visible=false), so it's dropped from primary nav.
@@ -14,14 +15,29 @@ const NAV_LINKS = [
   { label: 'Services', anchor: 'services' },
 ]
 
-export default function Navbar() {
+export default function Navbar({ profile }) {
   const [open, setOpen] = useState(false)
+  const [widgets, setWidgets] = useState(null)
   const location = useLocation()
   const navigate = useNavigate()
 
   useEffect(() => {
     setOpen(false)
   }, [location.pathname])
+
+  useEffect(() => {
+    let cancelled = false
+    getSiteWidgets()
+      .then((data) => {
+        if (!cancelled) setWidgets(data)
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  const showResumeButton = Boolean(widgets?.resume_download_enabled && profile?.resume_file)
 
   const handleAnchorClick = (anchor) => (e) => {
     e.preventDefault()
@@ -73,6 +89,18 @@ export default function Navbar() {
 
         <div className="hidden shrink-0 items-center gap-3 lg:flex">
           <ColorModeToggle className="rounded-full p-2 text-cream/80 transition-colors hover:bg-cream/10 hover:text-accent" />
+          {showResumeButton && (
+            <a
+              href={profile.resume_file}
+              target="_blank"
+              rel="noopener noreferrer"
+              download
+              className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-4 py-2.5 text-sm font-semibold text-cream transition-colors hover:border-accent hover:text-accent"
+            >
+              <Download size={15} />
+              Resume
+            </a>
+          )}
           <a
             href="/#contact"
             onClick={handleAnchorClick('contact')}
@@ -114,6 +142,20 @@ export default function Navbar() {
                 Insights
               </Link>
             </li>
+            {showResumeButton && (
+              <li>
+                <a
+                  href={profile.resume_file}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  download
+                  className="inline-flex items-center gap-2 rounded-full border border-cream/25 px-5 py-2.5 text-sm font-semibold text-cream"
+                >
+                  <Download size={16} />
+                  Resume
+                </a>
+              </li>
+            )}
             <li>
               <a
                 href="/#contact"

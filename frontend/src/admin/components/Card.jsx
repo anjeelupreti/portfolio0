@@ -4,7 +4,7 @@ import { WindowTitlebar } from '../../components/ui/WindowChrome'
 // matches the public site's WindowChrome motif applied to functional UI.
 export default function Card({ title, children, className = '', bodyClassName = '' }) {
   return (
-    <div className={`overflow-hidden rounded-2xl border border-ink/10 bg-white/60 shadow-sm ${className}`}>
+    <div className={`overflow-hidden rounded-2xl border border-ink/10 bg-surface/60 shadow-sm ${className}`}>
       {title && (
         <div className="flex items-center gap-3 border-b border-ink/10 bg-ink/[0.03] px-4 py-2.5">
           <span className="flex items-center gap-1.5">

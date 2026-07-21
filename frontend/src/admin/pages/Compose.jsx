@@ -93,7 +93,7 @@ export default function Compose() {
           value={form.to_email}
           onChange={handleChange}
           placeholder="someone@example.com"
-          className="w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+          className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
         />
 
         <label className="mb-1.5 mt-4 block font-mono text-xs text-ink/50">subject</label>
@@ -101,7 +101,7 @@ export default function Compose() {
           name="subject"
           value={form.subject}
           onChange={handleChange}
-          className="w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+          className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
         />
 
         <label className="mb-1.5 mt-4 block font-mono text-xs text-ink/50">body</label>

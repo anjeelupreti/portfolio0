@@ -122,7 +122,7 @@ export default function DashboardLayout() {
             >
               <Menu size={22} />
             </button>
-            <div className="hidden items-center gap-2 rounded-lg border border-ink/10 bg-white/60 px-3 py-1.5 sm:flex">
+            <div className="hidden items-center gap-2 rounded-lg border border-ink/10 bg-surface/60 px-3 py-1.5 sm:flex">
               <TrafficLights />
               <span className="font-mono text-[11px] text-ink/40">admin-dashboard</span>
             </div>

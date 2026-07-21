@@ -12,6 +12,7 @@
   --color-accent: #d9ff4b;
   --color-accent-soft: #eaffa0;
   --color-muted: #6b6b6b;
+  --color-surface: #ffffff;
 }
 
 html {
@@ -28,6 +29,7 @@ html {
   --color-ink: #f5f1e3;
   --color-ink-soft: #e8e4d5;
   --color-muted: #9a9a9a;
+  --color-surface: #1c1c22;
 }
 
 body {

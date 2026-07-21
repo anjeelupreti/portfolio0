@@ -92,7 +92,7 @@ export default function ProfileEdit() {
                   rows={4}
                   value={form[f.name] || ''}
                   onChange={handleChange}
-                  className="w-full resize-none rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+                  className="w-full resize-none rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
                 />
               ) : (
                 <input
@@ -100,7 +100,7 @@ export default function ProfileEdit() {
                   name={f.name}
                   value={form[f.name] || ''}
                   onChange={handleChange}
-                  className="w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+                  className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
                 />
               )}
             </div>

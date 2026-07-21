@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { format } from 'date-fns'
@@ -10,16 +10,91 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  LucideLink as LinkIcon,
+  LucideCheck as Check,
 } from 'lucide-react'
 import { useApi } from '../hooks/useApi'
-import { getBlogPost, postBlogComment } from '../api/resources'
+import { getBlogPost, postBlogComment, getSiteWidgets } from '../api/resources'
 import { fadeUp } from '../lib/motion'
 
 const initialForm = { name: '', email: '', content: '' }
 
+// Hand-authored brand glyphs — lucide-react v1.25 dropped real brand icons,
+// so these mirror the WhatsApp button's inline-SVG pattern for recognizable
+// X/LinkedIn marks instead of generic stand-ins.
+function XIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" {...props}>
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  )
+}
+
+function LinkedInIcon(props) {
+  return (
+    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true" {...props}>
+      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.048c.476-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.125 2.062 2.062 0 0 1 0 4.125zM7.114 20.452H3.558V9h3.556z" />
+    </svg>
+  )
+}
+
+function ShareButtons({ post }) {
+  const [copied, setCopied] = useState(false)
+
+  const url = typeof window !== 'undefined' ? window.location.href : ''
+  const encodedUrl = encodeURIComponent(url)
+  const encodedTitle = encodeURIComponent(post?.title || '')
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(url)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // clipboard unavailable — fail silently, no crash
+    }
+  }
+
+  return (
+    <div className="mt-8 flex flex-wrap items-center gap-3">
+      <span className="text-xs font-semibold uppercase tracking-widest text-ink/40">Share</span>
+      <a
+        href={`https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Share on X"
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 text-ink/70 transition-colors hover:border-ink hover:text-ink"
+      >
+        <XIcon />
+      </a>
+      <a
+        href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Share on LinkedIn"
+        className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 text-ink/70 transition-colors hover:border-ink hover:text-ink"
+      >
+        <LinkedInIcon />
+      </a>
+      <button
+        type="button"
+        onClick={handleCopy}
+        className="inline-flex items-center gap-1.5 rounded-full border border-ink/15 px-3.5 py-2 text-xs font-semibold text-ink/70 transition-colors hover:border-ink hover:text-ink"
+      >
+        {copied ? <Check size={14} /> : <LinkIcon size={14} />}
+        {copied ? 'Copied!' : 'Copy link'}
+      </button>
+    </div>
+  )
+}
+
 export default function BlogDetail() {
   const { slug } = useParams()
-  const { data: post, loading } = useApi(getBlogPost, [slug], null)
+  // useApi calls its fetcher with no arguments, so getBlogPost (which takes
+  // slug as a param) must be wrapped in a closure here rather than passed
+  // directly — passing it bare silently requests /blog-posts/undefined/.
+  const { data: post, loading } = useApi(() => getBlogPost(slug), [slug], null)
+  const { data: widgets } = useApi(getSiteWidgets, [], null)
 
   const [form, setForm] = useState(initialForm)
   const [status, setStatus] = useState('idle')
@@ -119,6 +194,8 @@ export default function BlogDetail() {
             className="prose prose-neutral mt-10 max-w-none prose-headings:font-display prose-headings:text-ink prose-p:text-ink/75 prose-a:text-ink prose-a:underline prose-strong:text-ink"
             dangerouslySetInnerHTML={{ __html: post.content || '' }}
           />
+
+          {widgets?.blog_share_enabled && <ShareButtons post={post} />}
         </motion.div>
 
         {/* Comments */}

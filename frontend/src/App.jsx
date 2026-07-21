@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-route
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import WhatsAppButton from './components/ui/WhatsAppButton'
+import ScrollToTopButton from './components/ui/ScrollToTopButton'
+import CookieBanner from './components/ui/CookieBanner'
 import Home from './pages/Home'
 import BlogList from './pages/BlogList'
 import BlogDetail from './pages/BlogDetail'
@@ -49,7 +51,7 @@ function PublicLayout() {
 
   return (
     <>
-      <Navbar />
+      <Navbar profile={profile} />
       <main>
         <Routes>
           <Route path="/" element={<Home profile={profile} />} />
@@ -59,6 +61,8 @@ function PublicLayout() {
       </main>
       <Footer profile={profile} />
       <WhatsAppButton />
+      <ScrollToTopButton />
+      <CookieBanner />
     </>
   )
 }

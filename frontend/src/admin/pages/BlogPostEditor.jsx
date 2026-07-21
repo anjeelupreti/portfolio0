@@ -230,7 +230,7 @@ export default function BlogPostEditor() {
             <input
               value={form.title}
               onChange={handleTitleChange}
-              className="w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+              className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
             />
             <label className="mb-1.5 mt-4 block font-mono text-xs text-ink/50">slug</label>
             <input
@@ -239,7 +239,7 @@ export default function BlogPostEditor() {
                 setSlugTouched(true)
                 setForm((f) => ({ ...f, slug: e.target.value }))
               }}
-              className="w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 font-mono text-sm text-ink focus:border-ink focus:outline-none"
+              className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 font-mono text-sm text-ink focus:border-ink focus:outline-none"
             />
             <label className="mb-1.5 mt-4 block font-mono text-xs text-ink/50">excerpt</label>
             <textarea
@@ -247,7 +247,7 @@ export default function BlogPostEditor() {
               rows={3}
               value={form.excerpt}
               onChange={handleChange}
-              className="w-full resize-none rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+              className="w-full resize-none rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
             />
           </Card>
 
@@ -283,7 +283,7 @@ export default function BlogPostEditor() {
               value={form.cover_image}
               onChange={handleChange}
               placeholder="https://..."
-              className="w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+              className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
             />
             <p className="mt-1 font-mono text-[10px] text-ink/30">
               File upload not wired (DRF ImageField would need multipart handling) — paste a hosted URL.
@@ -295,7 +295,7 @@ export default function BlogPostEditor() {
               name="category"
               value={form.category || ''}
               onChange={handleChange}
-              className="w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+              className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
             >
               <option value="">— none —</option>
               {categories.map((c) => (
@@ -307,7 +307,7 @@ export default function BlogPostEditor() {
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 placeholder="New category"
-                className="flex-1 rounded-lg border border-ink/15 bg-white px-3 py-2 text-xs text-ink focus:border-ink focus:outline-none"
+                className="flex-1 rounded-lg border border-ink/15 bg-surface px-3 py-2 text-xs text-ink focus:border-ink focus:outline-none"
               />
               <button
                 type="button"
@@ -340,7 +340,7 @@ export default function BlogPostEditor() {
                 value={newTagName}
                 onChange={(e) => setNewTagName(e.target.value)}
                 placeholder="New tag"
-                className="flex-1 rounded-lg border border-ink/15 bg-white px-3 py-2 text-xs text-ink focus:border-ink focus:outline-none"
+                className="flex-1 rounded-lg border border-ink/15 bg-surface px-3 py-2 text-xs text-ink focus:border-ink focus:outline-none"
               />
               <button
                 type="button"

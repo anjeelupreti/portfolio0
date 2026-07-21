@@ -27,13 +27,32 @@ function Switch({ checked, onChange, disabled }) {
   )
 }
 
+function ToggleRow({ title, description, checked, onChange, disabled }) {
+  return (
+    <div className="flex items-center justify-between gap-4">
+      <div>
+        <p className="font-medium text-ink">{title}</p>
+        <p className="font-mono text-[11px] text-ink/40">{description}</p>
+      </div>
+      <Switch checked={checked} onChange={onChange} disabled={disabled} />
+    </div>
+  )
+}
+
 export default function Widgets() {
   const { push } = useToast()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+
   const [enabled, setEnabled] = useState(false)
   const [number, setNumber] = useState('')
   const [message, setMessage] = useState('')
+
+  const [scrollToTopEnabled, setScrollToTopEnabled] = useState(false)
+  const [resumeDownloadEnabled, setResumeDownloadEnabled] = useState(false)
+  const [blogShareEnabled, setBlogShareEnabled] = useState(false)
+  const [cookieBannerEnabled, setCookieBannerEnabled] = useState(false)
+  const [cookieMessage, setCookieMessage] = useState('')
 
   useEffect(() => {
     getSiteWidgetsAdmin()
@@ -42,6 +61,11 @@ export default function Widgets() {
         setEnabled(!!data.whatsapp_enabled)
         setNumber(data.whatsapp_number || '')
         setMessage(data.whatsapp_default_message || '')
+        setScrollToTopEnabled(!!data.scroll_to_top_enabled)
+        setResumeDownloadEnabled(!!data.resume_download_enabled)
+        setBlogShareEnabled(!!data.blog_share_enabled)
+        setCookieBannerEnabled(!!data.cookie_banner_enabled)
+        setCookieMessage(data.cookie_banner_message || '')
       })
       .catch(() => push('Failed to load widget settings.', 'error'))
       .finally(() => setLoading(false))
@@ -60,15 +84,35 @@ export default function Widgets() {
     }
   }
 
+  // Generic instant-toggle helper for the simple boolean-only widgets below —
+  // optimistic update + revert on failure, same pattern as the WhatsApp toggle.
+  const makeToggleHandler = (setState, field, label) => async (next) => {
+    setState(next)
+    try {
+      await updateSiteWidgets({ [field]: next })
+      push(`${label} is now ${next ? 'enabled' : 'disabled'}.`, 'success')
+    } catch {
+      setState(!next)
+      push(`Failed to update ${label}.`, 'error')
+    }
+  }
+
+  const handleScrollToTopToggle = makeToggleHandler(setScrollToTopEnabled, 'scroll_to_top_enabled', 'Scroll-to-top button')
+  const handleResumeDownloadToggle = makeToggleHandler(setResumeDownloadEnabled, 'resume_download_enabled', 'Resume download button')
+  const handleBlogShareToggle = makeToggleHandler(setBlogShareEnabled, 'blog_share_enabled', 'Blog share buttons')
+  const handleCookieBannerToggle = makeToggleHandler(setCookieBannerEnabled, 'cookie_banner_enabled', 'Cookie banner')
+
   const handleSave = async () => {
     setSaving(true)
     try {
       const updated = await updateSiteWidgets({
         whatsapp_number: number,
         whatsapp_default_message: message,
+        cookie_banner_message: cookieMessage,
       })
       setNumber(updated.whatsapp_number || '')
       setMessage(updated.whatsapp_default_message || '')
+      setCookieMessage(updated.cookie_banner_message || '')
       push('Widget settings saved.', 'success')
     } catch (err) {
       const detail =
@@ -94,21 +138,20 @@ export default function Widgets() {
     <div className="space-y-6">
       <div>
         <SectionEyebrow>Widgets</SectionEyebrow>
-        <h1 className="mt-3 font-display text-2xl font-bold text-ink">WhatsApp Button</h1>
+        <h1 className="mt-3 font-display text-2xl font-bold text-ink">Site Widgets</h1>
         <p className="mt-1 font-mono text-xs text-ink/40">
-          Controls the floating "Chat on WhatsApp" button shown to visitors on the public site.
+          Controls the floating buttons, share links, and consent banner shown to visitors on the public site.
         </p>
       </div>
 
       <Card title="whatsapp-widget.json">
-        <div className="flex items-center justify-between gap-4 pb-5">
-          <div>
-            <p className="font-medium text-ink">Enable floating button</p>
-            <p className="font-mono text-[11px] text-ink/40">
-              Show or hide the button across all public pages.
-            </p>
-          </div>
-          <Switch checked={enabled} onChange={handleToggle} />
+        <div className="pb-5">
+          <ToggleRow
+            title="Enable floating button"
+            description="Show or hide the WhatsApp button across all public pages."
+            checked={enabled}
+            onChange={handleToggle}
+          />
         </div>
 
         <div className="space-y-5 border-t border-ink/10 pt-5">
@@ -119,7 +162,7 @@ export default function Widgets() {
               value={number}
               onChange={(e) => setNumber(e.target.value)}
               placeholder="+9779843951313"
-              className="w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 font-mono text-sm text-ink focus:border-ink focus:outline-none"
+              className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 font-mono text-sm text-ink focus:border-ink focus:outline-none"
             />
             <p className="mt-1.5 font-mono text-[11px] text-ink/40">
               Include country code, e.g. +9779843951313, no spaces or dashes.
@@ -133,7 +176,7 @@ export default function Widgets() {
               onChange={(e) => setMessage(e.target.value)}
               rows={3}
               placeholder="Hi! I found your portfolio and would like to get in touch."
-              className="w-full resize-none rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 font-mono text-sm text-ink focus:border-ink focus:outline-none"
+              className="w-full resize-none rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 font-mono text-sm text-ink focus:border-ink focus:outline-none"
             />
             <p className="mt-1.5 font-mono text-[11px] text-ink/40">
               Prefilled message visitors see when they open the chat.
@@ -165,6 +208,54 @@ export default function Widgets() {
               {previewUrl}
             </p>
           </div>
+        </div>
+      </Card>
+
+      <Card title="scroll-to-top.json">
+        <ToggleRow
+          title="Enable scroll-to-top button"
+          description="Floating button (bottom-left) that appears after scrolling and jumps back to the top of the page."
+          checked={scrollToTopEnabled}
+          onChange={handleScrollToTopToggle}
+        />
+      </Card>
+
+      <Card title="resume-download.json">
+        <ToggleRow
+          title="Enable resume download button"
+          description="Shows a 'Resume' button in the navbar, linking to the uploaded resume file. Hidden automatically if no resume has been uploaded on the Profile page."
+          checked={resumeDownloadEnabled}
+          onChange={handleResumeDownloadToggle}
+        />
+      </Card>
+
+      <Card title="blog-share.json">
+        <ToggleRow
+          title="Enable blog share buttons"
+          description="Adds X (Twitter), LinkedIn, and copy-link share buttons at the end of every blog post."
+          checked={blogShareEnabled}
+          onChange={handleBlogShareToggle}
+        />
+      </Card>
+
+      <Card title="cookie-banner.json">
+        <div className="pb-5">
+          <ToggleRow
+            title="Enable cookie/analytics banner"
+            description="Shows a dismissible consent notice to first-time visitors."
+            checked={cookieBannerEnabled}
+            onChange={handleCookieBannerToggle}
+          />
+        </div>
+        <div className="border-t border-ink/10 pt-5">
+          <label className="mb-2 block font-mono text-xs text-ink/50">Banner message</label>
+          <textarea
+            value={cookieMessage}
+            onChange={(e) => setCookieMessage(e.target.value)}
+            rows={2}
+            placeholder="This site uses cookies for basic analytics to improve your experience."
+            className="w-full resize-none rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 font-mono text-sm text-ink focus:border-ink focus:outline-none"
+          />
         </div>
       </Card>
 

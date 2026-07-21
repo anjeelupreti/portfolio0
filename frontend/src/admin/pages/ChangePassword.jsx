@@ -47,7 +47,7 @@ export default function ChangePassword() {
               name="old_password"
               value={form.old_password}
               onChange={handleChange}
-              className="w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+              className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
             />
           </div>
           <div>
@@ -58,7 +58,7 @@ export default function ChangePassword() {
               name="new_password"
               value={form.new_password}
               onChange={handleChange}
-              className="w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+              className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
             />
           </div>
           <div>
@@ -69,7 +69,7 @@ export default function ChangePassword() {
               name="confirm"
               value={form.confirm}
               onChange={handleChange}
-              className="w-full rounded-lg border border-ink/15 bg-white px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
+              className="w-full rounded-lg border border-ink/15 bg-surface px-3.5 py-2.5 text-sm text-ink focus:border-ink focus:outline-none"
             />
           </div>
           <button

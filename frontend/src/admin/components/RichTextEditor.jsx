@@ -135,7 +135,7 @@ export default function RichTextEditor({ value, onChange }) {
   }, [editor, value])
 
   return (
-    <div className="overflow-hidden rounded-lg border border-ink/15 bg-white">
+    <div className="overflow-hidden rounded-lg border border-ink/15 bg-surface">
       <Toolbar editor={editor} />
       <EditorContent editor={editor} />
     </div>
