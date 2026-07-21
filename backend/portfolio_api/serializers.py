@@ -83,8 +83,8 @@ class LanguageSerializer(serializers.ModelSerializer):
 class ContactMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactMessage
-        fields = ["id", "name", "email", "subject", "message", "created_at"]
-        read_only_fields = ["id", "created_at"]
+        fields = ["id", "name", "email", "subject", "message", "created_at", "is_read"]
+        read_only_fields = ["id", "created_at", "is_read"]
 
 
 class ServiceSerializer(serializers.ModelSerializer):

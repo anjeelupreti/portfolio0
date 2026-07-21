@@ -37,9 +37,14 @@ class SiteSectionViewSet(viewsets.ModelViewSet):
         return [IsAuthenticated()]
 
 
-class ProfileViewSet(viewsets.ReadOnlyModelViewSet):
+class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
+
+    def get_permissions(self):
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 
 class ExperienceViewSet(viewsets.ReadOnlyModelViewSet):
@@ -80,6 +85,21 @@ class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
 class ContactMessageCreateView(generics.CreateAPIView):
     queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer
+
+
+class ContactMessageViewSet(viewsets.ReadOnlyModelViewSet):
+    """Staff-only inbox for viewing contact form submissions."""
+
+    queryset = ContactMessage.objects.all()
+    serializer_class = ContactMessageSerializer
+    permission_classes = [IsAdminUser]
+
+    @action(detail=True, methods=["patch"])
+    def mark_read(self, request, pk=None):
+        message = self.get_object()
+        message.is_read = True
+        message.save(update_fields=["is_read"])
+        return Response(self.get_serializer(message).data)
 
 
 class ServiceViewSet(viewsets.ReadOnlyModelViewSet):

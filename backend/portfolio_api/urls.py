@@ -19,6 +19,7 @@ router.register(r"blog-categories", views.BlogCategoryViewSet, basename="blogcat
 router.register(r"blog-tags", views.BlogTagViewSet, basename="blogtag")
 router.register(r"blog-posts", views.BlogPostViewSet, basename="blogpost")
 router.register(r"blog-comments", views.BlogCommentViewSet, basename="blogcomment")
+router.register(r"contact-messages", views.ContactMessageViewSet, basename="contactmessage")
 
 urlpatterns = [
     path("", include(router.urls)),
