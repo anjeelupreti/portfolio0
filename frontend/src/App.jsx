@@ -23,6 +23,7 @@ import BlogPostList from './admin/pages/BlogPostList'
 import BlogPostEditor from './admin/pages/BlogPostEditor'
 import Comments from './admin/pages/Comments'
 import Messages from './admin/pages/Messages'
+import Compose from './admin/pages/Compose'
 import ChangePassword from './admin/pages/ChangePassword'
 import Personalization from './admin/pages/Personalization'
 
@@ -83,6 +84,7 @@ function AdminRoutes() {
         <Route path="blog/:slug/edit" element={<BlogPostEditor />} />
         <Route path="comments" element={<Comments />} />
         <Route path="messages" element={<Messages />} />
+        <Route path="compose" element={<Compose />} />
         <Route path="personalization" element={<Personalization />} />
         <Route path="change-password" element={<ChangePassword />} />
       </Route>

@@ -7,6 +7,7 @@ import {
   LucideFileText as FileText,
   LucideMessageSquare as MessageSquare,
   LucideMail as Mail,
+  LucidePenSquare as PenSquare,
   LucideKey as Key,
   LucideLogOut as LogOut,
   LucideMenu as Menu,
@@ -24,6 +25,7 @@ const NAV_ITEMS = [
   { to: '/admin/blog', label: 'Blog Posts', icon: FileText },
   { to: '/admin/comments', label: 'Comments', icon: MessageSquare },
   { to: '/admin/messages', label: 'Messages', icon: Mail },
+  { to: '/admin/compose', label: 'Compose', icon: PenSquare },
   { to: '/admin/personalization', label: 'Personalization', icon: Palette },
   { to: '/admin/change-password', label: 'Settings', icon: Key },
 ]

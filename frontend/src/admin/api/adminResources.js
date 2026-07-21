@@ -73,3 +73,19 @@ export const getContactMessages = () => adminClient.get('/contact-messages/').th
 
 export const markContactMessageRead = (id) =>
   adminClient.patch(`/contact-messages/${id}/mark_read/`).then((r) => r.data)
+
+// ---- Send email (reply to a contact message, or standalone compose) ----
+// SMTP failures come back from the API as a 202/502-shaped body with a
+// non-empty `send_error` field rather than a clean 2xx — axios still rejects
+// on non-2xx, so we catch and surface the response body (with the record
+// that WAS created) instead of losing it as a generic network error.
+export const sendEmail = (payload) =>
+  adminClient
+    .post('/send-email/', payload)
+    .then((r) => ({ data: r.data, ok: true }))
+    .catch((err) => {
+      if (err.response?.data) {
+        return { data: err.response.data, ok: false }
+      }
+      throw err
+    })
