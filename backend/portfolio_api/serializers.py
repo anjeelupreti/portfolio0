@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import (
     Profile, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
     Education, Training, Reference, Language, ContactMessage,
-    Service, PricingPlan, PricingFeature, SiteSection,
+    Service, PricingPlan, PricingFeature, SiteSection, SiteTheme,
     BlogCategory, BlogTag, BlogPost, BlogComment,
 )
 
@@ -14,6 +14,26 @@ class SiteSectionSerializer(serializers.ModelSerializer):
     class Meta:
         model = SiteSection
         fields = ["id", "key", "label", "is_visible", "order"]
+
+
+class SiteThemeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteTheme
+        fields = ["preset", "primary_color", "secondary_color", "updated_at"]
+        read_only_fields = ["updated_at"]
+
+    def validate_primary_color(self, value):
+        return self._validate_hex(value)
+
+    def validate_secondary_color(self, value):
+        return self._validate_hex(value)
+
+    @staticmethod
+    def _validate_hex(value):
+        import re
+        if not re.match(r"^#[0-9a-fA-F]{6}$", value):
+            raise serializers.ValidationError("Must be a hex color like #d9ff4b.")
+        return value
 
 
 class ProfileSerializer(serializers.ModelSerializer):

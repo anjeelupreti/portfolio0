@@ -24,6 +24,7 @@ router.register(r"contact-messages", views.ContactMessageViewSet, basename="cont
 urlpatterns = [
     path("", include(router.urls)),
     path("contact/", views.ContactMessageCreateView.as_view(), name="contact-message"),
+    path("site-theme/", views.SiteThemeView.as_view(), name="site-theme"),
 
     # auth
     path("auth/login/", auth_views.LoginView.as_view(), name="auth-login"),

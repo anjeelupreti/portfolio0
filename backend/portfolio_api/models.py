@@ -3,6 +3,40 @@ from django.db import models
 from django.utils import timezone
 
 
+class SiteTheme(models.Model):
+    """Singleton: site-wide color palette, set by the admin, applied for every visitor."""
+
+    PRESET_CHOICES = [
+        ("custom", "Custom"),
+        ("lime-ink", "Lime & Ink"),
+        ("ocean-blue", "Ocean Blue"),
+        ("sunset-orange", "Sunset Orange"),
+        ("violet-dusk", "Violet Dusk"),
+        ("forest-green", "Forest Green"),
+        ("crimson-rose", "Crimson Rose"),
+    ]
+
+    preset = models.CharField(max_length=30, choices=PRESET_CHOICES, default="lime-ink")
+    primary_color = models.CharField(max_length=7, default="#d9ff4b", help_text="Hex color, e.g. #d9ff4b")
+    secondary_color = models.CharField(max_length=7, default="#0a0a0a", help_text="Hex color, e.g. #0a0a0a")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Site theme"
+
+    def __str__(self):
+        return f"Theme ({self.preset})"
+
+    def save(self, *args, **kwargs):
+        self.pk = 1  # enforce singleton
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+
 class SiteSection(models.Model):
     """Feature flags controlling which homepage sections are visible on the public site."""
 

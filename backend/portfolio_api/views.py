@@ -13,13 +13,13 @@ from .models import (
     Profile, Experience, Project, SkillCategory,
     Education, Training, Reference, Language, ContactMessage,
     Service, PricingPlan, BlogCategory, BlogTag, BlogPost, BlogComment,
-    SiteVisit, SiteSection,
+    SiteVisit, SiteSection, SiteTheme,
 )
 from .serializers import (
     ProfileSerializer, ExperienceSerializer, ProjectSerializer, SkillCategorySerializer,
     EducationSerializer, TrainingSerializer, ReferenceSerializer, LanguageSerializer,
     ContactMessageSerializer,
-    ServiceSerializer, PricingPlanSerializer, SiteSectionSerializer,
+    ServiceSerializer, PricingPlanSerializer, SiteSectionSerializer, SiteThemeSerializer,
     BlogCategorySerializer, BlogTagSerializer,
     BlogPostListSerializer, BlogPostDetailSerializer, BlogPostWriteSerializer,
     BlogCommentSerializer,
@@ -35,6 +35,25 @@ class SiteSectionViewSet(viewsets.ModelViewSet):
         if self.action in ("list", "retrieve"):
             return [AllowAny()]
         return [IsAuthenticated()]
+
+
+class SiteThemeView(APIView):
+    """Singleton site-wide color theme: public GET, staff-only PATCH."""
+
+    def get_permissions(self):
+        if self.request.method == "GET":
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+    def get(self, request):
+        return Response(SiteThemeSerializer(SiteTheme.load()).data)
+
+    def patch(self, request):
+        theme = SiteTheme.load()
+        serializer = SiteThemeSerializer(theme, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
 class ProfileViewSet(viewsets.ModelViewSet):

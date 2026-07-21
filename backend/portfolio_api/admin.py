@@ -3,7 +3,7 @@ from django.contrib import admin
 from .models import (
     Profile, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
     Education, Training, Reference, Language, ContactMessage, SiteVisit,
-    Service, PricingPlan, PricingFeature, SiteSection,
+    Service, PricingPlan, PricingFeature, SiteSection, SiteTheme,
     BlogCategory, BlogTag, BlogPost, BlogComment,
 )
 
@@ -13,6 +13,17 @@ class SiteSectionAdmin(admin.ModelAdmin):
     list_display = ("label", "key", "is_visible", "order")
     list_editable = ("is_visible", "order")
     search_fields = ("label", "key")
+
+
+@admin.register(SiteTheme)
+class SiteThemeAdmin(admin.ModelAdmin):
+    list_display = ("preset", "primary_color", "secondary_color", "updated_at")
+
+    def has_add_permission(self, request):
+        return not SiteTheme.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 class ExperienceHighlightInline(admin.TabularInline):
