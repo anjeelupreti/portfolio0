@@ -15,14 +15,28 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 
+import re
+
 from django.conf import settings
-from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.views.static import serve
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("portfolio_api.urls")),
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# django.conf.urls.static.static() only adds this pattern when DEBUG=True —
+# it's a no-op in production, which is why media uploads 404'd even after
+# wiring MEDIA_ROOT/MEDIA_URL correctly. Call django.views.static.serve
+# directly instead so uploaded files (resume, profile photo, certificates)
+# are actually served regardless of DEBUG. Not using nginx/a CDN for this
+# given the project's scale — see the README's known-limitations note.
+urlpatterns += [
+    re_path(
+        r"^%s(?P<path>.*)$" % re.escape(settings.MEDIA_URL.lstrip("/")),
+        serve,
+        {"document_root": settings.MEDIA_ROOT},
+    ),
+]
