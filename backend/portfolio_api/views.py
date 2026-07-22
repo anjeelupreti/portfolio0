@@ -14,13 +14,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import (
-    Profile, SocialLink, Experience, Project, SkillCategory,
+    Profile, SocialLink, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
     Education, Training, Reference, Language, ContactMessage, EmailReply,
     Service, PricingPlan, PricingFeature, BlogCategory, BlogTag, BlogPost, BlogComment,
     SiteVisit, SiteSection, SiteTheme, SiteWidget, EmailSettings,
 )
 from .serializers import (
-    ProfileSerializer, SocialLinkSerializer, ExperienceSerializer, ProjectSerializer, SkillCategorySerializer,
+    ProfileSerializer, SocialLinkSerializer, ExperienceSerializer, ExperienceHighlightSerializer,
+    ProjectSerializer, SkillCategorySerializer, SkillSerializer,
     EducationSerializer, TrainingSerializer, ReferenceSerializer, LanguageSerializer,
     ContactMessageSerializer, EmailReplySerializer, EmailReplyWriteSerializer,
     ServiceSerializer, PricingPlanSerializer, PricingFeatureSerializer, SiteSectionSerializer, SiteThemeSerializer,
@@ -133,11 +134,25 @@ class SocialLinkViewSet(viewsets.ModelViewSet):
         return [IsAuthenticated()]
 
 
-class ExperienceViewSet(viewsets.ReadOnlyModelViewSet):
-    """Public read-only listing of work-history entries."""
+class ExperienceViewSet(viewsets.ModelViewSet):
+    """CRUD for work-history entries; public read, staff-only write."""
 
     queryset = Experience.objects.all()
     serializer_class = ExperienceSerializer
+
+    def get_permissions(self):
+        """Anyone can view experience entries; only authenticated staff can edit them."""
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+
+class ExperienceHighlightViewSet(viewsets.ModelViewSet):
+    """Staff-only CRUD for individual highlight bullets under an Experience entry (read via the parent's nested list on the public site)."""
+
+    queryset = ExperienceHighlight.objects.all()
+    serializer_class = ExperienceHighlightSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -153,18 +168,38 @@ class ProjectViewSet(viewsets.ModelViewSet):
         return [IsAuthenticated()]
 
 
-class SkillCategoryViewSet(viewsets.ReadOnlyModelViewSet):
-    """Public read-only listing of skill categories with nested skills."""
+class SkillCategoryViewSet(viewsets.ModelViewSet):
+    """CRUD for skill categories with nested skills; public read, staff-only write."""
 
     queryset = SkillCategory.objects.all()
     serializer_class = SkillCategorySerializer
 
+    def get_permissions(self):
+        """Anyone can view skill categories; only authenticated staff can edit them."""
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
-class EducationViewSet(viewsets.ReadOnlyModelViewSet):
-    """Public read-only listing of education entries."""
+
+class SkillViewSet(viewsets.ModelViewSet):
+    """Staff-only CRUD for individual skills under a SkillCategory (read via the parent's nested list on the public site)."""
+
+    queryset = Skill.objects.all()
+    serializer_class = SkillSerializer
+    permission_classes = [IsAuthenticated]
+
+
+class EducationViewSet(viewsets.ModelViewSet):
+    """CRUD for education/degree entries; public read, staff-only write."""
 
     queryset = Education.objects.all()
     serializer_class = EducationSerializer
+
+    def get_permissions(self):
+        """Anyone can view education entries; only authenticated staff can edit them."""
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 
 class TrainingViewSet(viewsets.ModelViewSet):
@@ -180,18 +215,30 @@ class TrainingViewSet(viewsets.ModelViewSet):
         return [IsAuthenticated()]
 
 
-class ReferenceViewSet(viewsets.ReadOnlyModelViewSet):
-    """Public read-only listing of professional references."""
+class ReferenceViewSet(viewsets.ModelViewSet):
+    """CRUD for professional references; public read, staff-only write."""
 
     queryset = Reference.objects.all()
     serializer_class = ReferenceSerializer
 
+    def get_permissions(self):
+        """Anyone can view references; only authenticated staff can edit them."""
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
-class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
-    """Public read-only listing of spoken languages."""
+
+class LanguageViewSet(viewsets.ModelViewSet):
+    """CRUD for spoken languages; public read, staff-only write."""
 
     queryset = Language.objects.all()
     serializer_class = LanguageSerializer
+
+    def get_permissions(self):
+        """Anyone can view languages; only authenticated staff can edit them."""
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 
 class ContactMessageCreateView(generics.CreateAPIView):
@@ -345,11 +392,24 @@ class SendEmailView(APIView):
         return Response(EmailReplySerializer(reply).data, status=status.HTTP_201_CREATED)
 
 
-class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
-    """Public read-only listing of active service offerings."""
+class ServiceViewSet(viewsets.ModelViewSet):
+    """CRUD for service offerings; public read (active only), staff-only write (sees all, including inactive)."""
 
-    queryset = Service.objects.filter(is_active=True)
     serializer_class = ServiceSerializer
+
+    def get_queryset(self):
+        """Visitors only see active services; staff managing the list see everything."""
+        if self.action in ("list", "retrieve") and not (
+            self.request.user and self.request.user.is_authenticated
+        ):
+            return Service.objects.filter(is_active=True)
+        return Service.objects.all()
+
+    def get_permissions(self):
+        """Anyone can view active services; only authenticated staff can edit them."""
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 
 class PricingPlanViewSet(viewsets.ModelViewSet):

@@ -98,11 +98,11 @@ class SocialLinkSerializer(serializers.ModelSerializer):
 
 
 class ExperienceHighlightSerializer(serializers.ModelSerializer):
-    """(De)serializes a single bullet point under an Experience entry."""
+    """(De)serializes a single bullet point under an Experience entry. `experience` is required on create/update but omitted from the nested read-only listing on ExperienceSerializer."""
 
     class Meta:
         model = ExperienceHighlight
-        fields = ["id", "text", "order"]
+        fields = ["id", "experience", "text", "order"]
 
 
 class ExperienceSerializer(serializers.ModelSerializer):
@@ -124,11 +124,11 @@ class ProjectSerializer(serializers.ModelSerializer):
 
 
 class SkillSerializer(serializers.ModelSerializer):
-    """(De)serializes a single skill with its proficiency score."""
+    """(De)serializes a single skill with its proficiency score. `category` is required on create/update but omitted from the nested read-only listing on SkillCategorySerializer."""
 
     class Meta:
         model = Skill
-        fields = ["id", "name", "proficiency", "order"]
+        fields = ["id", "category", "name", "proficiency", "order"]
 
 
 class SkillCategorySerializer(serializers.ModelSerializer):
