@@ -13,7 +13,7 @@ import { fadeUp, viewportOnce } from '../../lib/motion'
 import { postContact } from '../../api/resources'
 import SectionEyebrow from '../ui/SectionEyebrow'
 
-const initialForm = { name: '', email: '', subject: '', message: '' }
+const initialForm = { name: '', email: '', phone: '', subject: '', message: '' }
 
 /** Contact section of the home page with profile contact info and a message form that posts to the contact API. */
 export default function Contact({ profile }) {
@@ -113,14 +113,24 @@ export default function Contact({ profile }) {
                 className="rounded-xl border border-cream-fixed/15 bg-transparent px-4 py-3 text-sm text-cream-fixed placeholder:text-cream-fixed/40 focus:border-accent focus:outline-none"
               />
             </div>
-            <input
-              required
-              name="subject"
-              value={form.subject}
-              onChange={handleChange}
-              placeholder="Subject"
-              className="w-full rounded-xl border border-cream-fixed/15 bg-transparent px-4 py-3 text-sm text-cream-fixed placeholder:text-cream-fixed/40 focus:border-accent focus:outline-none"
-            />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <input
+                type="tel"
+                name="phone"
+                value={form.phone}
+                onChange={handleChange}
+                placeholder="Phone (optional)"
+                className="rounded-xl border border-cream-fixed/15 bg-transparent px-4 py-3 text-sm text-cream-fixed placeholder:text-cream-fixed/40 focus:border-accent focus:outline-none"
+              />
+              <input
+                required
+                name="subject"
+                value={form.subject}
+                onChange={handleChange}
+                placeholder="Subject"
+                className="rounded-xl border border-cream-fixed/15 bg-transparent px-4 py-3 text-sm text-cream-fixed placeholder:text-cream-fixed/40 focus:border-accent focus:outline-none"
+              />
+            </div>
             <textarea
               required
               name="message"

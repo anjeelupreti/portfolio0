@@ -189,6 +189,7 @@ export default function Messages() {
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-medium text-ink">{m.name}</span>
                       <span className="font-mono text-[11px] text-ink/40">{m.email}</span>
+                      {m.phone && <span className="font-mono text-[11px] text-ink/40">{m.phone}</span>}
                       {!m.is_read && (
                         <span className="rounded-full bg-accent/20 px-2 py-0.5 font-mono text-[10px] uppercase tracking-wide text-ink">
                           new
