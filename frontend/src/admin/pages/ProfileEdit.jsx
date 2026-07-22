@@ -55,7 +55,12 @@ export default function ProfileEdit() {
     if (!profile?.id) return
     setSaving(true)
     try {
-      const updated = await updateProfile(profile.id, form)
+      // resume_file/profile_image are file fields — form holds their current
+      // URL as a plain string (from the initial load or a prior upload), and
+      // DRF's FileField rejects a string in place of an actual uploaded file.
+      // Uploads go through their own dedicated endpoints, so strip them here.
+      const { resume_file, profile_image, ...payload } = form
+      const updated = await updateProfile(profile.id, payload)
       setProfile(updated)
       push('Profile updated.', 'success')
     } catch {
