@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
   LucideLayoutDashboard as LayoutDashboard,
@@ -22,6 +22,7 @@ import {
 import { TrafficLights } from '../../components/ui/WindowChrome'
 import { useAuth } from '../context/AuthContext'
 import ColorModeToggle from '../../components/ui/ColorModeToggle'
+import { getContactMessages } from '../api/adminResources'
 
 const NAV_ITEMS = [
   { to: '/admin/overview', label: 'Overview', icon: LayoutDashboard },
@@ -31,7 +32,7 @@ const NAV_ITEMS = [
   { to: '/admin/projects', label: 'Projects', icon: FolderCode },
   { to: '/admin/blog', label: 'Blog Posts', icon: FileText },
   { to: '/admin/comments', label: 'Comments', icon: MessageSquare },
-  { to: '/admin/messages', label: 'Messages', icon: Mail },
+  { to: '/admin/messages', label: 'Messages', icon: Mail, badgeKey: 'unreadMessages' },
   { to: '/admin/compose', label: 'Compose', icon: PenSquare },
   { to: '/admin/personalization', label: 'Personalization', icon: Palette },
   { to: '/admin/widgets', label: 'Widgets', icon: MessageCircle },
@@ -40,10 +41,48 @@ const NAV_ITEMS = [
   { to: '/admin/change-password', label: 'Settings', icon: Key },
 ]
 
+/** Fetches the unread contact-message count on mount and every 30s so the sidebar badge stays reasonably fresh without a websocket. */
+function useUnreadMessageCount() {
+  const [count, setCount] = useState(0)
+
+  useEffect(() => {
+    let cancelled = false
+
+    const load = () => {
+      getContactMessages()
+        .then((messages) => {
+          if (!cancelled) setCount(messages.filter((m) => !m.is_read).length)
+        })
+        .catch(() => {})
+    }
+
+    load()
+    const interval = setInterval(load, 30000)
+    return () => {
+      cancelled = true
+      clearInterval(interval)
+    }
+  }, [])
+
+  return count
+}
+
+/** Small pill showing a count, hidden entirely when the count is zero. */
+function NavBadge({ count }) {
+  if (!count) return null
+  return (
+    <span className="ml-auto flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-accent px-1.5 font-mono text-[10px] font-bold text-ink">
+      {count > 99 ? '99+' : count}
+    </span>
+  )
+}
+
 /** Sidebar nav + logout, shared by the desktop rail and the mobile slide-in panel in DashboardLayout. */
 function SidebarContent({ onNavigate }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
+  const unreadMessages = useUnreadMessageCount()
+  const badgeCounts = { unreadMessages }
 
   const handleLogout = () => {
     logout()
@@ -75,6 +114,7 @@ function SidebarContent({ onNavigate }) {
           >
             <item.icon size={17} />
             {item.label}
+            {item.badgeKey && <NavBadge count={badgeCounts[item.badgeKey]} />}
           </NavLink>
         ))}
       </nav>
