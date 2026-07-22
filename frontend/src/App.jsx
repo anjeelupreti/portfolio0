@@ -23,6 +23,7 @@ import Overview from './admin/pages/Overview'
 import Sections from './admin/pages/Sections'
 import ProfileEdit from './admin/pages/ProfileEdit'
 import Training from './admin/pages/Training'
+import Projects from './admin/pages/Projects'
 import BlogPostList from './admin/pages/BlogPostList'
 import BlogPostEditor from './admin/pages/BlogPostEditor'
 import Comments from './admin/pages/Comments'
@@ -93,6 +94,7 @@ function AdminRoutes() {
         <Route path="sections" element={<Sections />} />
         <Route path="profile" element={<ProfileEdit />} />
         <Route path="training" element={<Training />} />
+        <Route path="projects" element={<Projects />} />
         <Route path="blog" element={<BlogPostList />} />
         <Route path="blog/new" element={<BlogPostEditor />} />
         <Route path="blog/:slug/edit" element={<BlogPostEditor />} />

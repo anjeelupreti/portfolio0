@@ -57,6 +57,23 @@ export const uploadTrainingCertificate = (id, file) => {
   return adminClient.patch(`/training/${id}/`, formData).then((r) => r.data)
 }
 
+export const getProjectsAdmin = () => adminClient.get('/projects/').then((r) => r.data)
+
+export const createProject = (payload) =>
+  adminClient.post('/projects/', payload).then((r) => r.data)
+
+export const updateProject = (id, payload) =>
+  adminClient.patch(`/projects/${id}/`, payload).then((r) => r.data)
+
+export const deleteProject = (id) => adminClient.delete(`/projects/${id}/`)
+
+/** Uploads a project cover image via multipart form data; same Content-Type caveat as uploadResume. */
+export const uploadProjectImage = (id, file) => {
+  const formData = new FormData()
+  formData.append('image', file)
+  return adminClient.patch(`/projects/${id}/`, formData).then((r) => r.data)
+}
+
 export const getBlogPosts = () => adminClient.get('/blog-posts/').then((r) => r.data)
 
 export const getBlogPost = (slug) => adminClient.get(`/blog-posts/${slug}/`).then((r) => r.data)
