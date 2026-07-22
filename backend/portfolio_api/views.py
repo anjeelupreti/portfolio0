@@ -119,11 +119,17 @@ class ExperienceViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ExperienceSerializer
 
 
-class ProjectViewSet(viewsets.ReadOnlyModelViewSet):
-    """Public read-only listing of portfolio projects."""
+class ProjectViewSet(viewsets.ModelViewSet):
+    """CRUD for portfolio projects; public read, staff-only write."""
 
     queryset = Project.objects.all()
     serializer_class = ProjectSerializer
+
+    def get_permissions(self):
+        """Anyone can view projects; only authenticated staff can add/edit/remove them."""
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]
+        return [IsAuthenticated()]
 
 
 class SkillCategoryViewSet(viewsets.ReadOnlyModelViewSet):
