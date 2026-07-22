@@ -136,26 +136,38 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
 }
 
-# Email — was Gmail SMTP, but Render's free-tier outbound SMTP (port 587) hangs/
-# blocks in production even though it works fine locally, causing contact-form
-# and Compose sends to time out with no response. Switched to Resend (HTTPS
-# API, via django-anymail) below, which works over port 443 like any other
-# API call. Kept the old SMTP config here, commented out, in case Gmail SMTP
-# is ever usable again (e.g. on a host that doesn't block outbound SMTP).
+# Email (Gmail SMTP) — used for contact-form replies and password reset links.
 #
-# EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
-# EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
-# EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
-# EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
-# EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
-# EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+# NOTE: Render's free-tier web services block/are unreliable on outbound SMTP
+# (port 587) — without EMAIL_TIMEOUT, a blocked connection hangs forever,
+# stalling the whole request (this is what caused "Something went wrong" /
+# a stuck-pending request on the contact form and dashboard Compose). With
+# EMAIL_TIMEOUT set, a blocked send fails fast instead of hanging — the
+# contact message still saves and the visitor still gets a normal success
+# response either way, since perform_create's email sends are best-effort
+# and never allowed to block or fail the actual save. If outbound SMTP is
+# fully blocked (not just slow) on the current host, the email itself won't
+# arrive even with this fix — only a different host or an HTTPS-based
+# provider like Resend (see the commented block below) can fix that part.
+EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
+EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
+EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
+EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+EMAIL_TIMEOUT = config("EMAIL_TIMEOUT", default=8, cast=int)
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default=EMAIL_HOST_USER)
+CONTACT_RECEIVER_EMAIL = config("CONTACT_RECEIVER_EMAIL", default=EMAIL_HOST_USER)
 
-EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
-ANYMAIL = {
-    "RESEND_API_KEY": config("RESEND_API_KEY", default=""),
-}
-DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="")
-CONTACT_RECEIVER_EMAIL = config("CONTACT_RECEIVER_EMAIL", default=DEFAULT_FROM_EMAIL)
+# Resend (HTTPS API instead of SMTP) — kept ready but unused while on Railway.
+# To switch: comment out the Gmail SMTP block above and uncomment this.
+#
+# EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
+# ANYMAIL = {
+#     "RESEND_API_KEY": config("RESEND_API_KEY", default=""),
+# }
+# DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="")
+# CONTACT_RECEIVER_EMAIL = config("CONTACT_RECEIVER_EMAIL", default=DEFAULT_FROM_EMAIL)
 
 # Frontend base URL — used to build links back to the SPA (e.g. password reset)
 FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:5173")
