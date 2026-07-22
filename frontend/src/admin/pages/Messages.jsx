@@ -15,6 +15,7 @@ import Card from '../components/Card'
 import RichTextEditor from '../components/RichTextEditor'
 import { getContactMessages, markContactMessageRead, sendEmail } from '../api/adminResources'
 import { useToast } from '../components/Toast'
+import { useRefreshUnreadMessages } from '../layout/DashboardLayout'
 
 /** Renders the chain of admin replies already sent for a contact message, including any send errors. */
 function ReplyThread({ replies }) {
@@ -130,6 +131,7 @@ function ReplyForm({ message, onSent, onCancel }) {
 /** Admin contact inbox — lists messages, marks them read, and expands ReplyForm/ReplyThread per message. */
 export default function Messages() {
   const { push } = useToast()
+  const refreshUnreadCount = useRefreshUnreadMessages()
   const [messages, setMessages] = useState([])
   const [loading, setLoading] = useState(true)
   const [busyIds, setBusyIds] = useState({})
@@ -150,6 +152,7 @@ export default function Messages() {
     setMessages((prev) => prev.map((m) => (m.id === message.id ? { ...m, is_read: true } : m)))
     try {
       await markContactMessageRead(message.id)
+      refreshUnreadCount()
     } catch {
       setMessages((prev) => prev.map((m) => (m.id === message.id ? { ...m, is_read: false } : m)))
       push('Failed to mark message as read.', 'error')
@@ -161,6 +164,7 @@ export default function Messages() {
   const handleReplySent = (messageId) => {
     setReplyingId(null)
     loadMessages()
+    refreshUnreadCount()
   }
 
   return (

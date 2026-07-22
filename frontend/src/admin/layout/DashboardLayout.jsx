@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import {
   LucideLayoutDashboard as LayoutDashboard,
@@ -41,47 +41,51 @@ const NAV_ITEMS = [
   { to: '/admin/change-password', label: 'Settings', icon: Key },
 ]
 
-/** Fetches the unread contact-message count on mount and every 30s so the sidebar badge stays reasonably fresh without a websocket. */
+/**
+ * Shared unread-count + a `refresh()` function, so pages rendered inside the
+ * dashboard (e.g. Messages marking something read) can update the sidebar
+ * badge immediately instead of waiting for the next 30s poll.
+ */
+const UnreadMessagesContext = createContext({ count: 0, refresh: () => {} })
+
+/** Lets any page inside the dashboard trigger an immediate sidebar badge refresh, e.g. right after marking a message read. */
+export function useRefreshUnreadMessages() {
+  return useContext(UnreadMessagesContext).refresh
+}
+
+/** Fetches the unread contact-message count on mount, every 30s, and on demand via `refresh()`. */
 function useUnreadMessageCount() {
   const [count, setCount] = useState(0)
 
-  useEffect(() => {
-    let cancelled = false
-
-    const load = () => {
-      getContactMessages()
-        .then((messages) => {
-          if (!cancelled) setCount(messages.filter((m) => !m.is_read).length)
-        })
-        .catch(() => {})
-    }
-
-    load()
-    const interval = setInterval(load, 30000)
-    return () => {
-      cancelled = true
-      clearInterval(interval)
-    }
+  const refresh = useCallback(() => {
+    getContactMessages()
+      .then((messages) => setCount(messages.filter((m) => !m.is_read).length))
+      .catch(() => {})
   }, [])
 
-  return count
+  useEffect(() => {
+    refresh()
+    const interval = setInterval(refresh, 30000)
+    return () => clearInterval(interval)
+  }, [refresh])
+
+  return { count, refresh }
 }
 
 /** Small pill showing a count, hidden entirely when the count is zero. */
 function NavBadge({ count }) {
   if (!count) return null
   return (
-    <span className="ml-auto flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-accent px-1.5 font-mono text-[10px] font-bold text-ink">
+    <span className="ml-auto flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-accent px-1.5 font-mono text-[10px] font-bold text-ink-fixed">
       {count > 99 ? '99+' : count}
     </span>
   )
 }
 
 /** Sidebar nav + logout, shared by the desktop rail and the mobile slide-in panel in DashboardLayout. */
-function SidebarContent({ onNavigate }) {
+function SidebarContent({ onNavigate, unreadMessages }) {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
-  const unreadMessages = useUnreadMessageCount()
   const badgeCounts = { unreadMessages }
 
   const handleLogout = () => {
@@ -139,11 +143,12 @@ function SidebarContent({ onNavigate }) {
 export default function DashboardLayout() {
   const [mobileOpen, setMobileOpen] = useState(false)
   const { user } = useAuth()
+  const { count: unreadMessages, refresh: refreshUnreadMessages } = useUnreadMessageCount()
 
   return (
     <div className="min-h-screen bg-cream">
       <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-cream-fixed/10 bg-ink-fixed lg:block">
-        <SidebarContent />
+        <SidebarContent unreadMessages={unreadMessages} />
       </aside>
 
       {mobileOpen && (
@@ -153,7 +158,7 @@ export default function DashboardLayout() {
             onClick={() => setMobileOpen(false)}
           />
           <aside className="absolute inset-y-0 left-0 w-64 bg-ink-fixed">
-            <SidebarContent onNavigate={() => setMobileOpen(false)} />
+            <SidebarContent onNavigate={() => setMobileOpen(false)} unreadMessages={unreadMessages} />
           </aside>
         </div>
       )}
@@ -183,7 +188,9 @@ export default function DashboardLayout() {
         </header>
 
         <main className="px-4 py-6 sm:px-6 sm:py-8">
-          <Outlet />
+          <UnreadMessagesContext.Provider value={{ count: unreadMessages, refresh: refreshUnreadMessages }}>
+            <Outlet />
+          </UnreadMessagesContext.Provider>
         </main>
       </div>
     </div>
