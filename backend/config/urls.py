@@ -20,6 +20,7 @@ import re
 from django.conf import settings
 from django.contrib import admin
 from django.urls import include, path, re_path
+from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.static import serve
 
 urlpatterns = [
@@ -33,10 +34,15 @@ urlpatterns = [
 # directly instead so uploaded files (resume, profile photo, certificates)
 # are actually served regardless of DEBUG. Not using nginx/a CDN for this
 # given the project's scale — see the README's known-limitations note.
+#
+# xframe_options_exempt: Django's default X-Frame-Options: DENY (from
+# SecurityMiddleware) blocks the resume/certificate PDF preview modal's
+# <iframe> from rendering at all. Only exempted for this media-serving view,
+# not site-wide, so clickjacking protection still applies everywhere else.
 urlpatterns += [
     re_path(
         r"^%s(?P<path>.*)$" % re.escape(settings.MEDIA_URL.lstrip("/")),
-        serve,
+        xframe_options_exempt(serve),
         {"document_root": settings.MEDIA_ROOT},
     ),
 ]
