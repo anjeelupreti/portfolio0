@@ -8,7 +8,6 @@ import SocialIcon from '../ui/SocialIcon'
 export default function Hero({ profile, socialLinks = [] }) {
   const visibleSocialLinks = socialLinks.filter((link) => link.is_visible)
   const fullName = profile?.full_name || 'Anjeel Upreti'
-  const firstName = fullName.split(' ')[0] || 'Anjeel'
   const title = profile?.title || 'Software Engineer'
 
   return (
@@ -52,11 +51,11 @@ export default function Hero({ profile, socialLinks = [] }) {
           animate="show"
           variants={fadeUp}
           custom={0.1}
-          className="font-display text-6xl font-extrabold leading-[0.95] tracking-tight text-ink sm:text-7xl md:text-8xl"
+          className="font-display text-5xl font-extrabold leading-[1.05] tracking-tight text-ink sm:text-6xl md:text-7xl"
         >
-          HI THERE
+          Hi there, I am
           <br />
-          I'M <span className="outline-text">{firstName.toUpperCase()}</span>
+          <span className="text-accent">{fullName}</span>
         </motion.h1>
 
         <motion.div
