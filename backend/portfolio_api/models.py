@@ -394,6 +394,7 @@ class ContactMessage(models.Model):
 
     name = models.CharField(max_length=150)
     email = models.EmailField()
+    phone = models.CharField(max_length=30, blank=True, help_text="Optional callback number the visitor left.")
     subject = models.CharField(max_length=200, blank=True)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

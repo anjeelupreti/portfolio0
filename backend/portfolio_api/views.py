@@ -230,8 +230,11 @@ class ContactMessageCreateView(generics.CreateAPIView):
     def _send_owner_notification(contact_message):
         """Email CONTACT_RECEIVER_EMAIL with the submitted message; failure is logged, not raised."""
         try:
+            phone_line_html = f"<p><strong>Phone:</strong> {contact_message.phone}</p>" if contact_message.phone else ""
+            phone_line_text = f"Phone: {contact_message.phone}\n" if contact_message.phone else ""
             body_html = (
                 f"<p><strong>From:</strong> {contact_message.name} ({contact_message.email})</p>"
+                f"{phone_line_html}"
                 f"<p><strong>Subject:</strong> {contact_message.subject or '(no subject)'}</p>"
                 f"<p>{contact_message.message}</p>"
             )
@@ -239,6 +242,7 @@ class ContactMessageCreateView(generics.CreateAPIView):
                 subject=f"New contact form message: {contact_message.subject or contact_message.name}",
                 body=(
                     f"From: {contact_message.name} ({contact_message.email})\n"
+                    f"{phone_line_text}"
                     f"Subject: {contact_message.subject or '(no subject)'}\n\n"
                     f"{contact_message.message}"
                 ),
