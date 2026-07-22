@@ -127,6 +127,24 @@ export const updateSocialLink = (id, payload) =>
 
 export const deleteSocialLink = (id) => adminClient.delete(`/social-links/${id}/`)
 
+export const getPricingPlansAdmin = () => adminClient.get('/pricing-plans/').then((r) => r.data)
+
+export const createPricingPlan = (payload) =>
+  adminClient.post('/pricing-plans/', payload).then((r) => r.data)
+
+export const updatePricingPlan = (id, payload) =>
+  adminClient.patch(`/pricing-plans/${id}/`, payload).then((r) => r.data)
+
+export const deletePricingPlan = (id) => adminClient.delete(`/pricing-plans/${id}/`)
+
+export const createPricingFeature = (payload) =>
+  adminClient.post('/pricing-features/', payload).then((r) => r.data)
+
+export const updatePricingFeature = (id, payload) =>
+  adminClient.patch(`/pricing-features/${id}/`, payload).then((r) => r.data)
+
+export const deletePricingFeature = (id) => adminClient.delete(`/pricing-features/${id}/`)
+
 export const getAnalyticsSummary = () => adminClient.get('/analytics/summary/').then((r) => r.data)
 
 export const getContactMessages = () => adminClient.get('/contact-messages/').then((r) => r.data)
