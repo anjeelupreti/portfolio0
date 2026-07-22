@@ -105,6 +105,59 @@ class SiteWidget(models.Model):
         return obj
 
 
+class EmailSettings(models.Model):
+    """
+    Singleton: controls what happens when the public contact form is
+    submitted — whether the owner gets notified, whether the visitor gets an
+    auto-reply, and the editable subject/message for that auto-reply.
+    """
+
+    notify_owner_enabled = models.BooleanField(
+        default=True,
+        help_text="Send an email to CONTACT_RECEIVER_EMAIL (from settings/.env) whenever the contact form is submitted.",
+    )
+
+    auto_reply_enabled = models.BooleanField(
+        default=True,
+        help_text="Send a confirmation email back to the visitor who submitted the contact form.",
+    )
+    auto_reply_subject = models.CharField(
+        max_length=200, blank=True,
+        default="Thanks for reaching out!",
+        help_text="Subject line of the auto-reply sent to the visitor.",
+    )
+    auto_reply_message = models.TextField(
+        blank=True,
+        default=(
+            "Hi {name},\n\n"
+            "Thanks for getting in touch! I've received your message and will "
+            "get back to you as soon as I can.\n\n"
+            "Best,\n{owner_name}"
+        ),
+        help_text="Body of the auto-reply. {name} and {owner_name} are replaced with the visitor's name and the site owner's name.",
+    )
+
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Email settings"
+
+    def __str__(self):
+        """Static label since this is a singleton settings row."""
+        return "Email settings"
+
+    def save(self, *args, **kwargs):
+        """Force pk=1 so there is ever only one email-settings row."""
+        self.pk = 1
+        super().save(*args, **kwargs)
+
+    @classmethod
+    def load(cls):
+        """Fetch the singleton row, creating it with defaults on first use."""
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+
+
 class SiteSection(models.Model):
     """Feature flags controlling which homepage sections are visible on the public site."""
 

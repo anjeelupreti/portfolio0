@@ -3,7 +3,7 @@ from rest_framework import serializers
 from .models import (
     Profile, SocialLink, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
     Education, Training, Reference, Language, ContactMessage, EmailReply,
-    Service, PricingPlan, PricingFeature, SiteSection, SiteTheme, SiteWidget,
+    Service, PricingPlan, PricingFeature, SiteSection, SiteTheme, SiteWidget, EmailSettings,
     BlogCategory, BlogTag, BlogPost, BlogComment,
 )
 
@@ -64,6 +64,19 @@ class SiteWidgetSerializer(serializers.ModelSerializer):
                 "Must be in international format with country code, e.g. +9779843951313."
             )
         return value
+
+
+class EmailSettingsSerializer(serializers.ModelSerializer):
+    """(De)serializes the singleton contact-form email behavior settings (owner notification, visitor auto-reply)."""
+
+    class Meta:
+        model = EmailSettings
+        fields = [
+            "notify_owner_enabled",
+            "auto_reply_enabled", "auto_reply_subject", "auto_reply_message",
+            "updated_at",
+        ]
+        read_only_fields = ["updated_at"]
 
 
 class ProfileSerializer(serializers.ModelSerializer):

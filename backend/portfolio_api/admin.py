@@ -3,7 +3,7 @@ from django.contrib import admin
 from .models import (
     Profile, SocialLink, Experience, ExperienceHighlight, Project, SkillCategory, Skill,
     Education, Training, Reference, Language, ContactMessage, EmailReply, SiteVisit,
-    Service, PricingPlan, PricingFeature, SiteSection, SiteTheme, SiteWidget,
+    Service, PricingPlan, PricingFeature, SiteSection, SiteTheme, SiteWidget, EmailSettings,
     BlogCategory, BlogTag, BlogPost, BlogComment,
 )
 
@@ -53,6 +53,21 @@ class SiteWidgetAdmin(admin.ModelAdmin):
 
     def has_delete_permission(self, request, obj=None):
         """Never allow deleting the singleton widget-settings row."""
+        return False
+
+
+@admin.register(EmailSettings)
+class EmailSettingsAdmin(admin.ModelAdmin):
+    """Admin for the singleton contact-form email settings; blocks adding a second row or deleting the only one."""
+
+    list_display = ("notify_owner_enabled", "auto_reply_enabled", "auto_reply_subject", "updated_at")
+
+    def has_add_permission(self, request):
+        """Only allow adding if no EmailSettings row exists yet (enforces singleton)."""
+        return not EmailSettings.objects.exists()
+
+    def has_delete_permission(self, request, obj=None):
+        """Never allow deleting the singleton email-settings row."""
         return False
 
 

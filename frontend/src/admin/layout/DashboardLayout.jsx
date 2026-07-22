@@ -17,6 +17,7 @@ import {
   LucidePalette as Palette,
   LucideMessageCircle as MessageCircle,
   LucideShare2 as Share2,
+  LucideMailCheck as MailCheck,
 } from 'lucide-react'
 import { TrafficLights } from '../../components/ui/WindowChrome'
 import { useAuth } from '../context/AuthContext'
@@ -35,6 +36,7 @@ const NAV_ITEMS = [
   { to: '/admin/personalization', label: 'Personalization', icon: Palette },
   { to: '/admin/widgets', label: 'Widgets', icon: MessageCircle },
   { to: '/admin/social-links', label: 'Social Links', icon: Share2 },
+  { to: '/admin/email-settings', label: 'Email Settings', icon: MailCheck },
   { to: '/admin/change-password', label: 'Settings', icon: Key },
 ]
 

@@ -112,6 +112,11 @@ export const getSiteWidgetsAdmin = () => adminClient.get('/site-widgets/').then(
 export const updateSiteWidgets = (payload) =>
   adminClient.patch('/site-widgets/', payload).then((r) => r.data)
 
+export const getEmailSettingsAdmin = () => adminClient.get('/email-settings/').then((r) => r.data)
+
+export const updateEmailSettings = (payload) =>
+  adminClient.patch('/email-settings/', payload).then((r) => r.data)
+
 export const getSocialLinksAdmin = () => adminClient.get('/social-links/').then((r) => r.data)
 
 export const createSocialLink = (payload) =>

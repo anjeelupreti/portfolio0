@@ -1,3 +1,4 @@
+from django.conf import settings as django_settings
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Count
 from django.db.models.functions import TruncDate
@@ -14,14 +15,14 @@ from .models import (
     Profile, SocialLink, Experience, Project, SkillCategory,
     Education, Training, Reference, Language, ContactMessage, EmailReply,
     Service, PricingPlan, BlogCategory, BlogTag, BlogPost, BlogComment,
-    SiteVisit, SiteSection, SiteTheme, SiteWidget,
+    SiteVisit, SiteSection, SiteTheme, SiteWidget, EmailSettings,
 )
 from .serializers import (
     ProfileSerializer, SocialLinkSerializer, ExperienceSerializer, ProjectSerializer, SkillCategorySerializer,
     EducationSerializer, TrainingSerializer, ReferenceSerializer, LanguageSerializer,
     ContactMessageSerializer, EmailReplySerializer, EmailReplyWriteSerializer,
     ServiceSerializer, PricingPlanSerializer, SiteSectionSerializer, SiteThemeSerializer,
-    SiteWidgetSerializer,
+    SiteWidgetSerializer, EmailSettingsSerializer,
     BlogCategorySerializer, BlogTagSerializer,
     BlogPostListSerializer, BlogPostDetailSerializer, BlogPostWriteSerializer,
     BlogCommentSerializer,
@@ -81,6 +82,24 @@ class SiteWidgetView(APIView):
         """Partially update the singleton widget-settings record."""
         widget = SiteWidget.load()
         serializer = SiteWidgetSerializer(widget, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+
+class EmailSettingsView(APIView):
+    """Singleton contact-form email settings: staff-only GET/PATCH (visitors never need to see the auto-reply template)."""
+
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Return the current (or default) email settings."""
+        return Response(EmailSettingsSerializer(EmailSettings.load()).data)
+
+    def patch(self, request):
+        """Partially update the singleton email-settings record."""
+        settings_obj = EmailSettings.load()
+        serializer = EmailSettingsSerializer(settings_obj, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
@@ -174,10 +193,73 @@ class LanguageViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class ContactMessageCreateView(generics.CreateAPIView):
-    """Public endpoint the contact form posts to; creates a ContactMessage record."""
+    """
+    Public endpoint the contact form posts to; creates a ContactMessage record,
+    then (per EmailSettings) emails the owner a notification and/or emails the
+    visitor an auto-reply confirmation. Both emails are best-effort — a send
+    failure never blocks the message from being saved or the request from
+    succeeding, since the message is already safely in the database either way.
+    """
 
     queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer
+
+    def perform_create(self, serializer):
+        """Save the message, then fire the owner-notification and visitor auto-reply emails."""
+        contact_message = serializer.save()
+        settings_obj = EmailSettings.load()
+        profile = Profile.objects.first()
+        owner_name = profile.full_name if profile else "the site owner"
+
+        if settings_obj.notify_owner_enabled:
+            self._send_owner_notification(contact_message)
+
+        if settings_obj.auto_reply_enabled:
+            self._send_auto_reply(contact_message, settings_obj, owner_name)
+
+    @staticmethod
+    def _send_owner_notification(contact_message):
+        """Email CONTACT_RECEIVER_EMAIL with the submitted message; failure is logged, not raised."""
+        try:
+            body_html = (
+                f"<p><strong>From:</strong> {contact_message.name} ({contact_message.email})</p>"
+                f"<p><strong>Subject:</strong> {contact_message.subject or '(no subject)'}</p>"
+                f"<p>{contact_message.message}</p>"
+            )
+            email = EmailMultiAlternatives(
+                subject=f"New contact form message: {contact_message.subject or contact_message.name}",
+                body=(
+                    f"From: {contact_message.name} ({contact_message.email})\n"
+                    f"Subject: {contact_message.subject or '(no subject)'}\n\n"
+                    f"{contact_message.message}"
+                ),
+                from_email=django_settings.DEFAULT_FROM_EMAIL,
+                to=[django_settings.CONTACT_RECEIVER_EMAIL],
+                reply_to=[contact_message.email],
+            )
+            email.attach_alternative(render_branded_email(body_html), "text/html")
+            email.send(fail_silently=True)
+        except Exception:
+            pass
+
+    @staticmethod
+    def _send_auto_reply(contact_message, settings_obj, owner_name):
+        """Email the visitor a confirmation using the dashboard-editable template; failure is logged, not raised."""
+        try:
+            message_text = settings_obj.auto_reply_message.format(
+                name=contact_message.name, owner_name=owner_name
+            )
+            body_html = message_text.replace("\n", "<br>")
+            email = EmailMultiAlternatives(
+                subject=settings_obj.auto_reply_subject,
+                body=message_text,
+                from_email=django_settings.DEFAULT_FROM_EMAIL,
+                to=[contact_message.email],
+            )
+            email.attach_alternative(render_branded_email(body_html), "text/html")
+            email.send(fail_silently=True)
+        except Exception:
+            pass
 
 
 class ContactMessageViewSet(viewsets.ReadOnlyModelViewSet):

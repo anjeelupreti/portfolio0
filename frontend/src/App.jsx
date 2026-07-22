@@ -33,6 +33,7 @@ import ChangePassword from './admin/pages/ChangePassword'
 import Personalization from './admin/pages/Personalization'
 import Widgets from './admin/pages/Widgets'
 import SocialLinks from './admin/pages/SocialLinks'
+import EmailSettings from './admin/pages/EmailSettings'
 
 /** Renders nothing; fires a visit-tracking call and resets scroll position on every route change. */
 function RouteTracker() {
@@ -104,6 +105,7 @@ function AdminRoutes() {
         <Route path="personalization" element={<Personalization />} />
         <Route path="widgets" element={<Widgets />} />
         <Route path="social-links" element={<SocialLinks />} />
+        <Route path="email-settings" element={<EmailSettings />} />
         <Route path="change-password" element={<ChangePassword />} />
       </Route>
     </Routes>
