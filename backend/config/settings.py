@@ -93,11 +93,16 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STORAGES = {
+    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"},
 }
 
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+# media/ is gitignored (uploads aren't committed), so it may not exist at all
+# on a fresh deploy — create it eagerly rather than relying on FileField's
+# storage backend to create it lazily on first save.
+MEDIA_ROOT.mkdir(parents=True, exist_ok=True)
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
@@ -142,3 +147,19 @@ CONTACT_RECEIVER_EMAIL = config("CONTACT_RECEIVER_EMAIL", default=EMAIL_HOST_USE
 
 # Frontend base URL — used to build links back to the SPA (e.g. password reset)
 FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:5173")
+
+# Explicit logging so unhandled exceptions (500s) always print a traceback to
+# stdout/stderr — Render captures process output as logs, and without this,
+# DEBUG=False can leave server errors completely invisible.
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {"class": "logging.StreamHandler"},
+    },
+    "root": {"handlers": ["console"], "level": "WARNING"},
+    "loggers": {
+        "django": {"handlers": ["console"], "level": "INFO", "propagate": False},
+        "django.request": {"handlers": ["console"], "level": "ERROR", "propagate": False},
+    },
+}
