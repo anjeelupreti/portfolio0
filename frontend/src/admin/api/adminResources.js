@@ -57,6 +57,16 @@ export const uploadTrainingCertificate = (id, file) => {
   return adminClient.patch(`/training/${id}/`, formData).then((r) => r.data)
 }
 
+export const getServicesAdmin = () => adminClient.get('/services/').then((r) => r.data)
+
+export const createService = (payload) =>
+  adminClient.post('/services/', payload).then((r) => r.data)
+
+export const updateService = (id, payload) =>
+  adminClient.patch(`/services/${id}/`, payload).then((r) => r.data)
+
+export const deleteService = (id) => adminClient.delete(`/services/${id}/`)
+
 export const getProjectsAdmin = () => adminClient.get('/projects/').then((r) => r.data)
 
 export const createProject = (payload) =>
@@ -73,6 +83,16 @@ export const uploadProjectImage = (id, file) => {
   formData.append('image', file)
   return adminClient.patch(`/projects/${id}/`, formData).then((r) => r.data)
 }
+
+export const getReferencesAdmin = () => adminClient.get('/references/').then((r) => r.data)
+
+export const createReference = (payload) =>
+  adminClient.post('/references/', payload).then((r) => r.data)
+
+export const updateReference = (id, payload) =>
+  adminClient.patch(`/references/${id}/`, payload).then((r) => r.data)
+
+export const deleteReference = (id) => adminClient.delete(`/references/${id}/`)
 
 export const getBlogPosts = () => adminClient.get('/blog-posts/').then((r) => r.data)
 
@@ -144,6 +164,61 @@ export const updatePricingFeature = (id, payload) =>
   adminClient.patch(`/pricing-features/${id}/`, payload).then((r) => r.data)
 
 export const deletePricingFeature = (id) => adminClient.delete(`/pricing-features/${id}/`)
+
+export const getSkillCategoriesAdmin = () => adminClient.get('/skill-categories/').then((r) => r.data)
+
+export const createSkillCategory = (payload) =>
+  adminClient.post('/skill-categories/', payload).then((r) => r.data)
+
+export const updateSkillCategory = (id, payload) =>
+  adminClient.patch(`/skill-categories/${id}/`, payload).then((r) => r.data)
+
+export const deleteSkillCategory = (id) => adminClient.delete(`/skill-categories/${id}/`)
+
+export const createSkill = (payload) => adminClient.post('/skills/', payload).then((r) => r.data)
+
+export const updateSkill = (id, payload) =>
+  adminClient.patch(`/skills/${id}/`, payload).then((r) => r.data)
+
+export const deleteSkill = (id) => adminClient.delete(`/skills/${id}/`)
+
+export const getLanguagesAdmin = () => adminClient.get('/languages/').then((r) => r.data)
+
+export const createLanguage = (payload) =>
+  adminClient.post('/languages/', payload).then((r) => r.data)
+
+export const updateLanguage = (id, payload) =>
+  adminClient.patch(`/languages/${id}/`, payload).then((r) => r.data)
+
+export const deleteLanguage = (id) => adminClient.delete(`/languages/${id}/`)
+
+export const getExperienceAdmin = () => adminClient.get('/experience/').then((r) => r.data)
+
+export const createExperience = (payload) =>
+  adminClient.post('/experience/', payload).then((r) => r.data)
+
+export const updateExperience = (id, payload) =>
+  adminClient.patch(`/experience/${id}/`, payload).then((r) => r.data)
+
+export const deleteExperience = (id) => adminClient.delete(`/experience/${id}/`)
+
+export const createExperienceHighlight = (payload) =>
+  adminClient.post('/experience-highlights/', payload).then((r) => r.data)
+
+export const updateExperienceHighlight = (id, payload) =>
+  adminClient.patch(`/experience-highlights/${id}/`, payload).then((r) => r.data)
+
+export const deleteExperienceHighlight = (id) => adminClient.delete(`/experience-highlights/${id}/`)
+
+export const getEducationAdmin = () => adminClient.get('/education/').then((r) => r.data)
+
+export const createEducation = (payload) =>
+  adminClient.post('/education/', payload).then((r) => r.data)
+
+export const updateEducation = (id, payload) =>
+  adminClient.patch(`/education/${id}/`, payload).then((r) => r.data)
+
+export const deleteEducation = (id) => adminClient.delete(`/education/${id}/`)
 
 export const getAnalyticsSummary = () => adminClient.get('/analytics/summary/').then((r) => r.data)
 
