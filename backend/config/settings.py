@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "rest_framework",
     "corsheaders",
+    "anymail",
     "portfolio_api",
 ]
 
@@ -135,15 +136,26 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": True,
 }
 
-# Email (Gmail SMTP) — used for contact-form replies and password reset links
-EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
-EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
-EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
-EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
-EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
-DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default=EMAIL_HOST_USER)
-CONTACT_RECEIVER_EMAIL = config("CONTACT_RECEIVER_EMAIL", default=EMAIL_HOST_USER)
+# Email — was Gmail SMTP, but Render's free-tier outbound SMTP (port 587) hangs/
+# blocks in production even though it works fine locally, causing contact-form
+# and Compose sends to time out with no response. Switched to Resend (HTTPS
+# API, via django-anymail) below, which works over port 443 like any other
+# API call. Kept the old SMTP config here, commented out, in case Gmail SMTP
+# is ever usable again (e.g. on a host that doesn't block outbound SMTP).
+#
+# EMAIL_BACKEND = config("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
+# EMAIL_HOST = config("EMAIL_HOST", default="smtp.gmail.com")
+# EMAIL_PORT = config("EMAIL_PORT", default=587, cast=int)
+# EMAIL_USE_TLS = config("EMAIL_USE_TLS", default=True, cast=bool)
+# EMAIL_HOST_USER = config("EMAIL_HOST_USER", default="")
+# EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", default="")
+
+EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
+ANYMAIL = {
+    "RESEND_API_KEY": config("RESEND_API_KEY", default=""),
+}
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="")
+CONTACT_RECEIVER_EMAIL = config("CONTACT_RECEIVER_EMAIL", default=DEFAULT_FROM_EMAIL)
 
 # Frontend base URL — used to build links back to the SPA (e.g. password reset)
 FRONTEND_URL = config("FRONTEND_URL", default="http://localhost:5173")

@@ -38,8 +38,8 @@ unless you want a different visual structure entirely.
 
 ## Stack
 
-**Backend** — Django 6 + Django REST Framework, JWT auth (SimpleJWT), Gmail SMTP for email, SQLite (dev)
-or PostgreSQL (prod via `DATABASE_URL`).
+**Backend** — Django 6 + Django REST Framework, JWT auth (SimpleJWT), Resend for email (via django-anymail),
+SQLite (dev) or PostgreSQL (prod via `DATABASE_URL`).
 
 **Frontend** — React 19 + Vite, Tailwind CSS v4, Framer Motion, TipTap (rich text editor), Recharts
 (analytics charts), react-router-dom. One app, two route trees: `/` and `/blog/*` are public, `/admin/*`
@@ -82,8 +82,8 @@ python manage.py runserver 8000
 | `DEBUG` | `True` locally, `False` in production |
 | `ALLOWED_HOSTS` | Comma-separated hostnames Django will serve |
 | `CORS_ALLOWED_ORIGINS` | Comma-separated frontend origins allowed to call the API |
-| `EMAIL_HOST_USER` / `EMAIL_HOST_PASSWORD` | Gmail address + **App Password** (not your regular password — requires 2-Step Verification enabled, generate one at Google Account → Security → App Passwords) |
-| `DEFAULT_FROM_EMAIL` / `CONTACT_RECEIVER_EMAIL` | Sender/recipient for contact form and reset emails |
+| `RESEND_API_KEY` | API key from resend.com — Gmail SMTP is deliberately not used (see note below) |
+| `DEFAULT_FROM_EMAIL` / `CONTACT_RECEIVER_EMAIL` | Sender/recipient for contact form and reset emails (sender must be on a domain verified with Resend) |
 | `FRONTEND_URL` | Used to build links back to the SPA (e.g. password reset) |
 | `DATABASE_URL` | Optional — if unset, falls back to a local SQLite file |
 
@@ -133,16 +133,23 @@ throughout, so re-running it just re-applies the same content rather than duplic
    | `ALLOWED_HOSTS` | `your-service.onrender.com` |
    | `CORS_ALLOWED_ORIGINS` | `https://your-frontend.vercel.app` |
    | `DATABASE_URL` | the Postgres URL from step 1 |
-   | `EMAIL_HOST_USER` / `EMAIL_HOST_PASSWORD` | your Gmail + App Password |
-   | `DEFAULT_FROM_EMAIL` / `CONTACT_RECEIVER_EMAIL` | same Gmail address (or different recipient) |
+   | `RESEND_API_KEY` | API key from resend.com — **do not use Gmail SMTP here** (see note below) |
+   | `DEFAULT_FROM_EMAIL` / `CONTACT_RECEIVER_EMAIL` | an address on a domain verified with Resend |
    | `FRONTEND_URL` | `https://your-frontend.vercel.app` |
    | `DJANGO_SUPERUSER_USERNAME` | your chosen dashboard login username |
-   | `DJANGO_SUPERUSER_EMAIL` | your email (can be the same Gmail address) |
+   | `DJANGO_SUPERUSER_EMAIL` | your email |
    | `DJANGO_SUPERUSER_PASSWORD` | a real password — **remove this env var after the first successful deploy** so the credential doesn't sit in your Render dashboard indefinitely |
 
 4. Deploy. `ensure_superuser` creates your dashboard login during the build — log in at
    `/admin/login` on the deployed frontend with the username/password from step 3.
 5. Note the live API URL (`https://your-service.onrender.com`) for the frontend step below.
+
+**Why Resend and not Gmail SMTP:** Gmail SMTP works fine locally but hangs indefinitely on Render's
+free tier — outbound SMTP (port 587) is blocked/unreliable there, so the contact form and dashboard
+Compose feature would time out with no response at all in production despite working perfectly in
+local dev. Resend sends over a normal HTTPS API call instead, which isn't affected by this. The old
+SMTP settings are still present in `settings.py`, commented out, in case you move to a host that
+doesn't have this restriction.
 
 **Known limitation:** Render's filesystem is ephemeral — uploaded files (resume, certificates, blog
 cover images, profile photo) will **not** survive a redeploy or restart, even though the database
