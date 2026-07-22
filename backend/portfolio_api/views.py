@@ -1,3 +1,5 @@
+import threading
+
 from django.conf import settings as django_settings
 from django.core.mail import EmailMultiAlternatives
 from django.db.models import Count
@@ -196,26 +198,33 @@ class ContactMessageCreateView(generics.CreateAPIView):
     """
     Public endpoint the contact form posts to; creates a ContactMessage record,
     then (per EmailSettings) emails the owner a notification and/or emails the
-    visitor an auto-reply confirmation. Both emails are best-effort — a send
-    failure never blocks the message from being saved or the request from
-    succeeding, since the message is already safely in the database either way.
+    visitor an auto-reply confirmation.
+
+    Both emails are sent from a background thread, not inline, so the HTTP
+    response always returns as soon as the message is saved — a slow or
+    blocked SMTP connection (e.g. on hosts that restrict outbound SMTP) can
+    no longer make the request itself hang or time out client-side. Each
+    send is still wrapped in its own try/except so a failure there is just
+    silently dropped rather than raised anywhere.
     """
 
     queryset = ContactMessage.objects.all()
     serializer_class = ContactMessageSerializer
 
     def perform_create(self, serializer):
-        """Save the message, then fire the owner-notification and visitor auto-reply emails."""
+        """Save the message, then fire the notification/auto-reply emails on a background thread."""
         contact_message = serializer.save()
         settings_obj = EmailSettings.load()
         profile = Profile.objects.first()
         owner_name = profile.full_name if profile else "the site owner"
 
-        if settings_obj.notify_owner_enabled:
-            self._send_owner_notification(contact_message)
+        def send_emails():
+            if settings_obj.notify_owner_enabled:
+                self._send_owner_notification(contact_message)
+            if settings_obj.auto_reply_enabled:
+                self._send_auto_reply(contact_message, settings_obj, owner_name)
 
-        if settings_obj.auto_reply_enabled:
-            self._send_auto_reply(contact_message, settings_obj, owner_name)
+        threading.Thread(target=send_emails, daemon=True).start()
 
     @staticmethod
     def _send_owner_notification(contact_message):
