@@ -219,11 +219,11 @@ class ServiceSerializer(serializers.ModelSerializer):
 
 
 class PricingFeatureSerializer(serializers.ModelSerializer):
-    """(De)serializes a single feature line under a pricing plan."""
+    """(De)serializes a single feature line under a pricing plan. `plan` is required on create/update but omitted from the nested read-only listing on PricingPlanSerializer."""
 
     class Meta:
         model = PricingFeature
-        fields = ["id", "text", "included", "order"]
+        fields = ["id", "plan", "text", "included", "order"]
 
 
 class PricingPlanSerializer(serializers.ModelSerializer):

@@ -16,14 +16,14 @@ from rest_framework.views import APIView
 from .models import (
     Profile, SocialLink, Experience, Project, SkillCategory,
     Education, Training, Reference, Language, ContactMessage, EmailReply,
-    Service, PricingPlan, BlogCategory, BlogTag, BlogPost, BlogComment,
+    Service, PricingPlan, PricingFeature, BlogCategory, BlogTag, BlogPost, BlogComment,
     SiteVisit, SiteSection, SiteTheme, SiteWidget, EmailSettings,
 )
 from .serializers import (
     ProfileSerializer, SocialLinkSerializer, ExperienceSerializer, ProjectSerializer, SkillCategorySerializer,
     EducationSerializer, TrainingSerializer, ReferenceSerializer, LanguageSerializer,
     ContactMessageSerializer, EmailReplySerializer, EmailReplyWriteSerializer,
-    ServiceSerializer, PricingPlanSerializer, SiteSectionSerializer, SiteThemeSerializer,
+    ServiceSerializer, PricingPlanSerializer, PricingFeatureSerializer, SiteSectionSerializer, SiteThemeSerializer,
     SiteWidgetSerializer, EmailSettingsSerializer,
     BlogCategorySerializer, BlogTagSerializer,
     BlogPostListSerializer, BlogPostDetailSerializer, BlogPostWriteSerializer,
@@ -352,11 +352,25 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ServiceSerializer
 
 
-class PricingPlanViewSet(viewsets.ReadOnlyModelViewSet):
-    """Public read-only listing of pricing plans with nested features."""
+class PricingPlanViewSet(viewsets.ModelViewSet):
+    """CRUD for pricing plans; public read, staff-only write."""
 
     queryset = PricingPlan.objects.all()
     serializer_class = PricingPlanSerializer
+
+    def get_permissions(self):
+        """Anyone can view pricing plans; only authenticated staff can add/edit/remove them."""
+        if self.action in ("list", "retrieve"):
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
+
+class PricingFeatureViewSet(viewsets.ModelViewSet):
+    """Staff-only CRUD for individual feature bullets under a pricing plan (read via the plan's nested list on the public site)."""
+
+    queryset = PricingFeature.objects.all()
+    serializer_class = PricingFeatureSerializer
+    permission_classes = [IsAuthenticated]
 
 
 class BlogCategoryViewSet(viewsets.ReadOnlyModelViewSet):
