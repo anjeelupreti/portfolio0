@@ -107,12 +107,19 @@ API + PostgreSQL. Deploy the backend first so you have its live URL for the fron
 
 ### Backend → Render
 
+**Free-tier Render has no shell access**, so `createsuperuser` (which normally prompts interactively)
+and `seed_data` need to run as part of the build instead. Both are safe to run on every deploy:
+`ensure_superuser` is a no-op once the account exists, and `seed_data` uses `update_or_create`
+throughout, so re-running it just re-applies the same content rather than duplicating anything.
+
 1. **Create a PostgreSQL instance** on Render (Dashboard → New → PostgreSQL). Copy its **Internal Database URL**.
 2. **Create a Web Service** on Render, pointing at this repo with **Root Directory: `backend`**.
    - **Build Command:**
      ```
-     pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate
+     pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate && python manage.py ensure_superuser && python manage.py seed_data
      ```
+     Drop `&& python manage.py seed_data` once you've replaced the seed content with your own (or don't
+     want it re-applied on every deploy).
    - **Start Command:**
      ```
      gunicorn config.wsgi:application
@@ -129,12 +136,12 @@ API + PostgreSQL. Deploy the backend first so you have its live URL for the fron
    | `EMAIL_HOST_USER` / `EMAIL_HOST_PASSWORD` | your Gmail + App Password |
    | `DEFAULT_FROM_EMAIL` / `CONTACT_RECEIVER_EMAIL` | same Gmail address (or different recipient) |
    | `FRONTEND_URL` | `https://your-frontend.vercel.app` |
+   | `DJANGO_SUPERUSER_USERNAME` | your chosen dashboard login username |
+   | `DJANGO_SUPERUSER_EMAIL` | your email (can be the same Gmail address) |
+   | `DJANGO_SUPERUSER_PASSWORD` | a real password — **remove this env var after the first successful deploy** so the credential doesn't sit in your Render dashboard indefinitely |
 
-4. Deploy. Once live, run the one-time setup via Render's shell (Dashboard → your service → Shell):
-   ```bash
-   python manage.py seed_data          # optional
-   python manage.py createsuperuser
-   ```
+4. Deploy. `ensure_superuser` creates your dashboard login during the build — log in at
+   `/admin/login` on the deployed frontend with the username/password from step 3.
 5. Note the live API URL (`https://your-service.onrender.com`) for the frontend step below.
 
 **Known limitation:** Render's filesystem is ephemeral — uploaded files (resume, certificates, blog
