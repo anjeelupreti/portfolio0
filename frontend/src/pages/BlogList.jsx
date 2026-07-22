@@ -2,25 +2,40 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { format } from 'date-fns'
-import { ArrowUpRight, LucideNewspaper as Newspaper, Eye } from 'lucide-react'
+import { ArrowUpRight, LucideNewspaper as Newspaper, LucideSearch as Search, Eye } from 'lucide-react'
 import { useApi } from '../hooks/useApi'
 import { getBlogPosts, getBlogCategories } from '../api/resources'
 import { fadeUp, staggerContainer, viewportOnce } from '../lib/motion'
+import SEO from '../components/ui/SEO'
 
-/** Public blog index — lists published posts with client-side category filtering. */
+/** Public blog index — lists published posts with client-side category filtering and text search. */
 export default function BlogList() {
   const { data: posts, loading } = useApi(getBlogPosts, [], [])
   const { data: categories } = useApi(getBlogCategories, [], [])
   const [activeCategory, setActiveCategory] = useState('all')
+  const [query, setQuery] = useState('')
 
   const filtered = useMemo(() => {
-    const list = posts || []
-    if (activeCategory === 'all') return list
-    return list.filter((p) => p.category?.slug === activeCategory)
-  }, [posts, activeCategory])
+    let list = posts || []
+    if (activeCategory !== 'all') list = list.filter((p) => p.category?.slug === activeCategory)
+    const q = query.trim().toLowerCase()
+    if (q) {
+      list = list.filter(
+        (p) =>
+          p.title?.toLowerCase().includes(q) ||
+          p.excerpt?.toLowerCase().includes(q) ||
+          p.tags?.some((tag) => tag.name?.toLowerCase().includes(q))
+      )
+    }
+    return list
+  }, [posts, activeCategory, query])
 
   return (
     <section className="min-h-screen bg-cream px-4 pb-24 pt-40 sm:px-6 sm:pt-44">
+      <SEO
+        title="Notes & Writing"
+        description="Thoughts on backend engineering, APIs, and building maintainable software."
+      />
       <div className="mx-auto max-w-6xl">
         <motion.div initial="hidden" animate="show" variants={fadeUp}>
           <span className="inline-flex items-center gap-2 rounded-full border border-ink/15 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-ink/70">
@@ -33,6 +48,17 @@ export default function BlogList() {
             Thoughts on backend engineering, APIs, and building maintainable software.
           </p>
         </motion.div>
+
+        <div className="relative mt-8 max-w-sm">
+          <Search className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-ink/30" size={16} />
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search posts..."
+            className="w-full rounded-full border border-ink/15 bg-surface/40 py-2.5 pl-10 pr-4 text-sm text-ink placeholder:text-ink/40 focus:border-ink focus:outline-none"
+          />
+        </div>
 
         {categories?.length > 0 && (
           <div className="mt-10 flex flex-wrap gap-2">
@@ -61,7 +87,18 @@ export default function BlogList() {
         )}
 
         {loading && (
-          <p className="mt-16 text-ink/40">Loading posts...</p>
+          <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="flex h-full flex-col overflow-hidden rounded-3xl border border-ink/10 bg-surface/40">
+                <div className="h-44 w-full animate-pulse bg-ink/5" />
+                <div className="flex flex-1 flex-col gap-3 p-6">
+                  <div className="h-5 w-3/4 animate-pulse rounded bg-ink/10" />
+                  <div className="h-4 w-full animate-pulse rounded bg-ink/5" />
+                  <div className="h-4 w-2/3 animate-pulse rounded bg-ink/5" />
+                </div>
+              </div>
+            ))}
+          </div>
         )}
 
         {!loading && filtered.length === 0 && (

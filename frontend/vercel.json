@@ -1,5 +1,7 @@
 {
   "rewrites": [
+    { "source": "/sitemap.xml", "destination": "https://portfolio0-22s7.onrender.com/sitemap.xml" },
+    { "source": "/robots.txt", "destination": "https://portfolio0-22s7.onrender.com/robots.txt" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }

@@ -16,6 +16,7 @@ import {
 import { useApi } from '../hooks/useApi'
 import { getBlogPost, postBlogComment, getSiteWidgets } from '../api/resources'
 import { fadeUp } from '../lib/motion'
+import SEO from '../components/ui/SEO'
 
 const initialForm = { name: '', email: '', content: '' }
 
@@ -114,8 +115,19 @@ export default function BlogDetail() {
 
   if (loading) {
     return (
-      <section className="flex min-h-screen items-center justify-center bg-cream px-4 pt-32">
-        <p className="text-ink/40">Loading post...</p>
+      <section className="min-h-screen bg-cream px-4 pb-24 pt-40 sm:px-6 sm:pt-44">
+        <div className="mx-auto max-w-3xl animate-pulse">
+          <div className="h-4 w-24 rounded bg-ink/10" />
+          <div className="mt-8 h-6 w-32 rounded-full bg-ink/10" />
+          <div className="mt-6 h-10 w-3/4 rounded bg-ink/10" />
+          <div className="mt-5 h-4 w-1/2 rounded bg-ink/5" />
+          <div className="mt-8 h-72 w-full rounded-3xl bg-ink/5" />
+          <div className="mt-10 space-y-3">
+            <div className="h-4 w-full rounded bg-ink/5" />
+            <div className="h-4 w-full rounded bg-ink/5" />
+            <div className="h-4 w-2/3 rounded bg-ink/5" />
+          </div>
+        </div>
       </section>
     )
   }
@@ -138,8 +150,26 @@ export default function BlogDetail() {
     )
   }
 
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.excerpt,
+    image: post.cover_image || undefined,
+    datePublished: post.published_at || undefined,
+    dateModified: post.updated_at || post.published_at || undefined,
+    author: post.author ? { '@type': 'Person', name: post.author } : undefined,
+  }
+
   return (
     <section className="min-h-screen bg-cream px-4 pb-24 pt-40 sm:px-6 sm:pt-44">
+      <SEO
+        title={post.title}
+        description={post.excerpt}
+        image={post.cover_image}
+        type="article"
+        jsonLd={articleJsonLd}
+      />
       <div className="mx-auto max-w-3xl">
         <Link
           to="/blog"

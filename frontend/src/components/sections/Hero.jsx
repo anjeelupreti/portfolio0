@@ -4,11 +4,23 @@ import { fadeUp } from '../../lib/motion'
 import { TrafficLights } from '../ui/WindowChrome'
 import SocialIcon from '../ui/SocialIcon'
 
+/** Picks the top N skills by proficiency across all categories, for the Hero's "stack" line. */
+function topSkillNames(skillCategories, count) {
+  const allSkills = skillCategories.flatMap((cat) => cat.skills || [])
+  return allSkills
+    .slice()
+    .sort((a, b) => (b.proficiency ?? 0) - (a.proficiency ?? 0))
+    .slice(0, count)
+    .map((s) => s.name)
+}
+
 /** Landing hero section (first thing rendered on the home page) — headline, availability status, summary, and social links. */
-export default function Hero({ profile, socialLinks = [] }) {
+export default function Hero({ profile, socialLinks = [], skillCategories = [] }) {
   const visibleSocialLinks = socialLinks.filter((link) => link.is_visible)
   const fullName = profile?.full_name || 'Anjeel Upreti'
   const title = profile?.title || 'Software Engineer'
+  const topSkills = topSkillNames(skillCategories, 3)
+  const stackLine = topSkills.length > 0 ? topSkills.join(' / ') : 'Python / Django / PostgreSQL'
 
   return (
     <section
@@ -92,10 +104,10 @@ export default function Hero({ profile, socialLinks = [] }) {
               </span>
             )}
             <span>
-              <span className="text-ink/30">stack:</span> Python / Django / PostgreSQL
+              <span className="text-ink/30">stack:</span> {stackLine}
             </span>
             <span>
-              <span className="text-ink/30">focus:</span> backend systems
+              <span className="text-ink/30">focus:</span> {title}
             </span>
           </div>
         </motion.div>

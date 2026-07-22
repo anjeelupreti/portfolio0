@@ -14,6 +14,7 @@ import {
 } from '../api/resources'
 import { isVisible } from '../lib/flags'
 
+import SEO from '../components/ui/SEO'
 import Hero from '../components/sections/Hero'
 import About from '../components/sections/About'
 import ExperienceTimeline from '../components/sections/ExperienceTimeline'
@@ -52,7 +53,7 @@ export default function Home({ profile, socialLinks }) {
   const { data: siteSections } = useApi(getSiteSections, [], [])
 
   const SECTION_REGISTRY = {
-    hero: () => <Hero profile={profile} socialLinks={socialLinks} />,
+    hero: () => <Hero profile={profile} socialLinks={socialLinks} skillCategories={skillCategories || []} />,
     about: () => (
       <About
         profile={profile}
@@ -74,8 +75,26 @@ export default function Home({ profile, socialLinks }) {
   const sections = siteSections && siteSections.length > 0 ? siteSections : null
   const order = sections ? sections.map((s) => s.key) : DEFAULT_ORDER
 
+  const personJsonLd = profile && {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    name: profile.full_name,
+    jobTitle: profile.title,
+    description: profile.tagline || profile.summary,
+    email: profile.email || undefined,
+    image: profile.profile_image || undefined,
+    url: typeof window !== 'undefined' ? window.location.origin : undefined,
+    sameAs: (socialLinks || []).filter((s) => s.is_visible).map((s) => s.url),
+  }
+
   return (
     <>
+      <SEO
+        title={profile ? `${profile.full_name} — ${profile.title}` : undefined}
+        description={profile?.tagline || profile?.summary}
+        image={profile?.profile_image}
+        jsonLd={personJsonLd}
+      />
       {order.map((key) => {
         const Component = SECTION_REGISTRY[key]
         if (!Component) return null

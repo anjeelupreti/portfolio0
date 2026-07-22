@@ -23,9 +23,13 @@ from django.urls import include, path, re_path
 from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.static import serve
 
+from portfolio_api.seo_views import robots_txt, sitemap_xml
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("api/", include("portfolio_api.urls")),
+    path("sitemap.xml", sitemap_xml, name="sitemap"),
+    path("robots.txt", robots_txt, name="robots"),
 ]
 
 # django.conf.urls.static.static() only adds this pattern when DEBUG=True —
